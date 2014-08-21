@@ -33,8 +33,8 @@
 //        self.backgroundColor = [UIColor blackColor];
         self.backgroundColor = [UIColor clearColor];
 
-        self.rimColour = [UIColor whiteColor];
-        self.textColour = [UIColor whiteColor];
+        self.rimColour = [UIColor blackColor];
+        self.textColour = [UIColor blackColor];
         self.tapColour = [UIColor blueColor];
         self.swirlColour = [UIColor greenColor];
         

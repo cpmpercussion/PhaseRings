@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "5623DB5F188CDB3800AA6C14"
-               BuildableName = "SingingBowls.app"
+               BuildableName = "PhaseRings.app"
                BlueprintName = "PhaseRings"
                ReferencedContainer = "container:PhaseRings.xcodeproj">
             </BuildableReference>
@@ -33,7 +33,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "5623DB80188CDB3800AA6C14"
-               BuildableName = "SingingBowlsTests.xctest"
+               BuildableName = "PhaseRingsTests.xctest"
                BlueprintName = "PhaseRingsTests"
                ReferencedContainer = "container:PhaseRings.xcodeproj">
             </BuildableReference>
@@ -43,7 +43,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5623DB5F188CDB3800AA6C14"
-            BuildableName = "SingingBowls.app"
+            BuildableName = "PhaseRings.app"
             BlueprintName = "PhaseRings"
             ReferencedContainer = "container:PhaseRings.xcodeproj">
          </BuildableReference>
@@ -62,7 +62,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5623DB5F188CDB3800AA6C14"
-            BuildableName = "SingingBowls.app"
+            BuildableName = "PhaseRings.app"
             BlueprintName = "PhaseRings"
             ReferencedContainer = "container:PhaseRings.xcodeproj">
          </BuildableReference>
@@ -80,7 +80,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5623DB5F188CDB3800AA6C14"
-            BuildableName = "SingingBowls.app"
+            BuildableName = "PhaseRings.app"
             BlueprintName = "PhaseRings"
             ReferencedContainer = "container:PhaseRings.xcodeproj">
          </BuildableReference>

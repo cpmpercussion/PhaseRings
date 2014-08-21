@@ -22,6 +22,12 @@
 //#import "StudyInBowls1.h"
 #import "GenerativeSetupComposition.h"
 
+// Touch Radius for iOS < 8
+@interface UITouch (Private)
+-(float)_pathMajorRadius;
+@end
+//
+
 @interface ViewController ()
 // Audio
 @property (strong,nonatomic) PdAudioController *audioController;
@@ -57,16 +63,19 @@
 {
     [super viewDidLoad];
     
-    // Setup UI
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"manual_control_mode"]) {
-        [self.distortSlider setHidden:NO];
-        [self.compositionStepper setHidden:NO];
-        [self.oscStatusLabel setHidden:YES];
-    } else {
-        [self.distortSlider setHidden:YES];
-        [self.compositionStepper setHidden:YES];
-        [self.oscStatusLabel setHidden:NO];
-    }
+//    // Setup UI
+//    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"manual_control_mode"]) {
+//        [self.distortSlider setHidden:NO];
+//        [self.compositionStepper setHidden:NO];
+//        [self.oscStatusLabel setHidden:YES];
+//    } else {
+//        [self.distortSlider setHidden:YES];
+//        [self.compositionStepper setHidden:YES];
+//        [self.oscStatusLabel setHidden:NO];
+//    }
+    [self.distortSlider setHidden:NO];
+    [self.compositionStepper setHidden:NO];
+    [self.oscStatusLabel setHidden:NO];
     
     // Setup Pd
     if([self.audioController configurePlaybackWithSampleRate:44100 numberChannels:2 inputEnabled:NO mixingEnabled:YES] != PdAudioOK) {
@@ -75,7 +84,7 @@
         NSLog(@"audioController initialised.");
     }
     
-    [PdBase openFile:@"SoundScraper.pd" path:[[NSBundle mainBundle] bundlePath]];
+    [PdBase openFile:@"PhaseRingSynth.pd" path:[[NSBundle mainBundle] bundlePath]];
     [self.audioController setActive:YES];
     [self.audioController print];
     [PdBase setDelegate:self];
@@ -127,10 +136,19 @@
 {
     for (UITouch * touch in [touches objectEnumerator]) {
         CGPoint point = [touch locationInView:self.view];
-        int velocity = 100;
+//        NSLog(@"Radius: %f",touch.majorRadius);
+        
+        int velocity = floorf(15 + (((touch._pathMajorRadius - 5.0)/16) * 115));
+        if (velocity > 127) velocity = 127;
+        if (velocity < 0) velocity = 0;
+        
+//        int velocity = 100;
         [PdBase sendNoteOn:1 pitch:[self noteFromPosition:point] velocity:velocity];
         [self.networkManager sendMessageWithTouch:point Velocity:0.0];
+        
     }
+    
+    
 }
 
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -152,26 +170,28 @@
     CGFloat xVelocity = [sender velocityInView:self.view].x;
     CGFloat yVelocity = [sender velocityInView:self.view].y;
     CGFloat velHyp = sqrt((xVelocity * xVelocity) + (yVelocity * yVelocity));
-    CGFloat velocity = log(velHyp)*20;
+    CGFloat velocity = log(velHyp)/10;
+    if (velocity < 0) velocity = 0;
+    if (velocity > 1) velocity = 1;
     [PdBase sendFloat:velocity toReceiver:@"singlevel" ];
     [self.bowlView changeBowlVolumeTo:velocity / 200];
     
     if ([sender state] == UIGestureRecognizerStateBegan) { // pan began
         [PdBase sendFloat:1 toReceiver:@"sing"];
-        [PdBase sendFloat:velocity toReceiver:@"singlevel" ];
         [PdBase sendFloat:(float) [self noteFromPosition:[sender locationInView:self.view]] toReceiver:@"singpitch"];
         
         [self.bowlView continuouslyAnimateBowlAtRadius:[self calculateDistanceFromCenter:[sender locationInView:self.view]]];
         
     } else if ([sender state] == UIGestureRecognizerStateChanged) { // pan changed
-        [PdBase sendFloat:velocity toReceiver:@"singlevel" ];
+        [PdBase sendFloat:velocity toReceiver:@"singlevel" ]; // Send Velocity
+        NSLog(@"Sing Velocity: %f",velocity);
+
         
         // send angle message to PD.
         CGFloat angle = [sender velocityInView:self.view].y/velHyp;
         [PdBase sendFloat:angle toReceiver:@"sinPanAngle"];
         [self.bowlView changeContinuousColour:angle forRadius:[self calculateDistanceFromCenter:[sender locationInView:self.view]]];
         //NSLog(@"%f",[sender velocityInView:self.view].y/velHyp);
-        
         // send distance var to PD.
         CGFloat xTrans = [sender translationInView:self.view].x;
         CGFloat yTrans = [sender translationInView:self.view].y;
@@ -181,6 +201,7 @@
         [self.bowlView changeContinuousAnimationSpeed:(3*trans) + 0.1];
         
     } else if (([sender state] == UIGestureRecognizerStateEnded) || ([sender state] == UIGestureRecognizerStateCancelled)) { // panended
+        [PdBase sendFloat:0 toReceiver:@"singlevel"];
         [PdBase sendFloat:0 toReceiver:@"sing"];
         [self.bowlView stopAnimatingBowl];
     }
@@ -296,6 +317,11 @@
 - (BOOL)prefersStatusBarHidden
 {
     return YES;
+}
+
+
+-(void) receivePrint:(NSString *)message {
+    NSLog(@"Pd: %@",message);
 }
 
 @end
