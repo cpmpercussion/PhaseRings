@@ -23,9 +23,9 @@
 #import "GenerativeSetupComposition.h"
 
 // Touch Radius for iOS < 8
-@interface UITouch (Private)
--(float)_pathMajorRadius;
-@end
+//@interface UITouch (Private)
+//-(float)_pathMajorRadius;
+//@end
 //
 
 @interface ViewController ()
@@ -62,18 +62,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-//    // Setup UI
-//    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"manual_control_mode"]) {
-//        [self.distortSlider setHidden:NO];
-//        [self.compositionStepper setHidden:NO];
-//        [self.oscStatusLabel setHidden:YES];
-//    } else {
-//        [self.distortSlider setHidden:YES];
-//        [self.compositionStepper setHidden:YES];
-//        [self.oscStatusLabel setHidden:NO];
-//    }
-    [self.distortSlider setHidden:NO];
+    [self.distortSlider setHidden:YES];
     [self.compositionStepper setHidden:NO];
     [self.oscStatusLabel setHidden:NO];
     
@@ -136,9 +125,12 @@
 {
     for (UITouch * touch in [touches objectEnumerator]) {
         CGPoint point = [touch locationInView:self.view];
-//        NSLog(@"Radius: %f",touch.majorRadius);
+        NSLog(@"Radius: %f",touch.majorRadius);
+        NSLog(@"Radius Error: %f",touch.majorRadiusTolerance);
         
-        int velocity = floorf(15 + (((touch._pathMajorRadius - 5.0)/16) * 115));
+//        int velocity = floorf(15 + (((touch._pathMajorRadius - 5.0)/16) * 115));
+        int velocity = floorf(15 + (110*((touch.majorRadius)/125)));
+        NSLog(@"Velocity: %d",velocity);
         if (velocity > 127) velocity = 127;
         if (velocity < 0) velocity = 0;
         
@@ -174,7 +166,7 @@
     if (velocity < 0) velocity = 0;
     if (velocity > 1) velocity = 1;
     [PdBase sendFloat:velocity toReceiver:@"singlevel" ];
-    [self.bowlView changeBowlVolumeTo:velocity / 200];
+    [self.bowlView changeBowlVolumeTo:velocity];
     
     if ([sender state] == UIGestureRecognizerStateBegan) { // pan began
         [PdBase sendFloat:1 toReceiver:@"sing"];
@@ -246,7 +238,8 @@
 
 #pragma mark - Metatone Network Methods
 -(void)searchingForLoggingServer {
-    [self.oscStatusLabel setText:@"searching for classifier 😒"];
+//    [self.oscStatusLabel setText:@"searching for classifier 😒"];
+    [self.oscStatusLabel setText:@""];
 }
 
 -(void)stoppedSearchingForLoggingServer {
