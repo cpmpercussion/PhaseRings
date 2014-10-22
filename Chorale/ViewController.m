@@ -125,8 +125,6 @@
     [self.bowlView drawSetup:self.bowlSetup];
 }
 
-
-
 #pragma mark - Touch Methods
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
