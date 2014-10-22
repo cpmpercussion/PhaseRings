@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5623759A19F7610F004F1281 /* MetatoneMidiManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5623759019F7610F004F1281 /* MetatoneMidiManager.m */; };
+		5623759B19F7610F004F1281 /* PGMidi.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5623759319F7610F004F1281 /* PGMidi.mm */; };
+		5623759C19F7610F004F1281 /* PGMidiAllSources.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5623759519F7610F004F1281 /* PGMidiAllSources.mm */; };
+		5623759D19F7610F004F1281 /* PGMidiFind.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5623759719F7610F004F1281 /* PGMidiFind.mm */; };
 		5623DB64188CDB3800AA6C14 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5623DB63188CDB3800AA6C14 /* Foundation.framework */; };
 		5623DB66188CDB3800AA6C14 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5623DB65188CDB3800AA6C14 /* CoreGraphics.framework */; };
 		5623DB68188CDB3800AA6C14 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5623DB67188CDB3800AA6C14 /* UIKit.framework */; };
@@ -447,6 +451,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5623758E19F7610F004F1281 /* iOSVersionDetection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iOSVersionDetection.h; sourceTree = "<group>"; };
+		5623758F19F7610F004F1281 /* MetatoneMidiManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetatoneMidiManager.h; sourceTree = "<group>"; };
+		5623759019F7610F004F1281 /* MetatoneMidiManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MetatoneMidiManager.m; sourceTree = "<group>"; };
+		5623759119F7610F004F1281 /* PGArc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PGArc.h; sourceTree = "<group>"; };
+		5623759219F7610F004F1281 /* PGMidi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PGMidi.h; sourceTree = "<group>"; };
+		5623759319F7610F004F1281 /* PGMidi.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PGMidi.mm; sourceTree = "<group>"; };
+		5623759419F7610F004F1281 /* PGMidiAllSources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PGMidiAllSources.h; sourceTree = "<group>"; };
+		5623759519F7610F004F1281 /* PGMidiAllSources.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PGMidiAllSources.mm; sourceTree = "<group>"; };
+		5623759619F7610F004F1281 /* PGMidiFind.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PGMidiFind.h; sourceTree = "<group>"; };
+		5623759719F7610F004F1281 /* PGMidiFind.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PGMidiFind.mm; sourceTree = "<group>"; };
 		5623DB60188CDB3800AA6C14 /* PhaseRings.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhaseRings.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5623DB63188CDB3800AA6C14 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		5623DB65188CDB3800AA6C14 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -916,9 +930,27 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5623758C19F7610F004F1281 /* MetatoneMIDI */ = {
+			isa = PBXGroup;
+			children = (
+				5623758E19F7610F004F1281 /* iOSVersionDetection.h */,
+				5623758F19F7610F004F1281 /* MetatoneMidiManager.h */,
+				5623759019F7610F004F1281 /* MetatoneMidiManager.m */,
+				5623759119F7610F004F1281 /* PGArc.h */,
+				5623759219F7610F004F1281 /* PGMidi.h */,
+				5623759319F7610F004F1281 /* PGMidi.mm */,
+				5623759419F7610F004F1281 /* PGMidiAllSources.h */,
+				5623759519F7610F004F1281 /* PGMidiAllSources.mm */,
+				5623759619F7610F004F1281 /* PGMidiFind.h */,
+				5623759719F7610F004F1281 /* PGMidiFind.mm */,
+			);
+			path = MetatoneMIDI;
+			sourceTree = "<group>";
+		};
 		5623DB57188CDB3800AA6C14 = {
 			isa = PBXGroup;
 			children = (
+				5623758C19F7610F004F1281 /* MetatoneMIDI */,
 				56E170F51991EAF400A36C74 /* PhaseRingSynth */,
 				567B39E01898C88F000DDFD1 /* MetatoneOSC */,
 				5623DB69188CDB3800AA6C14 /* Chorale */,
@@ -1502,7 +1534,7 @@
 		5623DB58188CDB3800AA6C14 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0510;
+				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = "Charles Martin";
 				TargetAttributes = {
 					5623DB5F188CDB3800AA6C14 = {
@@ -1947,17 +1979,20 @@
 				5623DB7A188CDB3800AA6C14 /* ViewController.m in Sources */,
 				567B3A0A1898C88F000DDFD1 /* F53OSCSocket.m in Sources */,
 				568A0C6D18C96F41007E9A8C /* StudyInBowls1.m in Sources */,
+				5623759A19F7610F004F1281 /* MetatoneMidiManager.m in Sources */,
 				565A2328188F94CA00093B32 /* SingingBowlSetup.m in Sources */,
 				567B3A041898C88F000DDFD1 /* F53OSCBundle.m in Sources */,
 				567B3A051898C88F000DDFD1 /* F53OSCClient.m in Sources */,
 				56C28DB6194A968400E015BB /* NoteColours.m in Sources */,
 				567B3A0C1898C88F000DDFD1 /* GCDAsyncSocket.m in Sources */,
 				567B3A081898C88F000DDFD1 /* F53OSCParser.m in Sources */,
+				5623759B19F7610F004F1281 /* PGMidi.mm in Sources */,
 				567B3A091898C88F000DDFD1 /* F53OSCServer.m in Sources */,
 				564C44B31952B05500FD0E8B /* GenerativeSetupComposition.m in Sources */,
 				567B3A071898C88F000DDFD1 /* F53OSCPacket.m in Sources */,
 				567B3A0B1898C88F000DDFD1 /* F53OSCTimeTag.m in Sources */,
 				567B3A0D1898C88F000DDFD1 /* GCDAsyncUdpSocket.m in Sources */,
+				5623759C19F7610F004F1281 /* PGMidiAllSources.mm in Sources */,
 				565A2324188F94AE00093B32 /* SingingBowlView.m in Sources */,
 				56B7898F1897327D00B6AE22 /* SingingBowlComposition.m in Sources */,
 				5623DB74188CDB3800AA6C14 /* AppDelegate.m in Sources */,
@@ -1969,6 +2004,7 @@
 				567B3A0F1898C88F000DDFD1 /* MetatoneNetworkManager.m in Sources */,
 				5623DB70188CDB3800AA6C14 /* main.m in Sources */,
 				567B3A061898C88F000DDFD1 /* F53OSCMessage.m in Sources */,
+				5623759D19F7610F004F1281 /* PGMidiFind.mm in Sources */,
 				567B3A101898C88F000DDFD1 /* NSData+F53OSCBlob.m in Sources */,
 				567B3A121898C88F000DDFD1 /* NSNumber+F53OSCNumber.m in Sources */,
 			);
@@ -2058,7 +2094,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 2;
