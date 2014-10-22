@@ -9,8 +9,6 @@
 #import "SingingBowlView.h"
 #import "ScaleMaker.h"
 
-#define CENTER_X 512
-#define CENTER_Y 384
 #define ROOTTWO 1.41421356237
 #define DISPLAYNOTENAME false
 
@@ -19,9 +17,7 @@
 @property (strong,nonatomic) NSMutableDictionary *continuousEdgeLayers;
 @property (strong,nonatomic) NSMutableDictionary *tapEdgeLayers;
 @property (weak,nonatomic) SingingBowlSetup* currentSetup;
-@property (nonatomic) CGFloat totalRadius;
 @end
-
 
 @implementation SingingBowlView
 
@@ -30,18 +26,16 @@
     self = [super initWithCoder:aDecoder];
     if (self) {
         // Initialization code
-//        self.backgroundColor = [UIColor blackColor];
         self.backgroundColor = [UIColor clearColor];
 
         self.rimColour = [UIColor blackColor];
         self.textColour = [UIColor blackColor];
         self.tapColour = [UIColor blueColor];
         self.swirlColour = [UIColor greenColor];
-        
         self.rimSubLayer = [[CALayer alloc] init];
         [self.layer addSublayer:self.rimSubLayer];
         self.multipleTouchEnabled = YES;
-        self.totalRadius = [self viewRadius];
+//        self.totalRadius = [self viewRadius];
     }
     return self;
 }
@@ -161,7 +155,6 @@
     pulse.repeatCount = HUGE_VALF;
     
     [layer addAnimation:pulse forKey:@"pulseAnimation"];
-
 }
 
 
@@ -169,7 +162,6 @@
 -(void) stopAnimatingBowl {
     for (CALayer *n in [self.continuousEdgeLayers objectEnumerator]) {
         n.hidden = YES;
-        //n.speed = 1.0;
     }
 }
 
@@ -183,7 +175,6 @@
     CGFloat newSpeed = speed;
     //if (speed > 1) newSpeed = 1;
     if (speed < 0) newSpeed = 0;
-//    NSLog(@"New Speed: %f", newSpeed);
     for (CALayer *layer in [self.continuousEdgeLayers objectEnumerator]) {
         layer.timeOffset = [layer convertTime:CACurrentMediaTime() fromLayer:nil];
         layer.beginTime = CACurrentMediaTime();
@@ -192,7 +183,6 @@
 }
 
 -(void) changeContinuousColour:(CGFloat) amount forRadius:(CGFloat)radius {
-//    NSLog(@"New Colour Bend: %f", amount);
     CGFloat newSaturation = 0.6 + (amount * 0.1);
     int noteNumber = [self.currentSetup pitchAtRadius: [self fractionOfTotalRadiusFromRadius:radius]];
     CAShapeLayer *layer = [self.continuousEdgeLayers objectForKey: [NSNumber numberWithInt:noteNumber]];
@@ -219,6 +209,20 @@
 }
 
 -(CGFloat)fractionOfTotalRadiusFromRadius:(CGFloat)radius {
-    return radius / self.totalRadius;
+    return radius / [self viewRadius];
 }
+
+#pragma mark - Observing Changes
+-(void)didMoveToWindow {
+    NSLog(@"Did Move to Window! Something Happened!");
+}
+
+-(void)didMoveToSuperview {
+    NSLog(@"Did Move to Superview!");
+}
+
+-(void)didChange:(NSKeyValueChange)changeKind valuesAtIndexes:(NSIndexSet *)indexes forKey:(NSString *)key {
+    NSLog(@"View DID change!");
+}
+
 @end

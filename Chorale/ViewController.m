@@ -62,17 +62,13 @@
     
     // Setup Pd
     if([self.audioController configurePlaybackWithSampleRate:44100 numberChannels:2 inputEnabled:NO mixingEnabled:YES] != PdAudioOK) {
-        NSLog(@"failed to initialise audioController");
-    } else {
-        NSLog(@"audioController initialised.");
-    }
+        NSLog(@"LIBPD: failed to initialise audioController");
+    } else { NSLog(@"LIBPD: audioController initialised."); }
     
     [PdBase openFile:@"PhaseRingSynth.pd" path:[[NSBundle mainBundle] bundlePath]];
     [self.audioController setActive:YES];
     [self.audioController print];
     [PdBase setDelegate:self];
-    
-    // Setup Midi
     self.midiManager = [[MetatoneMidiManager alloc] init];
     
     // Setup composition
@@ -83,7 +79,6 @@
     [self.compositionStepper setMinimumValue:0];
     [self.compositionStepper setMaximumValue:[self.composition numberOfSetups]];
     [self.compositionStepper setWraps:YES];
-    
     
     // Setup singing bowls
     self.bowlSetup = [[SingingBowlSetup alloc] initWithPitches:[NSMutableArray arrayWithArray:[self.composition firstSetup]]];
@@ -116,6 +111,21 @@
     self.bowlSetup = [[SingingBowlSetup alloc] initWithPitches:[NSMutableArray arrayWithArray:setup]];
     [self.bowlView drawSetup:self.bowlSetup];
 }
+
+- (void) viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+    NSLog(@"View is changing size!! Do something about it."); // Doesn't work yet!
+}
+
+- (void) viewWillAppear:(BOOL)animated {
+    NSLog(@"View will appear.");
+}
+
+- (void) viewDidLayoutSubviews {
+    NSLog(@"View Will layout subviews.");
+    [self.bowlView drawSetup:self.bowlSetup];
+}
+
+
 
 #pragma mark - Touch Methods
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
