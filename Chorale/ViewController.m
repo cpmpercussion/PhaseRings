@@ -122,22 +122,12 @@
 {
     for (UITouch * touch in [touches objectEnumerator]) {
         CGPoint point = [touch locationInView:self.view];
-        NSLog(@"Radius: %f",touch.majorRadius);
-        NSLog(@"Radius Error: %f",touch.majorRadiusTolerance);
-        
-//        int velocity = floorf(15 + (((touch._pathMajorRadius - 5.0)/16) * 115));
         int velocity = floorf(15 + (110*((touch.majorRadius)/125)));
-        NSLog(@"Velocity: %d",velocity);
         if (velocity > 127) velocity = 127;
         if (velocity < 0) velocity = 0;
-        
-//        int velocity = 100;
         [PdBase sendNoteOn:1 pitch:[self noteFromPosition:point] velocity:velocity];
         [self.networkManager sendMessageWithTouch:point Velocity:0.0];
-        
     }
-    
-    
 }
 
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -173,7 +163,7 @@
         
     } else if ([sender state] == UIGestureRecognizerStateChanged) { // pan changed
         [PdBase sendFloat:velocity toReceiver:@"singlevel" ]; // Send Velocity
-        NSLog(@"Sing Velocity: %f",velocity);
+//        NSLog(@"Sing Velocity: %f",velocity);
 
         
         // send angle message to PD.
