@@ -22,12 +22,6 @@
 //#import "StudyInBowls1.h"
 #import "GenerativeSetupComposition.h"
 
-// Touch Radius for iOS < 8
-//@interface UITouch (Private)
-//-(float)_pathMajorRadius;
-//@end
-//
-
 @interface ViewController ()
 // Audio
 @property (strong,nonatomic) PdAudioController *audioController;
