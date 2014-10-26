@@ -12,6 +12,8 @@
 #define SETUP_SIZE @[@3,@5,@8,@11]
 #define NUMBER_SETUPS_PER_ROOT 2
 #define RANGE 36
+#define DEFAULT_ROOTS @[@34,@36,@37]
+#define DEFAULT_SCALES @[@"LYDIAN",@"MIXOFLATSIX",@"OCTATONIC"]
 
 @implementation GenerativeSetupComposition
 
@@ -28,8 +30,8 @@
 - (GenerativeSetupComposition *) init {
     self = [super init];
     self.looping = YES; // edited for 19072014 experiments.
-    self.rootNotes = @[@34,@36,@37];
-    self.scales = @[@"LYDIAN",@"MIXOFLATSIX",@"OCTATONIC"];
+    self.rootNotes = DEFAULT_ROOTS;
+    self.scales = DEFAULT_SCALES;
     self.contents = [self generateSetups];
     return self;
 }

@@ -28,11 +28,11 @@
 		<key>1A0B07D1631AC7F0F17FCE76695E42D64F01958F</key>
 		<string>../../../pd-for-ios/libpd</string>
 		<key>5C788FB45371F7A39B6FFB445D10D0EF209EBAE3</key>
-		<string>../../MetatoneMIDI/</string>
+		<string>../../MetatoneMIDI</string>
 		<key>778D08CA7C55C6E283FAC4140D174E64889DF148</key>
 		<string>../../../pd-for-ios</string>
 		<key>8290155778CD077C9D8A85EC03BEA069395BD6EA</key>
-		<string>../../MetatoneOSC/</string>
+		<string>../../MetatoneOSC</string>
 		<key>92714FB683A6AC2A1ACFEC6654CCEE2DDCA24404</key>
 		<string>../..</string>
 	</dict>
