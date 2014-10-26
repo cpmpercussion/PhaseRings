@@ -65,6 +65,8 @@
         NSLog(@"LIBPD: failed to initialise audioController");
     } else { NSLog(@"LIBPD: audioController initialised."); }
     
+    #pragma mark TODO add option to open other Pd files
+    
     [PdBase openFile:@"PhaseRingSynth.pd" path:[[NSBundle mainBundle] bundlePath]];
     [self.audioController setActive:YES];
     [self.audioController print];

@@ -6,23 +6,273 @@
 	<array>
 		<dict>
 			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
+			<string>PSGroupSpecifier</string>
 			<key>Title</key>
-			<string></string>
-			<key>Key</key>
-			<string></string>
-			<key>DefaultValue</key>
-			<string></string>
+			<string>General Settings</string>
 		</dict>
 		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Sound</string>
+			<key>Key</key>
+			<string>sound</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Phase Synthesis</string>
+				<string>String Synthesis</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Manual Control</string>
 			<key>DefaultValue</key>
 			<false/>
 			<key>Key</key>
 			<string>manual_control_mode</string>
-			<key>Title</key>
-			<string>Manual Control</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Composition</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>First Scale</string>
+			<key>Key</key>
+			<string>scale_1</string>
+			<key>DefaultValue</key>
+			<integer>3</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+				<integer>4</integer>
+				<integer>5</integer>
+				<integer>6</integer>
+				<integer>7</integer>
+				<integer>8</integer>
+				<integer>9</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Ionian</string>
+				<string>Dorian</string>
+				<string>Phrygian</string>
+				<string>Lydian</string>
+				<string>Mixolydian</string>
+				<string>Aeolian</string>
+				<string>Lochrian</string>
+				<string>Lydian #5</string>
+				<string>Octatonic</string>
+				<string>Whole Tone</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>First Note</string>
+			<key>Key</key>
+			<string>note_1</string>
+			<key>DefaultValue</key>
+			<integer>8</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+				<integer>4</integer>
+				<integer>5</integer>
+				<integer>6</integer>
+				<integer>7</integer>
+				<integer>8</integer>
+				<integer>9</integer>
+				<integer>10</integer>
+				<integer>11</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>A</string>
+				<string>A#</string>
+				<string>B</string>
+				<string>C</string>
+				<string>C#</string>
+				<string>D</string>
+				<string>D#</string>
+				<string>E</string>
+				<string>F</string>
+				<string>F#</string>
+				<string>G</string>
+				<string>G#</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Second Scale</string>
+			<key>Key</key>
+			<string>scale_2</string>
+			<key>DefaultValue</key>
+			<integer>3</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+				<integer>4</integer>
+				<integer>5</integer>
+				<integer>6</integer>
+				<integer>7</integer>
+				<integer>8</integer>
+				<integer>9</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Ionian</string>
+				<string>Dorian</string>
+				<string>Phrygian</string>
+				<string>Lydian</string>
+				<string>Mixolydian</string>
+				<string>Aeolian</string>
+				<string>Lochrian</string>
+				<string>Lydian #5</string>
+				<string>Octatonic</string>
+				<string>Whole Tone</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Second Note</string>
+			<key>Key</key>
+			<string>note_2</string>
+			<key>DefaultValue</key>
+			<integer>8</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+				<integer>4</integer>
+				<integer>5</integer>
+				<integer>6</integer>
+				<integer>7</integer>
+				<integer>8</integer>
+				<integer>9</integer>
+				<integer>10</integer>
+				<integer>11</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>A</string>
+				<string>A#</string>
+				<string>B</string>
+				<string>C</string>
+				<string>C#</string>
+				<string>D</string>
+				<string>D#</string>
+				<string>E</string>
+				<string>F</string>
+				<string>F#</string>
+				<string>G</string>
+				<string>G#</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Third Scale</string>
+			<key>Key</key>
+			<string>scale_3</string>
+			<key>DefaultValue</key>
+			<integer>3</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+				<integer>4</integer>
+				<integer>5</integer>
+				<integer>6</integer>
+				<integer>7</integer>
+				<integer>8</integer>
+				<integer>9</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Ionian</string>
+				<string>Dorian</string>
+				<string>Phrygian</string>
+				<string>Lydian</string>
+				<string>Mixolydian</string>
+				<string>Aeolian</string>
+				<string>Lochrian</string>
+				<string>Lydian #5</string>
+				<string>Octatonic</string>
+				<string>Whole Tone</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Third Note</string>
+			<key>Key</key>
+			<string>note_3</string>
+			<key>DefaultValue</key>
+			<integer>8</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+				<integer>4</integer>
+				<integer>5</integer>
+				<integer>6</integer>
+				<integer>7</integer>
+				<integer>8</integer>
+				<integer>9</integer>
+				<integer>10</integer>
+				<integer>11</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>A</string>
+				<string>A#</string>
+				<string>B</string>
+				<string>C</string>
+				<string>C#</string>
+				<string>D</string>
+				<string>D#</string>
+				<string>E</string>
+				<string>F</string>
+				<string>F#</string>
+				<string>G</string>
+				<string>G#</string>
+			</array>
 		</dict>
 	</array>
 	<key>StringsTable</key>
