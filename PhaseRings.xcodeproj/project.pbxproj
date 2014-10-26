@@ -993,7 +993,7 @@
 				562375D419F76CF7004F1281 /* Launch Screen.xib */,
 				5623759F19F764FC004F1281 /* MetatoneOSC */,
 				5623758C19F7610F004F1281 /* MetatoneMIDI */,
-				56E170F51991EAF400A36C74 /* PhaseRingSynth */,
+				56E170F51991EAF400A36C74 /* Synth */,
 				5623DB69188CDB3800AA6C14 /* Chorale */,
 				5623DB88188CDB3800AA6C14 /* ChoraleTests */,
 				5623DB62188CDB3800AA6C14 /* Frameworks */,
@@ -1113,13 +1113,14 @@
 			name = models;
 			sourceTree = "<group>";
 		};
-		56E170F51991EAF400A36C74 /* PhaseRingSynth */ = {
+		56E170F51991EAF400A36C74 /* Synth */ = {
 			isa = PBXGroup;
 			children = (
 				56E170F61991EAF400A36C74 /* PhaseRingSynth.pd */,
 				56E170F71991EAF400A36C74 /* phasesynth.pd */,
 				56E170F81991EAF400A36C74 /* rj */,
 			);
+			name = Synth;
 			path = PhaseRingSynth;
 			sourceTree = "<group>";
 		};
