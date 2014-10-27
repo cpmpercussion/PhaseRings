@@ -67,7 +67,7 @@
     
     #pragma mark TODO add option to open other Pd files
     
-    [PdBase openFile:@"PhaseRingSynth.pd" path:[[NSBundle mainBundle] bundlePath]];
+    [PdBase openFile:@"PhaseRingSynthEnvironment.pd" path:[[NSBundle mainBundle] bundlePath]];
     [self.audioController setActive:YES];
     [self.audioController print];
     [PdBase setDelegate:self];

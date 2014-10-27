@@ -1,4 +1,4 @@
-#N canvas 599 22 687 743 10;
+#N canvas 161 27 687 743 10;
 #X declare -path .;
 #X declare -path .;
 #X declare -path rj;
@@ -22,7 +22,7 @@
 #X obj 324 36 s pitch;
 #X obj 385 34 s velocity;
 #X obj 470 36 s channel;
-#N canvas 190 266 185 141 reverb 0;
+#N canvas 190 266 185 141 reverb 1;
 #X obj 22 10 inlet~;
 #X obj 21 68 outlet~;
 #X obj 77 69 outlet~;
@@ -208,7 +208,7 @@
 #X restore 194 81 pd zerotoone;
 #X obj 179 121 list append 80;
 #X obj 101 417 pluck~;
-#X obj 63 252 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+#X obj 63 252 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
 #X obj 62 273 metro 2000;
 #X obj 99 357 f 60;
@@ -368,7 +368,7 @@
 #X obj 732 30 vsl 50 150 0 1 0 0 distortlevel empty empty 0 -9 0 10
 -260097 -1 -1 0 1;
 #X obj 435 224 hsl 200 30 -1 1 0 0 sinPanAngle empty sinPanAngle -2
--8 0 10 -262144 -1 -1 16900 1;
+-8 0 10 -262144 -1 -1 0 1;
 #X msg 660 214 0.8;
 #X obj 662 239 s panTranslation;
 #X msg 697 214 1;

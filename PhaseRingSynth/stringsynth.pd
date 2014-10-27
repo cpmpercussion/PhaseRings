@@ -1,4 +1,4 @@
-#N canvas 436 114 701 827 10;
+#N canvas 399 101 701 827 10;
 #X declare -path .;
 #X declare -path rj;
 #X obj 361 648 / 100;
@@ -102,7 +102,7 @@
 #X obj 77 512 pluck~;
 #X msg 92 467 0.999;
 #X obj 89 437 loadbang;
-#N canvas 534 124 497 393 pan 1;
+#N canvas 534 124 497 393 pan 0;
 #X text 189 156 * ~M_PI/2;
 #X obj 116 148 * 1.5708;
 #X obj 116 33 inlet;
