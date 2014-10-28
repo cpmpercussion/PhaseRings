@@ -79,6 +79,9 @@
                                 <state key="normal" title="⚙">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="settingsPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="YDn-qh-SDq"/>
+                                </connections>
                             </button>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="OSC connection feedback" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Owk-aY-7Io">
                                 <rect key="frame" x="28" y="20" width="320" height="25"/>
@@ -121,6 +124,7 @@
                         <outlet property="gestureStatusLabel" destination="Ezi-AO-jQ3" id="YjC-AS-84a"/>
                         <outlet property="oscStatusLabel" destination="Owk-aY-7Io" id="o3y-7Q-Yn0"/>
                         <outlet property="playerStatusLabel" destination="EPW-aI-xkd" id="UyT-g0-O3i"/>
+                        <outlet property="settingsButton" destination="BfF-Lc-5IP" id="LDh-K3-1WA"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

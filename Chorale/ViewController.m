@@ -14,8 +14,9 @@
 
 #define PHASE_SYNTH_PATCH @"PhaseRingSynthEnvironment.pd"
 #define STRING_SYNTH_PATCH @"CircleStringsSynthEnvironment.pd"
-#define SOUND_SCHEMES @[PHASE_SYNTH_PATCH,STRING_SYNTH_PATCH]
 #define BOWL_SYNTH_PATCH @""
+#define SOUND_SCHEMES @[PHASE_SYNTH_PATCH,STRING_SYNTH_PATCH,BOWL_SYNTH_PATCH]
+
 
 #define BASE_A 33
 
@@ -45,6 +46,7 @@
 @property (weak, nonatomic) IBOutlet UISlider *distortSlider;
 @property (weak, nonatomic) IBOutlet UILabel *oscStatusLabel;
 @property (weak, nonatomic) IBOutlet UIStepper *compositionStepper;
+@property (weak, nonatomic) IBOutlet UIButton *settingsButton;
 @property (weak, nonatomic) IBOutlet UILabel *playerStatusLabel;
 @property (weak, nonatomic) IBOutlet UILabel *gestureStatusLabel;
 @property (weak, nonatomic) IBOutlet UILabel *ensembleStatusLabel;
@@ -102,6 +104,9 @@
         [self.gestureStatusLabel setHidden:YES];
         [self.ensembleView setHidden:YES];
     }
+    
+    // Hide settings button until it really really works.
+    [self.settingsButton setHidden:YES];
     
 }
 
@@ -260,6 +265,11 @@
 }
 - (IBAction)sliderMoved:(UISlider *)sender {
     [self setDistortion:[sender value]];
+}
+
+#pragma mark TODO: Make the settings button work somehow.
+- (IBAction)settingsPressed:(UIButton *)sender {
+    NSLog(@"Settings Pressed!");
 }
 
 -(void)setDistortion:(float)level {
