@@ -17,6 +17,7 @@
 @property (strong,nonatomic) NSMutableDictionary *continuousEdgeLayers;
 @property (strong,nonatomic) NSMutableDictionary *tapEdgeLayers;
 @property (weak,nonatomic) SingingBowlSetup* currentSetup;
+@property (nonatomic) CGFloat currentRimWidth;
 @end
 
 @implementation SingingBowlView
@@ -50,25 +51,25 @@
 
     // draw new one
     CGFloat totalRadius = [self viewRadius];
-    CGFloat edgeWidth = totalRadius / (CGFloat) [setup numberOfPitches];
+    self.currentRimWidth = totalRadius / (CGFloat) [setup numberOfPitches];
     //CGFloat tapEdgeWidth = 0.0;
     
     for (int i = 0; i < [setup numberOfPitches]; i++) {
         // draw the rim.
-        CGFloat rimradius = i * edgeWidth;
+        CGFloat rimradius = i * self.currentRimWidth;
         int noteNumber = [setup pitchAtIndex:i];
         NSString *note = [SingingBowlSetup noteNameForMidiNumber:noteNumber];
         [self drawBowlRimAtRadius:rimradius withNote:note];
         
         // setup for rim layers:
-        CGFloat rimCenter = (i + 0.5) * edgeWidth;
+        CGFloat rimCenter = (i + 0.5) * self.currentRimWidth;
         
         // make continuous rim layer
-        CAShapeLayer* continuousLayer = [self makeBowlLayerAtRadius:rimCenter withColour:[NoteColours colourForNote:noteNumber withSaturation:0.6] ofWidth:edgeWidth];
+        CAShapeLayer* continuousLayer = [self makeBowlLayerAtRadius:rimCenter withColour:[NoteColours colourForNote:noteNumber withSaturation:0.6] ofWidth:self.currentRimWidth];
         [self.continuousEdgeLayers setObject:continuousLayer forKey:[NSNumber numberWithInt:noteNumber]];
         
         // make tap rim layer
-        CAShapeLayer* tapLayer = [self makeBowlLayerAtRadius:rimCenter withColour:[NoteColours colourForNote:noteNumber withSaturation:1.0] ofWidth:edgeWidth];
+        CAShapeLayer* tapLayer = [self makeBowlLayerAtRadius:rimCenter withColour:[NoteColours colourForNote:noteNumber withSaturation:1.0] ofWidth:self.currentRimWidth];
         [self.tapEdgeLayers setObject:tapLayer forKey:[NSNumber numberWithInt:noteNumber]];
     }
 }
@@ -86,14 +87,28 @@
     [self.rimLayers addObject:shapeLayer];
     
     if (DISPLAYNOTENAME) {
+        NSLog(@"DRAWING SETUP: Note names, current radius: %f",radius);
         CATextLayer *noteTextLayer = [CATextLayer layer];
-        CGFloat diagonaldistance = radius / ROOTTWO;
-        
+        [noteTextLayer setForegroundColor:[self.textColour CGColor]];
         noteTextLayer.string = note;
         [noteTextLayer setFont:@"HelveticaNeue"];
         noteTextLayer.fontSize = 20.f;
         noteTextLayer.alignmentMode = kCAAlignmentCenter;
-        noteTextLayer.frame = CGRectMake(self.center.x + diagonaldistance, self.center.y + diagonaldistance,25.f,25.f);
+        noteTextLayer.contentsScale = [[UIScreen mainScreen] scale];
+        [noteTextLayer setBounds:CGRectMake(0.0f, 0.0f, 25.0f, 25.0f)];
+        
+        // Positioning.
+        CGFloat alpha = self.center.y / self.center.x;
+        CGFloat beta = 1.0f / sqrt(1.0f + (alpha * alpha));
+        CGFloat dX = (radius + 0.5 * self.currentRimWidth) * beta;
+        CGFloat dY = alpha * dX;
+        
+        if (radius == 0.0) {
+            // centre ring
+            [noteTextLayer setPosition:CGPointMake(floorf(self.center.x),floorf(self.center.y))];
+        } else {
+            [noteTextLayer setPosition:CGPointMake(floorf(self.center.x + dX),floorf(self.center.y + dY))];
+        }
         
         [self.rimSubLayer addSublayer:noteTextLayer];
         [self.rimLayers addObject:noteTextLayer];
