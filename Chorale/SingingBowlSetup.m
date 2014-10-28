@@ -8,7 +8,7 @@
 
 #import "SingingBowlSetup.h"
 
-#define NOTENAMES @[@"C",@"C#",@"D",@"D#",@"E",@"F",@"F#",@"G",@"G#",@"A",@"A#",@"B",]
+#define NOTENAMES @[@"C",@"C♯",@"D",@"D♯",@"E",@"F",@"F♯",@"G",@"G♯",@"A",@"A♯",@"B"]
 
 
 @implementation SingingBowlSetup
