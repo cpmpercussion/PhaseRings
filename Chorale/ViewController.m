@@ -127,7 +127,6 @@
     NSLog(@"COMPOSITION OPENING: Opening composition");
     
     self.composition = [[GenerativeSetupComposition alloc] initWithRootNotes:notes andScales:scales];
-//    self.composition = [[GenerativeSetupComposition alloc] init];
     
     [self.compositionStepper setMinimumValue:0];
     [self.compositionStepper setMaximumValue:[self.composition numberOfSetups]];
@@ -136,6 +135,7 @@
     // Update bowl view.
     self.bowlSetup = [[SingingBowlSetup alloc] initWithPitches:[NSMutableArray arrayWithArray:[self.composition firstSetup]]];
     self.viewRadius = [self calculateMaximumRadius];
+    self.bowlView.displayNoteNames = [[NSUserDefaults standardUserDefaults] boolForKey:@"note_labels"];
     [self.bowlView drawSetup:self.bowlSetup];
 }
 

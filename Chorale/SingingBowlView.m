@@ -36,6 +36,7 @@
         self.rimSubLayer = [[CALayer alloc] init];
         [self.layer addSublayer:self.rimSubLayer];
         self.multipleTouchEnabled = YES;
+        self.displayNoteNames = DISPLAYNOTENAME;
 //        self.totalRadius = [self viewRadius];
     }
     return self;
@@ -86,8 +87,8 @@
     [self.rimSubLayer addSublayer:shapeLayer];
     [self.rimLayers addObject:shapeLayer];
     
-    if (DISPLAYNOTENAME) {
-//        NSLog(@"DRAWING SETUP: Note names, current radius: %f",radius);
+    if (self.displayNoteNames) {
+        //        NSLog(@"DRAWING SETUP: Note names, current radius: %f",radius);
         CATextLayer *noteTextLayer = [CATextLayer layer];
         [noteTextLayer setForegroundColor:[self.textColour CGColor]];
         noteTextLayer.string = note;

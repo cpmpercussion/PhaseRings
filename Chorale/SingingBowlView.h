@@ -21,6 +21,7 @@
 -(void) stopAnimatingBowl;
 -(void) changeContinuousColour:(CGFloat) amount forRadius:(CGFloat)radius;
 
+@property (nonatomic) bool displayNoteNames;
 @property (strong,nonatomic) UIColor *rimColour;
 @property (strong,nonatomic) UIColor *textColour;
 @property (strong,nonatomic) UIColor *tapColour;
