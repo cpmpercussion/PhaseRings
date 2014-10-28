@@ -12,6 +12,11 @@
 #define IPAD_SCREEN_DIAGONAL_LENGTH 1280
 #define ENSEMBLE_STATUS_MODE NO
 
+#define PHASE_SYNTH_PATCH @"PhaseRingSynthEnvironment.pd"
+#define STRING_SYNTH_PATCH @"CircleStringsSynthEnvironment.pd"
+#define SOUND_SCHEMES @[PHASE_SYNTH_PATCH,STRING_SYNTH_PATCH]
+#define BOWL_SYNTH_PATCH @""
+
 #import "ViewController.h"
 #import "ScaleMaker.h"
 #import "SingingBowlSetup.h"
@@ -25,6 +30,7 @@
 @interface ViewController ()
 // Audio
 @property (strong,nonatomic) PdAudioController *audioController;
+@property (strong,nonatomic) PdFile *openFile;
 @property (strong, nonatomic) SingingBowlSetup *bowlSetup;
 // Network
 @property (strong,nonatomic) MetatoneNetworkManager *networkManager;
@@ -65,9 +71,7 @@
         NSLog(@"LIBPD: failed to initialise audioController");
     } else { NSLog(@"LIBPD: audioController initialised."); }
     
-    #pragma mark TODO add option to open other Pd files
-    
-    [PdBase openFile:@"PhaseRingSynthEnvironment.pd" path:[[NSBundle mainBundle] bundlePath]];
+    [self openPdPatch];
     [self.audioController setActive:YES];
     [self.audioController print];
     [PdBase setDelegate:self];
@@ -108,6 +112,31 @@
     }
     
 }
+
+- (void) openPdPatch {
+    #pragma mark TODO add option to open other Pd files
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    NSInteger soundScheme = [[NSUserDefaults standardUserDefaults] integerForKey:@"sound"];
+    NSLog(@"PATCH OPENING: Sound Scheme value: %ld", (long) soundScheme);
+    NSString *patchName = [SOUND_SCHEMES objectAtIndex:soundScheme];
+    if (patchName) {
+        NSLog(@"PATCH OPENING: Patch found: %@",patchName);
+    } else {
+        patchName = PHASE_SYNTH_PATCH;
+        NSLog(@"PATCH OPENING: Patch not found, defaulting to %@",PHASE_SYNTH_PATCH);
+    }
+    //    [PdBase openFile:patchName path:[[NSBundle mainBundle] bundlePath]];
+    
+    if (![self.openFile.baseName isEqualToString:patchName]) {
+        NSLog(@"PATCH OPENING: Patch not open, opening now.");
+        [self.openFile closeFile];
+        self.openFile = [PdFile openFileNamed:patchName path:[[NSBundle mainBundle] bundlePath]];
+    } else {
+        NSLog(@"PATCH OPENING: Patch already open, doing nothing.");
+    }
+    
+}
+
 
 - (void) applyNewSetup: (NSArray *) setup {
     self.bowlSetup = [[SingingBowlSetup alloc] initWithPitches:[NSMutableArray arrayWithArray:setup]];

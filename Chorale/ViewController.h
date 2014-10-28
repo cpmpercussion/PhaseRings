@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "PdAudioController.h"
 #import "PdBase.h"
+#import "PdFile.h"
 #import "MetatoneNetworkManager.h"
 #import "MetatoneMidiManager.h"
 
