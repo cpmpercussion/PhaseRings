@@ -12,9 +12,23 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    // Register defaults
+    NSDictionary *defaults = @{@"sound":@1,
+                               @"note_labels":@YES,
+                               @"note_1":@1,
+                               @"note_2":@3,
+                               @"note_3":@4,
+                               @"scale_1":@3,
+                               @"scale_2":@8,
+                               @"scale_3":@9};
+    
+    [[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
+    
     // Override point for customization after application launch.
     application.idleTimerDisabled = YES;
     self.viewController = (ViewController*) self.window.rootViewController;
+    
+    
     
     // NSNotification for NSUserDefaults.
     [[NSNotificationCenter defaultCenter] addObserver:self
