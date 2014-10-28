@@ -16,5 +16,5 @@
 @interface ViewController : UIViewController <PdReceiverDelegate,MetatoneNetworkManagerDelegate>
 @property (strong, nonatomic) MetatoneMidiManager* midiManager;
 
-
+- (void) openPdPatch;
 @end

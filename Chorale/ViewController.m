@@ -78,8 +78,6 @@
     self.midiManager = [[MetatoneMidiManager alloc] init];
     
     // Setup composition
-    //    self.composition = [[TestChoraleComposition alloc] init];
-    //    self.composition = [[StudyInBowls1 alloc] init];
     self.composition = [[GenerativeSetupComposition alloc] init];
 
     [self.compositionStepper setMinimumValue:0];
