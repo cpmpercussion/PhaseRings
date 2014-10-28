@@ -37,7 +37,7 @@
 // HSV values have Hue measured in degrees (derp).
 
 // DeMaistre mapping from screenshot of colour music paintings, fudged a bit to make it work.
-#define DEMAISTRE @[@39.0,@68.0,@74.0,@149.0,@191.0,@206.0,@241.0,@337.0,@347.0,@0.0,@10.0]
+#define DEMAISTRE @[@39.0,@68.0,@74.0,@149.0,@191.0,@206.0,@241.0,@337.0,@347.0,@0.0,@10.0,@25.0]
 
 
 // Charles mapping evenly distributed around the HSV colour space, with A = red
