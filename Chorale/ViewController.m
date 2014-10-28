@@ -114,8 +114,8 @@
     NSInteger note2 = BASE_A + [[NSUserDefaults standardUserDefaults] integerForKey:@"note_2"];
     NSInteger note3 = BASE_A + [[NSUserDefaults standardUserDefaults] integerForKey:@"note_3"];
     NSInteger scale_1 = [[NSUserDefaults standardUserDefaults] integerForKey:@"scale_1"];
-    NSInteger scale_2 = [[NSUserDefaults standardUserDefaults] integerForKey:@"scale_1"];
-    NSInteger scale_3 = [[NSUserDefaults standardUserDefaults] integerForKey:@"scale_1"];
+    NSInteger scale_2 = [[NSUserDefaults standardUserDefaults] integerForKey:@"scale_2"];
+    NSInteger scale_3 = [[NSUserDefaults standardUserDefaults] integerForKey:@"scale_3"];
     
     NSArray *scalesList = @[@"IONIAN",@"DORIAN",@"PHRYGIAN",@"LYDIAN",@"MIXOLYDIAN",@"AEOLIAN",@"LOCHRIAN",@"LYDIANSHARPFIVE",@"MIXOFLATSIX",@"OCTATONIC",@"WHOLETONE"];
     
