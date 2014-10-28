@@ -83,11 +83,6 @@
     // Setup composition
     [self openComposition];
     
-    // Update bowl view.
-    self.bowlSetup = [[SingingBowlSetup alloc] initWithPitches:[NSMutableArray arrayWithArray:[self.composition firstSetup]]];
-    self.viewRadius = [self calculateMaximumRadius];
-    [self.bowlView drawSetup:self.bowlSetup];
-    
     // Setup Network
     self.metatoneClients = [[NSMutableDictionary alloc] init];
     self.networkManager = [[MetatoneNetworkManager alloc] initWithDelegate:self shouldOscLog:YES];
@@ -111,7 +106,7 @@
 }
 
 - (void) openComposition {
-    #pragma mark TODO - method to open a new composition taking current settings into account.
+    #pragma mark TODO - add some more interesting way to specify octave for each base note.
     [[NSUserDefaults standardUserDefaults] synchronize];
     // 36 -- C two below middle C
     // 33 - A below that.
@@ -137,6 +132,11 @@
     [self.compositionStepper setMinimumValue:0];
     [self.compositionStepper setMaximumValue:[self.composition numberOfSetups]];
     [self.compositionStepper setWraps:YES];
+    
+    // Update bowl view.
+    self.bowlSetup = [[SingingBowlSetup alloc] initWithPitches:[NSMutableArray arrayWithArray:[self.composition firstSetup]]];
+    self.viewRadius = [self calculateMaximumRadius];
+    [self.bowlView drawSetup:self.bowlSetup];
 }
 
 

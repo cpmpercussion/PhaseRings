@@ -87,7 +87,7 @@
     [self.rimLayers addObject:shapeLayer];
     
     if (DISPLAYNOTENAME) {
-        NSLog(@"DRAWING SETUP: Note names, current radius: %f",radius);
+//        NSLog(@"DRAWING SETUP: Note names, current radius: %f",radius);
         CATextLayer *noteTextLayer = [CATextLayer layer];
         [noteTextLayer setForegroundColor:[self.textColour CGColor]];
         noteTextLayer.string = note;

@@ -16,8 +16,19 @@
     application.idleTimerDisabled = YES;
     self.viewController = (ViewController*) self.window.rootViewController;
     
+    // NSNotification for NSUserDefaults.
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(defaultsDidChange:) name:NSUserDefaultsDidChangeNotification
+                                               object:nil];
     return YES;
 }
+
+- (void)defaultsDidChange:(NSNotification *)aNotification
+{
+    NSLog(@"SETTINGS NOTIFICATION: Something Changed: %@",aNotification);
+    [self.viewController openComposition];
+}
+
 							
 - (void)applicationWillResignActive:(UIApplication *)application
 {

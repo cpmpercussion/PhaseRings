@@ -17,4 +17,5 @@
 @property (strong, nonatomic) MetatoneMidiManager* midiManager;
 
 - (void) openPdPatch;
+- (void) openComposition;
 @end
