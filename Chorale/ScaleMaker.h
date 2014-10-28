@@ -10,20 +10,19 @@
 
 @interface ScaleMaker : NSObject
 
-+(int) lochrian:(int)base withNote:(int)note;
-+(int) phrygian:(int)base withNote:(int)note;
-+(int) aeolian:(int)base withNote:(int)note;
++(int) ionian:(int)base withNote:(int)note;
 +(int) dorian:(int)base withNote:(int)note;
-+(int) mixolydian:(int)base withNote:(int)note;
-+(int) major:(int)base withNote:(int)note;
++(int) phrygian:(int)base withNote:(int)note;
 +(int) lydian:(int)base withNote:(int)note;
-+(int) lydianSharpFive:(int)base withNote:(int)note;
++(int) mixolydian:(int)base withNote:(int)note;
++(int) aeolian:(int)base withNote:(int)note;
++(int) lochrian:(int)base withNote:(int)note;
 
++(int) lydianSharpFive:(int)base withNote:(int)note;
 +(int) mixoFlatSix:(int)base withNote:(int)note;
+
 +(int) octatonic:(int)base withNote:(int)note;
 +(int) wholeTone:(int)base withNote:(int)note;
 
-
 +(int) noteForScale:(NSString *)scale withBase:(int)base withNote:(int)note;
-
 @end

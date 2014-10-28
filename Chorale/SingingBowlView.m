@@ -10,7 +10,7 @@
 #import "ScaleMaker.h"
 
 #define ROOTTWO 1.41421356237
-#define DISPLAYNOTENAME false
+#define DISPLAYNOTENAME true
 
 @interface SingingBowlView()
 @property (strong,nonatomic) CALayer *rimSubLayer;

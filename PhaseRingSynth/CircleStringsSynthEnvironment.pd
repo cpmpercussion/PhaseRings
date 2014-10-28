@@ -1,7 +1,6 @@
 #N canvas 161 27 687 743 10;
 #X declare -path .;
 #X declare -path .;
-#X declare -path rj;
 #X declare -path metaPdLibs;
 #X declare -path metaPdLibs/control;
 #X declare -path metaPdLibs/fx;
@@ -12,11 +11,8 @@
 #X declare -path instrument;
 #X declare -path scales;
 #X declare -path .;
-#X declare -path rj;
 #X declare -path .;
-#X declare -path rj;
 #X declare -path .;
-#X declare -path rj;
 #X obj 258 672 dac~;
 #X obj 358 8 notein;
 #X obj 324 36 s pitch;
@@ -349,7 +345,7 @@
 #X restore 38 240 pd note_distribute;
 #X obj 38 214 r pitch;
 #X obj 90 214 r velocity;
-#N canvas 342 557 893 337 test 0;
+#N canvas 342 557 893 337 test 1;
 #X obj 69 29 bng 150 250 50 0 empty empty empty 17 7 0 10 -258113 -1
 -1;
 #X floatatom 73 218 5 0 0 0 - - -;
@@ -391,8 +387,8 @@
 #X connect 17 0 18 0;
 #X connect 19 0 20 0;
 #X connect 20 0 1 0;
-#X restore 126 15 pd test;
-#X obj 11 39 declare -path .;
+#X restore 174 11 pd test;
+#X obj 7 7 declare -path .;
 #X obj 199 110 loadbang;
 #X obj 197 165 + 50;
 #X obj 191 234 r phaseFreq;
@@ -402,8 +398,8 @@
 #X obj 539 205 r phaseFreq;
 #X obj 275 110 t b;
 #X obj 31 276 stringsynth;
-#X obj 11 61 declare -path metaPdLibs;
-#X obj 12 81 loadMetaPdLibs;
+#X obj 7 29 declare -path metaPdLibs;
+#X obj 8 49 loadMetaPdLibs;
 #X obj 107 330 stereovol 98;
 #X obj 400 334 stereovol 90;
 #X obj 268 573 stereovol 98;

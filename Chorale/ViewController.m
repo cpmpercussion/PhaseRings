@@ -17,6 +17,8 @@
 #define SOUND_SCHEMES @[PHASE_SYNTH_PATCH,STRING_SYNTH_PATCH]
 #define BOWL_SYNTH_PATCH @""
 
+#define BASE_A 33
+
 #import "ViewController.h"
 #import "ScaleMaker.h"
 #import "SingingBowlSetup.h"
@@ -38,6 +40,7 @@
 //UI
 @property (weak, nonatomic) IBOutlet SingingBowlView *bowlView;
 @property (weak, nonatomic) IBOutlet MetatoneEnsembleView *ensembleView;
+
 @property (nonatomic) CGFloat viewRadius;
 @property (weak, nonatomic) IBOutlet UISlider *distortSlider;
 @property (weak, nonatomic) IBOutlet UILabel *oscStatusLabel;
@@ -78,13 +81,9 @@
     self.midiManager = [[MetatoneMidiManager alloc] init];
     
     // Setup composition
-    self.composition = [[GenerativeSetupComposition alloc] init];
-
-    [self.compositionStepper setMinimumValue:0];
-    [self.compositionStepper setMaximumValue:[self.composition numberOfSetups]];
-    [self.compositionStepper setWraps:YES];
+    [self openComposition];
     
-    // Setup singing bowls
+    // Update bowl view.
     self.bowlSetup = [[SingingBowlSetup alloc] initWithPitches:[NSMutableArray arrayWithArray:[self.composition firstSetup]]];
     self.viewRadius = [self calculateMaximumRadius];
     [self.bowlView drawSetup:self.bowlSetup];
@@ -111,8 +110,39 @@
     
 }
 
+- (void) openComposition {
+    #pragma mark TODO - method to open a new composition taking current settings into account.
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    // 36 -- C two below middle C
+    // 33 - A below that.
+    NSInteger note1 = BASE_A + [[NSUserDefaults standardUserDefaults] integerForKey:@"note_1"];
+    NSInteger note2 = BASE_A + [[NSUserDefaults standardUserDefaults] integerForKey:@"note_2"];
+    NSInteger note3 = BASE_A + [[NSUserDefaults standardUserDefaults] integerForKey:@"note_3"];
+    NSInteger scale_1 = [[NSUserDefaults standardUserDefaults] integerForKey:@"scale_1"];
+    NSInteger scale_2 = [[NSUserDefaults standardUserDefaults] integerForKey:@"scale_1"];
+    NSInteger scale_3 = [[NSUserDefaults standardUserDefaults] integerForKey:@"scale_1"];
+    
+    NSArray *scalesList = @[@"IONIAN",@"DORIAN",@"PHRYGIAN",@"LYDIAN",@"MIXOLYDIAN",@"AEOLIAN",@"LOCHRIAN",@"LYDIANSHARPFIVE",@"MIXOFLATSIX",@"OCTATONIC",@"WHOLETONE"];
+    
+    NSArray *notes = @[[NSNumber numberWithInteger:note1],[NSNumber numberWithInteger:note2],[NSNumber numberWithInteger:note3]];
+    NSArray *scales = @[[scalesList objectAtIndex:scale_1],[scalesList objectAtIndex:scale_2],[scalesList objectAtIndex:scale_3]];
+    
+    NSLog(@"COMPOSITION OPENING: Base notes will be: %@",notes);
+    NSLog(@"COMPOSITION OPENING: Scales will be %@",scales);
+    NSLog(@"COMPOSITION OPENING: Opening composition");
+    
+    self.composition = [[GenerativeSetupComposition alloc] initWithRootNotes:notes andScales:scales];
+//    self.composition = [[GenerativeSetupComposition alloc] init];
+    
+    [self.compositionStepper setMinimumValue:0];
+    [self.compositionStepper setMaximumValue:[self.composition numberOfSetups]];
+    [self.compositionStepper setWraps:YES];
+}
+
+
+// Checks settings to which sound scheme is selected. If it's different from what
+// is currently open or nothing is open, the new scheme's Pd patch is opened.
 - (void) openPdPatch {
-    #pragma mark TODO add option to open other Pd files
     [[NSUserDefaults standardUserDefaults] synchronize];
     NSInteger soundScheme = [[NSUserDefaults standardUserDefaults] integerForKey:@"sound"];
     NSLog(@"PATCH OPENING: Sound Scheme value: %ld", (long) soundScheme);
@@ -132,11 +162,10 @@
     } else {
         NSLog(@"PATCH OPENING: Patch already open, doing nothing.");
     }
-    
 }
 
-
 - (void) applyNewSetup: (NSArray *) setup {
+    NSLog(@"Drawing new setup.");
     self.bowlSetup = [[SingingBowlSetup alloc] initWithPitches:[NSMutableArray arrayWithArray:setup]];
     [self.bowlView drawSetup:self.bowlSetup];
 }

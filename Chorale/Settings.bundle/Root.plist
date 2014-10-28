@@ -67,6 +67,7 @@
 				<integer>7</integer>
 				<integer>8</integer>
 				<integer>9</integer>
+                <integer>10</integer>
 			</array>
 			<key>Titles</key>
 			<array>
@@ -77,7 +78,8 @@
 				<string>Mixolydian</string>
 				<string>Aeolian</string>
 				<string>Lochrian</string>
-				<string>Lydian #5</string>
+				<string>Lydian ♯5</string>
+                <string>Mixolydian ♭6</string>
 				<string>Octatonic</string>
 				<string>Whole Tone</string>
 			</array>
@@ -131,32 +133,34 @@
 			<string>scale_2</string>
 			<key>DefaultValue</key>
 			<integer>3</integer>
-			<key>Values</key>
-			<array>
-				<integer>0</integer>
-				<integer>1</integer>
-				<integer>2</integer>
-				<integer>3</integer>
-				<integer>4</integer>
-				<integer>5</integer>
-				<integer>6</integer>
-				<integer>7</integer>
-				<integer>8</integer>
-				<integer>9</integer>
-			</array>
-			<key>Titles</key>
-			<array>
-				<string>Ionian</string>
-				<string>Dorian</string>
-				<string>Phrygian</string>
-				<string>Lydian</string>
-				<string>Mixolydian</string>
-				<string>Aeolian</string>
-				<string>Lochrian</string>
-				<string>Lydian #5</string>
-				<string>Octatonic</string>
-				<string>Whole Tone</string>
-			</array>
+            <key>Values</key>
+            <array>
+                <integer>0</integer>
+                <integer>1</integer>
+                <integer>2</integer>
+                <integer>3</integer>
+                <integer>4</integer>
+                <integer>5</integer>
+                <integer>6</integer>
+                <integer>7</integer>
+                <integer>8</integer>
+                <integer>9</integer>
+                <integer>10</integer>
+            </array>
+            <key>Titles</key>
+            <array>
+                <string>Ionian</string>
+                <string>Dorian</string>
+                <string>Phrygian</string>
+                <string>Lydian</string>
+                <string>Mixolydian</string>
+                <string>Aeolian</string>
+                <string>Lochrian</string>
+                <string>Lydian ♯5</string>
+                <string>Mixolydian ♭6</string>
+                <string>Octatonic</string>
+                <string>Whole Tone</string>
+            </array>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -207,32 +211,34 @@
 			<string>scale_3</string>
 			<key>DefaultValue</key>
 			<integer>3</integer>
-			<key>Values</key>
-			<array>
-				<integer>0</integer>
-				<integer>1</integer>
-				<integer>2</integer>
-				<integer>3</integer>
-				<integer>4</integer>
-				<integer>5</integer>
-				<integer>6</integer>
-				<integer>7</integer>
-				<integer>8</integer>
-				<integer>9</integer>
-			</array>
-			<key>Titles</key>
-			<array>
-				<string>Ionian</string>
-				<string>Dorian</string>
-				<string>Phrygian</string>
-				<string>Lydian</string>
-				<string>Mixolydian</string>
-				<string>Aeolian</string>
-				<string>Lochrian</string>
-				<string>Lydian #5</string>
-				<string>Octatonic</string>
-				<string>Whole Tone</string>
-			</array>
+            <key>Values</key>
+            <array>
+                <integer>0</integer>
+                <integer>1</integer>
+                <integer>2</integer>
+                <integer>3</integer>
+                <integer>4</integer>
+                <integer>5</integer>
+                <integer>6</integer>
+                <integer>7</integer>
+                <integer>8</integer>
+                <integer>9</integer>
+                <integer>10</integer>
+            </array>
+            <key>Titles</key>
+            <array>
+                <string>Ionian</string>
+                <string>Dorian</string>
+                <string>Phrygian</string>
+                <string>Lydian</string>
+                <string>Mixolydian</string>
+                <string>Aeolian</string>
+                <string>Lochrian</string>
+                <string>Lydian ♯5</string>
+                <string>Mixolydian ♭6</string>
+                <string>Octatonic</string>
+                <string>Whole Tone</string>
+            </array>
 		</dict>
 		<dict>
 			<key>Type</key>

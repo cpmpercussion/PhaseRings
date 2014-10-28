@@ -11,7 +11,7 @@
 #define DEGREE @[@1,@2,@3,@4,@5,@6,@7]
 #define LYDFIVE @[@0,@2,@4,@6,@8,@9,@11]
 #define LYDIAN @[@0,@2,@4,@6,@7,@9,@11]
-#define MAJOR @[@0,@2,@4,@5,@7,@9,@11]
+#define IONIAN @[@0,@2,@4,@5,@7,@9,@11]
 #define MIXOLYDIAN @[@0,@2,@4,@5,@7,@9,@10]
 #define DORIAN @[@0,@2,@3,@5,@7,@9,@10]
 #define MINOR @[@0,@2,@3,@5,@7,@8,@10]
@@ -45,8 +45,8 @@
     return base  + (octave * 12) + scalenote;
 }
 
-+(int)major:(int)base withNote:(int)note {
-    NSArray *scale = MAJOR;
++(int)ionian:(int)base withNote:(int)note {
+    NSArray *scale = IONIAN;
     
     int octave = note / [scale count];
     int scalenote = [scale[note % [scale count]] intValue];
@@ -155,8 +155,8 @@
     if ([scale isEqualToString:@"MIXOLYDIAN"]) {
         return [self mixolydian:base withNote:note];
     }
-    if ([scale isEqualToString:@"MAJOR"]) {
-        return [self major:base withNote:note];
+    if ([scale isEqualToString:@"IONIAN"]) {
+        return [self ionian:base withNote:note];
     }
     if ([scale isEqualToString:@"LYDIAN"]) {
         return [self lydian:base withNote:note];
@@ -173,8 +173,7 @@
     if ([scale isEqualToString:@"WHOLETONE"]) {
         return [self wholeTone:base withNote:note];
     }
-    
-    return [self major:base withNote:note];
+    NSLog(@"Scale: %@ not found! Using Ionian instead.",scale);
+    return [self ionian:base withNote:note];
 }
-
 @end
