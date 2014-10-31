@@ -14,10 +14,12 @@
 
 #define PHASE_SYNTH_PATCH @"PhaseRingSynthEnvironment.pd"
 #define STRING_SYNTH_PATCH @"CircleStringsSynthEnvironment.pd"
-#define BOWL_SYNTH_PATCH @""
-#define SOUND_SCHEMES @[PHASE_SYNTH_PATCH,STRING_SYNTH_PATCH,BOWL_SYNTH_PATCH]
-
-
+#define BOWL_SYNTH_PATCH @"SoundScraperSynthEnvironment.pd"
+#define GONG_SYNTH_PATCH @"SoundScraperSynthEnvironment.pd"
+#define CROTALES_SYNTH_PATCH @"SoundScraperSynthEnvironment.pd"
+#define POT_SYNTH_PATCH @"SoundScraperSynthEnvironment.pd"
+#define MARIMBA_SYNTH_PATCH @"SoundScraperSynthEnvironment.pd"
+#define SOUND_SCHEMES @[PHASE_SYNTH_PATCH,STRING_SYNTH_PATCH,BOWL_SYNTH_PATCH,GONG_SYNTH_PATCH,CROTALES_SYNTH_PATCH,POT_SYNTH_PATCH,MARIMBA_SYNTH_PATCH]
 #define BASE_A 33
 
 #import "ViewController.h"
@@ -167,6 +169,7 @@
     } else {
         NSLog(@"PATCH OPENING: Patch already open, doing nothing.");
     }
+    [PdBase sendFloat:[[NSUserDefaults standardUserDefaults] integerForKey:@"sound"] toReceiver:@"selectsound"];
 }
 
 - (void) applyNewSetup: (NSArray *) setup {
@@ -261,7 +264,7 @@
     int state = (int) sender.value;
     NSArray *newSetup = [self.composition setupForState:state];
     [self applyNewSetup:newSetup];
-    [PdBase sendFloat:(float) arc4random_uniform(6) toReceiver:@"changesound"];
+    //    [PdBase sendFloat:(float) arc4random_uniform(6) toReceiver:@"changesound"];
 }
 - (IBAction)sliderMoved:(UISlider *)sender {
     [self setDistortion:[sender value]];

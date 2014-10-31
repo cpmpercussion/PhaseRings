@@ -72,6 +72,19 @@
 		565A2328188F94CA00093B32 /* SingingBowlSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = 565A2327188F94CA00093B32 /* SingingBowlSetup.m */; };
 		5674AF24195011370052121E /* MetatoneEnsembleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5674AF23195011370052121E /* MetatoneEnsembleView.m */; };
 		568A0C6D18C96F41007E9A8C /* StudyInBowls1.m in Sources */ = {isa = PBXBuildFile; fileRef = 568A0C6C18C96F41007E9A8C /* StudyInBowls1.m */; };
+		568BDC111A03488B0056CF22 /* bellsynth.pd in Resources */ = {isa = PBXBuildFile; fileRef = 568BDC0A1A03488B0056CF22 /* bellsynth.pd */; };
+		568BDC121A03488B0056CF22 /* s_loopsmooth.pd in Resources */ = {isa = PBXBuildFile; fileRef = 568BDC0B1A03488B0056CF22 /* s_loopsmooth.pd */; };
+		568BDC131A03488B0056CF22 /* s_playolap.pd in Resources */ = {isa = PBXBuildFile; fileRef = 568BDC0C1A03488B0056CF22 /* s_playolap.pd */; };
+		568BDC141A03488B0056CF22 /* s_playtable.pd in Resources */ = {isa = PBXBuildFile; fileRef = 568BDC0D1A03488B0056CF22 /* s_playtable.pd */; };
+		568BDC151A03488B0056CF22 /* SoundScraperSynthEnvironment.pd in Resources */ = {isa = PBXBuildFile; fileRef = 568BDC0E1A03488B0056CF22 /* SoundScraperSynthEnvironment.pd */; };
+		568BDC161A03488B0056CF22 /* u_listdrip.pd in Resources */ = {isa = PBXBuildFile; fileRef = 568BDC0F1A03488B0056CF22 /* u_listdrip.pd */; };
+		568BDC171A03488B0056CF22 /* u_listmap.pd in Resources */ = {isa = PBXBuildFile; fileRef = 568BDC101A03488B0056CF22 /* u_listmap.pd */; };
+		568BDC201A0349300056CF22 /* almglockenC.wav in Resources */ = {isa = PBXBuildFile; fileRef = 568BDC1A1A0349300056CF22 /* almglockenC.wav */; };
+		568BDC211A0349300056CF22 /* bowl.wav in Resources */ = {isa = PBXBuildFile; fileRef = 568BDC1B1A0349300056CF22 /* bowl.wav */; };
+		568BDC221A0349300056CF22 /* crotale.wav in Resources */ = {isa = PBXBuildFile; fileRef = 568BDC1C1A0349300056CF22 /* crotale.wav */; };
+		568BDC231A0349300056CF22 /* gong.wav in Resources */ = {isa = PBXBuildFile; fileRef = 568BDC1D1A0349300056CF22 /* gong.wav */; };
+		568BDC241A0349300056CF22 /* marimba.wav in Resources */ = {isa = PBXBuildFile; fileRef = 568BDC1E1A0349300056CF22 /* marimba.wav */; };
+		568BDC251A0349300056CF22 /* xylo.wav in Resources */ = {isa = PBXBuildFile; fileRef = 568BDC1F1A0349300056CF22 /* xylo.wav */; };
 		56B7898F1897327D00B6AE22 /* SingingBowlComposition.m in Sources */ = {isa = PBXBuildFile; fileRef = 56B7898E1897327D00B6AE22 /* SingingBowlComposition.m */; };
 		56B789921897336800B6AE22 /* TestChoraleComposition.m in Sources */ = {isa = PBXBuildFile; fileRef = 56B789911897336800B6AE22 /* TestChoraleComposition.m */; };
 		56C28DB6194A968400E015BB /* NoteColours.m in Sources */ = {isa = PBXBuildFile; fileRef = 56C28DB5194A968400E015BB /* NoteColours.m */; };
@@ -211,6 +224,19 @@
 		5674AF23195011370052121E /* MetatoneEnsembleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MetatoneEnsembleView.m; sourceTree = "<group>"; };
 		568A0C6B18C96F41007E9A8C /* StudyInBowls1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StudyInBowls1.h; sourceTree = "<group>"; };
 		568A0C6C18C96F41007E9A8C /* StudyInBowls1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StudyInBowls1.m; sourceTree = "<group>"; };
+		568BDC0A1A03488B0056CF22 /* bellsynth.pd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bellsynth.pd; sourceTree = "<group>"; };
+		568BDC0B1A03488B0056CF22 /* s_loopsmooth.pd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = s_loopsmooth.pd; sourceTree = "<group>"; };
+		568BDC0C1A03488B0056CF22 /* s_playolap.pd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = s_playolap.pd; sourceTree = "<group>"; };
+		568BDC0D1A03488B0056CF22 /* s_playtable.pd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = s_playtable.pd; sourceTree = "<group>"; };
+		568BDC0E1A03488B0056CF22 /* SoundScraperSynthEnvironment.pd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SoundScraperSynthEnvironment.pd; sourceTree = "<group>"; };
+		568BDC0F1A03488B0056CF22 /* u_listdrip.pd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = u_listdrip.pd; sourceTree = "<group>"; };
+		568BDC101A03488B0056CF22 /* u_listmap.pd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = u_listmap.pd; sourceTree = "<group>"; };
+		568BDC1A1A0349300056CF22 /* almglockenC.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = almglockenC.wav; sourceTree = "<group>"; };
+		568BDC1B1A0349300056CF22 /* bowl.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = bowl.wav; sourceTree = "<group>"; };
+		568BDC1C1A0349300056CF22 /* crotale.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = crotale.wav; sourceTree = "<group>"; };
+		568BDC1D1A0349300056CF22 /* gong.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = gong.wav; sourceTree = "<group>"; };
+		568BDC1E1A0349300056CF22 /* marimba.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = marimba.wav; sourceTree = "<group>"; };
+		568BDC1F1A0349300056CF22 /* xylo.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = xylo.wav; sourceTree = "<group>"; };
 		56B7898D1897327D00B6AE22 /* SingingBowlComposition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SingingBowlComposition.h; sourceTree = "<group>"; };
 		56B7898E1897327D00B6AE22 /* SingingBowlComposition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SingingBowlComposition.m; sourceTree = "<group>"; };
 		56B789901897336800B6AE22 /* TestChoraleComposition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestChoraleComposition.h; sourceTree = "<group>"; };
@@ -456,6 +482,19 @@
 			path = scales;
 			sourceTree = "<group>";
 		};
+		568BDC191A0349300056CF22 /* samples */ = {
+			isa = PBXGroup;
+			children = (
+				568BDC1A1A0349300056CF22 /* almglockenC.wav */,
+				568BDC1B1A0349300056CF22 /* bowl.wav */,
+				568BDC1C1A0349300056CF22 /* crotale.wav */,
+				568BDC1D1A0349300056CF22 /* gong.wav */,
+				568BDC1E1A0349300056CF22 /* marimba.wav */,
+				568BDC1F1A0349300056CF22 /* xylo.wav */,
+			);
+			path = samples;
+			sourceTree = "<group>";
+		};
 		56B7898A1897323F00B6AE22 /* views */ = {
 			isa = PBXGroup;
 			children = (
@@ -491,8 +530,16 @@
 		56E170F51991EAF400A36C74 /* Synth */ = {
 			isa = PBXGroup;
 			children = (
+				568BDC191A0349300056CF22 /* samples */,
 				5630CFB119FE06ED00B3DC89 /* metaPdLibs */,
 				5630CFAD19FE06E700B3DC89 /* pluck~.pd */,
+				568BDC0A1A03488B0056CF22 /* bellsynth.pd */,
+				568BDC0B1A03488B0056CF22 /* s_loopsmooth.pd */,
+				568BDC0C1A03488B0056CF22 /* s_playolap.pd */,
+				568BDC0D1A03488B0056CF22 /* s_playtable.pd */,
+				568BDC0E1A03488B0056CF22 /* SoundScraperSynthEnvironment.pd */,
+				568BDC0F1A03488B0056CF22 /* u_listdrip.pd */,
+				568BDC101A03488B0056CF22 /* u_listmap.pd */,
 				5630CFAE19FE06E700B3DC89 /* stringsynth.pd */,
 				5630CFAB19FE06DE00B3DC89 /* CircleStringsSynthEnvironment.pd */,
 				56E170F61991EAF400A36C74 /* PhaseRingSynthEnvironment.pd */,
@@ -608,20 +655,33 @@
 				5630CFAC19FE06DE00B3DC89 /* CircleStringsSynthEnvironment.pd in Resources */,
 				56E172601991EAF500A36C74 /* PhaseRingSynthEnvironment.pd in Resources */,
 				5630CFB019FE06E700B3DC89 /* stringsynth.pd in Resources */,
+				568BDC251A0349300056CF22 /* xylo.wav in Resources */,
+				568BDC121A03488B0056CF22 /* s_loopsmooth.pd in Resources */,
+				568BDC171A03488B0056CF22 /* u_listmap.pd in Resources */,
+				568BDC221A0349300056CF22 /* crotale.wav in Resources */,
 				5630CFD419FE06ED00B3DC89 /* m_mixolydian.pd in Resources */,
+				568BDC151A03488B0056CF22 /* SoundScraperSynthEnvironment.pd in Resources */,
 				5630CFD119FE06ED00B3DC89 /* loadMetaPdLibs.pd in Resources */,
 				5630CFCA19FE06ED00B3DC89 /* feedbackdelay.pd in Resources */,
 				5630CFCD19FE06ED00B3DC89 /* rlop~.pd in Resources */,
 				5630CFD219FE06ED00B3DC89 /* m_lydian.pd in Resources */,
 				5630CFC819FE06ED00B3DC89 /* stereovol.pd in Resources */,
 				5630CFAF19FE06E700B3DC89 /* pluck~.pd in Resources */,
+				568BDC231A0349300056CF22 /* gong.wav in Resources */,
+				568BDC111A03488B0056CF22 /* bellsynth.pd in Resources */,
 				5623DB7C188CDB3800AA6C14 /* Images.xcassets in Resources */,
+				568BDC161A03488B0056CF22 /* u_listdrip.pd in Resources */,
+				568BDC241A0349300056CF22 /* marimba.wav in Resources */,
 				5630CFC919FE06ED00B3DC89 /* volumeRandomise.pd in Resources */,
 				5630CFD019FE06ED00B3DC89 /* slicesampler.pd in Resources */,
+				568BDC131A03488B0056CF22 /* s_playolap.pd in Resources */,
+				568BDC201A0349300056CF22 /* almglockenC.wav in Resources */,
 				5630CFCF19FE06ED00B3DC89 /* percsampler.pd in Resources */,
 				5630CFD519FE06ED00B3DC89 /* m_phrygian.pd in Resources */,
+				568BDC141A03488B0056CF22 /* s_playtable.pd in Resources */,
 				5623DB6E188CDB3800AA6C14 /* InfoPlist.strings in Resources */,
 				5630CFD319FE06ED00B3DC89 /* m_lydiansharp5.pd in Resources */,
+				568BDC211A0349300056CF22 /* bowl.wav in Resources */,
 				5630CFC719FE06ED00B3DC89 /* monopan.pd in Resources */,
 				56E172611991EAF500A36C74 /* phasesynth.pd in Resources */,
 				5623DB77188CDB3800AA6C14 /* Main.storyboard in Resources */,
