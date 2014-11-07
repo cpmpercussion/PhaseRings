@@ -397,12 +397,14 @@
 }
 
 - (IBAction)showSettingsModal:(id)sender {
-    [self showSettingsPopover:sender];
-    
-//    UINavigationController *aNavController = [[UINavigationController alloc] initWithRootViewController:self.appSettingsViewController];
-//    [self.appSettingsViewController setShowCreditsFooter:NO];
-//    [self.appSettingsViewController setShowDoneButton:YES];
-//    [self presentViewController:aNavController animated:YES completion:nil];
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        [self showSettingsPopover:sender];
+    } else {
+            UINavigationController *aNavController = [[UINavigationController alloc] initWithRootViewController:self.appSettingsViewController];
+            [self.appSettingsViewController setShowCreditsFooter:NO];
+            [self.appSettingsViewController setShowDoneButton:YES];
+            [self presentViewController:aNavController animated:YES completion:nil];
+    }
 }
 
 - (void)showSettingsPopover:(UIButton *)sender {
