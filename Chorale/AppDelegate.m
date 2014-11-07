@@ -40,7 +40,10 @@
 - (void)defaultsDidChange:(NSNotification *)aNotification
 {
     NSLog(@"SETTINGS NOTIFICATION: Something Changed: %@",aNotification);
+    NSLog(@"reloading everything");
     [self.viewController openComposition];
+    [self.viewController openPdPatch];
+
 }
 
 							

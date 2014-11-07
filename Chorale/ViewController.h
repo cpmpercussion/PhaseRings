@@ -13,9 +13,20 @@
 #import "MetatoneNetworkManager.h"
 #import "MetatoneMidiManager.h"
 
-@interface ViewController : UIViewController <PdReceiverDelegate,MetatoneNetworkManagerDelegate>
+// Settings:
+#import "IASKAppSettingsViewController.h"
+#import "IASKSettingsReader.h"
+
+
+
+@interface ViewController : UIViewController <PdReceiverDelegate,MetatoneNetworkManagerDelegate,IASKSettingsDelegate,UIPopoverControllerDelegate>
 @property (strong, nonatomic) MetatoneMidiManager* midiManager;
+@property (strong, nonatomic) IASKAppSettingsViewController *appSettingsViewController;
+@property (weak, nonatomic) UIPopoverController* currentPopoverController;
+
+
 
 - (void) openPdPatch;
 - (void) openComposition;
+- (IBAction)showSettingsModal:(id)sender;
 @end

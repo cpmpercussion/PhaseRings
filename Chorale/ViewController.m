@@ -32,6 +32,9 @@
 //#import "StudyInBowls1.h"
 #import "GenerativeSetupComposition.h"
 
+
+
+
 @interface ViewController ()
 // Audio
 @property (strong,nonatomic) PdAudioController *audioController;
@@ -272,10 +275,6 @@
     [self setDistortion:[sender value]];
 }
 
-#pragma mark TODO: Make the settings button work somehow.
-- (IBAction)settingsPressed:(UIButton *)sender {
-    NSLog(@"Settings Pressed!");
-}
 
 -(void)setDistortion:(float)level {
     [PdBase sendFloat:level toReceiver:@"distortlevel"];
@@ -384,5 +383,85 @@
 -(void) receivePrint:(NSString *)message {
     NSLog(@"Pd: %@",message);
 }
+
+#pragma mark IASK Methods
+
+- (IASKAppSettingsViewController*)appSettingsViewController {
+    if (!_appSettingsViewController) {
+        _appSettingsViewController = [[IASKAppSettingsViewController alloc] init];
+        _appSettingsViewController.delegate = self;
+        BOOL enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"AutoConnect"];
+        _appSettingsViewController.hiddenKeys = enabled ? nil : [NSSet setWithObjects:@"AutoConnectLogin", @"AutoConnectPassword", nil];
+    }
+    return _appSettingsViewController;
+}
+
+- (IBAction)showSettingsModal:(id)sender {
+    [self showSettingsPopover:sender];
+    
+//    UINavigationController *aNavController = [[UINavigationController alloc] initWithRootViewController:self.appSettingsViewController];
+//    [self.appSettingsViewController setShowCreditsFooter:NO];
+//    [self.appSettingsViewController setShowDoneButton:YES];
+//    [self presentViewController:aNavController animated:YES completion:nil];
+}
+
+- (void)showSettingsPopover:(UIButton *)sender {
+    if(self.currentPopoverController) {
+        [self dismissCurrentPopover];
+        return;
+    }
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.appSettingsViewController];
+    [self.appSettingsViewController setShowCreditsFooter:NO];
+    [self.appSettingsViewController setShowDoneButton:NO];
+
+    UIPopoverController *popover = [[UIPopoverController alloc] initWithContentViewController:navController];
+    popover.delegate = self;
+//    [popover setDelegate:self];
+    [popover presentPopoverFromRect:sender.frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+    //    [popover presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionUp animated:NO];
+    self.currentPopoverController = popover;
+}
+
+- (void) dismissCurrentPopover {
+    NSLog(@"dismissing the popover ourselves..");
+    [self.currentPopoverController dismissPopoverAnimated:YES];
+    self.currentPopoverController = nil;
+    [self openComposition];
+    [self openPdPatch];
+
+}
+
+- (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender {
+    [self dismissViewControllerAnimated:YES completion:nil];
+    NSLog(@"MainVC: Settings Changed, updating everything!");
+    [self openComposition];
+    [self openPdPatch];
+    // your code here to reconfigure the app for changed settings
+}
+
+- (void) popoverControllerDidDismissPopover:(UIPopoverController *)popoverController {
+    NSLog(@"MainVC: Popover going away updating everything!!");
+    [self openComposition];
+    [self openPdPatch];
+}
+
+
+- (void) popoverController:(UIPopoverController *)popoverController willRepositionPopoverToRect:(inout CGRect *)rect inView:(inout UIView *__autoreleasing *)view {
+    NSLog(@"repositioning popover");
+}
+
+- (BOOL)popoverControllerShouldDismissPopover:(UIPopoverController *)popoverController {
+    NSLog(@"MainVC: Popover will be dismissed.!!");
+    [self openComposition];
+    [self openPdPatch];
+    return YES;
+}
+
+
+#pragma mark TODO: Make the settings button work somehow.
+- (IBAction)settingsPressed:(UIButton *)sender {
+    NSLog(@"Settings Pressed!");
+}
+
 
 @end
