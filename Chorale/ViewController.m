@@ -108,7 +108,9 @@
     }
     
     // Hide settings button until it really really works.
-    [self.settingsButton setHidden:YES];
+//    [self.settingsButton setHidden:YES];
+    [self.settingsButton setHidden:NO];
+
     
 }
 

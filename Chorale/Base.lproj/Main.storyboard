@@ -81,6 +81,9 @@
                                 </state>
                                 <connections>
                                     <action selector="settingsPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="YDn-qh-SDq"/>
+                                    <segue destination="jWf-XN-YES" kind="popoverPresentation" popoverAnchorView="BfF-Lc-5IP" id="05o-7b-2cC">
+                                        <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                                    </segue>
                                 </connections>
                             </button>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="OSC connection feedback" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Owk-aY-7Io">
@@ -135,6 +138,24 @@
                 </panGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="-73.5" y="-59.5"/>
+        </scene>
+        <!--App Settings View Controller-->
+        <scene sceneID="jyn-PG-ZgU">
+            <objects>
+                <viewController id="jWf-XN-YES" customClass="IASKAppSettingsViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="xKx-iR-pBn"/>
+                        <viewControllerLayoutGuide type="bottom" id="qw1-DS-ak6"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="AU8-Qz-PXj" customClass="UITableView">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.59999999999999998" colorSpace="calibratedRGB"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="wNm-pL-gh8" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="676.5" y="-171"/>
         </scene>
     </scenes>
 </document>
