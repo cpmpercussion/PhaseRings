@@ -91,8 +91,7 @@
     [self openComposition];
     
     // Setup Network
-    self.metatoneClients = [[NSMutableDictionary alloc] init];
-    self.networkManager = [[MetatoneNetworkManager alloc] initWithDelegate:self shouldOscLog:YES];
+    [self setupOSCLogging];
     self.timeOfLastNewIdea = [NSDate date];
     
     // Ensemble Heads Up Display
@@ -109,12 +108,6 @@
         [self.gestureStatusLabel setHidden:YES];
         [self.ensembleView setHidden:YES];
     }
-    
-    // Hide settings button until it really really works.
-//    [self.settingsButton setHidden:YES];
-    [self.settingsButton setHidden:NO];
-
-    
 }
 
 - (void) openComposition {
@@ -330,6 +323,17 @@
 }
 
 #pragma mark - Metatone Network Methods
+-(void)stopOSCLogging
+{
+    [self.networkManager stopSearches];
+}
+
+-(void)setupOSCLogging {
+    self.metatoneClients = [[NSMutableDictionary alloc] init];
+    self.networkManager = [[MetatoneNetworkManager alloc] initWithDelegate:self shouldOscLog:YES];
+}
+
+
 -(void)searchingForLoggingServer {
 //    [self.oscStatusLabel setText:@"searching for classifier 😒"];
     [self.oscStatusLabel setText:@""];

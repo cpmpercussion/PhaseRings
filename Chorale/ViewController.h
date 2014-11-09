@@ -29,4 +29,7 @@
 - (void) openPdPatch;
 - (void) openComposition;
 - (IBAction)showSettingsModal:(id)sender;
+
+-(void) setupOSCLogging;
+-(void) stopOSCLogging;
 @end
