@@ -4,3 +4,6 @@
 [submodule "MetatoneOSC"]
 	path = MetatoneOSC
 	url = https://github.com/cpmpercussion/MetatoneOSC
+[submodule "InAppSettingsKit"]
+	path = InAppSettingsKit
+	url = https://github.com/futuretap/InAppSettingsKit.git
