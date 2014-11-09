@@ -122,20 +122,46 @@
     [[NSUserDefaults standardUserDefaults] synchronize];
     // 36 -- C two below middle C
     // 33 - A below that.
+    
+    NSInteger compositionSetting = [[NSUserDefaults standardUserDefaults] integerForKey:@"composition"];
     NSInteger note1 = BASE_A + [[NSUserDefaults standardUserDefaults] integerForKey:@"note_1"];
     NSInteger note2 = BASE_A + [[NSUserDefaults standardUserDefaults] integerForKey:@"note_2"];
     NSInteger note3 = BASE_A + [[NSUserDefaults standardUserDefaults] integerForKey:@"note_3"];
     NSInteger scale_1 = [[NSUserDefaults standardUserDefaults] integerForKey:@"scale_1"];
     NSInteger scale_2 = [[NSUserDefaults standardUserDefaults] integerForKey:@"scale_2"];
     NSInteger scale_3 = [[NSUserDefaults standardUserDefaults] integerForKey:@"scale_3"];
-    
     NSArray *scalesList = @[@"IONIAN",@"DORIAN",@"PHRYGIAN",@"LYDIAN",@"MIXOLYDIAN",@"AEOLIAN",@"LOCHRIAN",@"LYDIANSHARPFIVE",@"MIXOFLATSIX",@"OCTATONIC",@"WHOLETONE"];
     
     NSArray *notes = @[[NSNumber numberWithInteger:note1],[NSNumber numberWithInteger:note2],[NSNumber numberWithInteger:note3]];
     NSArray *scales = @[[scalesList objectAtIndex:scale_1],[scalesList objectAtIndex:scale_2],[scalesList objectAtIndex:scale_3]];
     
-    NSLog(@"COMPOSITION OPENING: Base notes will be: %@",notes);
-    NSLog(@"COMPOSITION OPENING: Scales will be %@",scales);
+    NSLog(@"Choosing Composition:");
+    
+    switch (compositionSetting) {
+        case 1:
+            NSLog(@"Study in Bowls");
+            notes = @[@41,@42,@48];
+            scales = @[@"MIXOLYDIAN",@"LYDIAN",@"LYDIANSHARPFIVE"];
+            break;
+        case 2:
+            NSLog(@"Amores");
+            notes = @[@36,@37,@41];
+            scales = @[@"MIXOFLATSIX",@"OCTATONIC",@"WHOLETONE"];
+            break;
+        case 3:
+            NSLog(@"MixoSteps");
+            notes = @[@36,@38,@41];
+            scales = @[@"MIXOLYDIAN",@"MIXOLYDIAN",@"MIXOLYDIAN"];
+            break;
+        default:
+            NSLog(@"Custom composition");
+            notes = @[[NSNumber numberWithInteger:note1],[NSNumber numberWithInteger:note2],[NSNumber numberWithInteger:note3]];
+            scales = @[[scalesList objectAtIndex:scale_1],[scalesList objectAtIndex:scale_2],[scalesList objectAtIndex:scale_3]];
+            break;
+    }
+    
+    NSLog(@"COMPOSITION OPENING: Base notes will be: %@, %@, %@",notes[0],notes[1],notes[2]);
+    NSLog(@"COMPOSITION OPENING: Scales will be %@, %@, %@",scales[0],scales[1],scales[2]);
     NSLog(@"COMPOSITION OPENING: Opening composition");
     
     self.composition = [[GenerativeSetupComposition alloc] initWithRootNotes:notes andScales:scales];

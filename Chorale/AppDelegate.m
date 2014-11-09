@@ -13,8 +13,9 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Register defaults
-    NSDictionary *defaults = @{@"sound":@1,
+    NSDictionary *defaults = @{@"sound":@2,
                                @"note_labels":@YES,
+                               @"composition":@3,
                                @"note_1":@1,
                                @"note_2":@3,
                                @"note_3":@4,
