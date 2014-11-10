@@ -25,6 +25,9 @@
     self.scales = scales;
     self.contents = [self generateSetups];
     self.setupDescriptions = [self generateDescriptions];
+    NSLog(@"Roots: %@",self.rootNotes);
+    NSLog(@"Scales:%@",self.scales);
+    NSLog(@"Descriptions:%@",self.setupDescriptions);
     return self;
 }
 

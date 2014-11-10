@@ -25,44 +25,9 @@
                                             <accessibilityTraits key="traits" none="YES" notEnabled="YES"/>
                                         </accessibility>
                                     </view>
-                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Metatone Ensemble Status" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="amy-rP-Abp">
-                                        <rect key="frame" x="20" y="626" width="207" height="21"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="207" id="RuE-oj-V3F"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Gesture Status" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ezi-AO-jQ3">
-                                        <rect key="frame" x="20" y="597" width="207" height="21"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="207" id="cVi-Ta-d3C"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Players Status" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EPW-aI-xkd">
-                                        <rect key="frame" x="20" y="568" width="207" height="21"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="207" id="OJf-3l-aUK"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <gestureRecognizers/>
-                                <constraints>
-                                    <constraint firstItem="amy-rP-Abp" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="20" symbolic="YES" id="Ich-rW-F58"/>
-                                    <constraint firstItem="Ezi-AO-jQ3" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="20" symbolic="YES" id="cIe-CB-qGT"/>
-                                    <constraint firstAttribute="bottom" secondItem="amy-rP-Abp" secondAttribute="bottom" constant="20" symbolic="YES" id="cO6-cE-ESc"/>
-                                    <constraint firstItem="Ezi-AO-jQ3" firstAttribute="top" secondItem="EPW-aI-xkd" secondAttribute="bottom" constant="8" symbolic="YES" id="dYF-2z-Uet"/>
-                                    <constraint firstItem="amy-rP-Abp" firstAttribute="top" secondItem="Ezi-AO-jQ3" secondAttribute="bottom" constant="8" symbolic="YES" id="lf1-cq-S7o"/>
-                                    <constraint firstItem="EPW-aI-xkd" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="20" symbolic="YES" id="mjN-Wp-9Ci"/>
-                                </constraints>
                                 <connections>
                                     <outletCollection property="gestureRecognizers" destination="JKV-LY-x6d" appends="YES" id="Dk7-8G-Pba"/>
                                 </connections>
@@ -73,6 +38,27 @@
                                     <action selector="steppedMoved:" destination="BYZ-38-t0r" eventType="valueChanged" id="gSs-4Y-ajv"/>
                                 </connections>
                             </stepper>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="A♯ Mixolydian" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="amy-rP-Abp">
+                                <rect key="frame" x="20" y="626" width="207" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="3S3-eK-9qJ"/>
+                                    <constraint firstAttribute="width" constant="207" id="RuE-oj-V3F"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="3S3-eK-9qJ"/>
+                                    </mask>
+                                </variation>
+                                <variation key="heightClass=compact-widthClass=compact">
+                                    <mask key="constraints">
+                                        <include reference="3S3-eK-9qJ"/>
+                                        <exclude reference="RuE-oj-V3F"/>
+                                    </mask>
+                                </variation>
+                            </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BfF-Lc-5IP">
                                 <rect key="frame" x="243" y="621" width="30" height="48"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="30"/>
@@ -97,9 +83,11 @@
                         <color key="backgroundColor" red="0.80000001192092896" green="0.80000001192092896" blue="0.80000001192092896" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="Mg1-8A-slj" firstAttribute="top" secondItem="kC3-j3-ajz" secondAttribute="bottom" constant="8" symbolic="YES" id="4u8-DM-BIt"/>
+                            <constraint firstItem="kC3-j3-ajz" firstAttribute="leading" secondItem="amy-rP-Abp" secondAttribute="trailing" constant="8" symbolic="YES" id="7ON-MA-uzC"/>
                             <constraint firstItem="8bC-Xf-vdC" firstAttribute="top" secondItem="yNT-f6-f79" secondAttribute="top" id="AHF-S1-bLV"/>
                             <constraint firstAttribute="centerX" secondItem="kC3-j3-ajz" secondAttribute="centerX" id="KcM-XM-goG"/>
                             <constraint firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailing" id="MCR-Fp-NX3"/>
+                            <constraint firstItem="amy-rP-Abp" firstAttribute="centerY" secondItem="kC3-j3-ajz" secondAttribute="centerY" id="UO4-h3-Mys"/>
                             <constraint firstItem="BfF-Lc-5IP" firstAttribute="leading" secondItem="kC3-j3-ajz" secondAttribute="trailing" constant="8" symbolic="YES" id="YvU-9y-oVN"/>
                             <constraint firstItem="Mg1-8A-slj" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="bottom" id="eUm-f0-Tj3"/>
                             <constraint firstItem="8bC-Xf-vdC" firstAttribute="leading" secondItem="yNT-f6-f79" secondAttribute="leading" id="f3g-F9-IFC"/>
@@ -110,6 +98,24 @@
                             <constraint firstItem="Owk-aY-7Io" firstAttribute="top" secondItem="yNT-f6-f79" secondAttribute="top" constant="20" symbolic="YES" id="pbB-Eq-Uqf"/>
                             <constraint firstItem="8bC-Xf-vdC" firstAttribute="leading" secondItem="yNT-f6-f79" secondAttribute="leading" id="sD1-Xa-R37"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="subviews">
+                                <exclude reference="amy-rP-Abp"/>
+                            </mask>
+                            <mask key="constraints">
+                                <exclude reference="7ON-MA-uzC"/>
+                                <exclude reference="UO4-h3-Mys"/>
+                            </mask>
+                        </variation>
+                        <variation key="heightClass=compact-widthClass=compact">
+                            <mask key="subviews">
+                                <include reference="amy-rP-Abp"/>
+                            </mask>
+                            <mask key="constraints">
+                                <include reference="7ON-MA-uzC"/>
+                                <include reference="UO4-h3-Mys"/>
+                            </mask>
+                        </variation>
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
                     <nil key="simulatedTopBarMetrics"/>
@@ -119,12 +125,10 @@
                     <connections>
                         <outlet property="bowlView" destination="8bC-Xf-vdC" id="nlM-eX-Hll"/>
                         <outlet property="compositionStepper" destination="kC3-j3-ajz" id="hRX-Me-Sdf"/>
-                        <outlet property="ensembleStatusLabel" destination="amy-rP-Abp" id="OXr-Bg-pbe"/>
                         <outlet property="ensembleView" destination="U7q-YO-31Y" id="ZNB-dX-Vdk"/>
-                        <outlet property="gestureStatusLabel" destination="Ezi-AO-jQ3" id="YjC-AS-84a"/>
                         <outlet property="oscStatusLabel" destination="Owk-aY-7Io" id="o3y-7Q-Yn0"/>
-                        <outlet property="playerStatusLabel" destination="EPW-aI-xkd" id="UyT-g0-O3i"/>
                         <outlet property="settingsButton" destination="BfF-Lc-5IP" id="LDh-K3-1WA"/>
+                        <outlet property="setupDescription" destination="amy-rP-Abp" id="7nO-KH-xY3"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

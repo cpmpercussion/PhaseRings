@@ -55,6 +55,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *playerStatusLabel;
 @property (weak, nonatomic) IBOutlet UILabel *gestureStatusLabel;
 @property (weak, nonatomic) IBOutlet UILabel *ensembleStatusLabel;
+@property (weak,nonatomic) IBOutlet UILabel  *setupDescription;
 // Composition
 @property (strong,nonatomic) SingingBowlComposition *composition;
 @property (strong, nonatomic) NSDate* timeOfLastNewIdea;
@@ -165,7 +166,7 @@
     self.composition = [[GenerativeSetupComposition alloc] initWithRootNotes:notes andScales:scales];
     
     [self.compositionStepper setMinimumValue:0];
-    [self.compositionStepper setMaximumValue:[self.composition numberOfSetups]];
+    [self.compositionStepper setMaximumValue:[self.composition numberOfSetups] - 1];
     [self.compositionStepper setWraps:YES];
     
     // Update bowl view.
@@ -266,9 +267,6 @@
         
     } else if ([sender state] == UIGestureRecognizerStateChanged) { // pan changed
         [PdBase sendFloat:velocity toReceiver:@"singlevel" ]; // Send Velocity
-//        NSLog(@"Sing Velocity: %f",velocity);
-
-        
         // send angle message to PD.
         CGFloat angle = [sender velocityInView:self.view].y/velHyp;
         [PdBase sendFloat:angle toReceiver:@"sinPanAngle"];
@@ -292,6 +290,8 @@
 - (IBAction)steppedMoved:(UIStepper *)sender {
     int state = (int) sender.value;
     NSArray *newSetup = [self.composition setupForState:state];
+    [self.setupDescription setText:[[(GenerativeSetupComposition *) self.composition setupDescriptions] objectAtIndex:state]];
+    NSLog(@"%@",[[(GenerativeSetupComposition *) self.composition setupDescriptions] objectAtIndex:state]);
     [self applyNewSetup:newSetup];
     [self.networkManager sendMetatoneMessage:@"CompositionStep" withState:[NSString stringWithFormat:@"%d",state]];
 }
