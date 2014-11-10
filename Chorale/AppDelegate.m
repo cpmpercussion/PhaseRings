@@ -40,8 +40,7 @@
 
 - (void)defaultsDidChange:(NSNotification *)aNotification
 {
-    NSLog(@"SETTINGS NOTIFICATION: Something Changed: %@",aNotification);
-    NSLog(@"reloading everything");
+    NSLog(@"SETTINGS NOTIFICATION: Something Changed, Updating.");
     [self.viewController openComposition];
     [self.viewController openPdPatch];
 
@@ -64,7 +63,7 @@
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
-    NSLog(@"Application will enter foreground - checking to see if patch needs to be reopened...");
+//    NSLog(@"Application will enter foreground - checking to see if patch needs to be reopened...");
     [self.viewController openPdPatch];
     [self.viewController setupOSCLogging];
 }
@@ -72,7 +71,7 @@
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-    NSLog(@"Application did become active.");
+//    NSLog(@"Application did become active.");
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application

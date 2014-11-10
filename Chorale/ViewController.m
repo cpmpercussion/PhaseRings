@@ -50,12 +50,10 @@
 @property (nonatomic) CGFloat viewRadius;
 @property (weak, nonatomic) IBOutlet UISlider *distortSlider;
 @property (weak, nonatomic) IBOutlet UILabel *oscStatusLabel;
+@property (weak, nonatomic) IBOutlet UILabel *setupDescription;
 @property (weak, nonatomic) IBOutlet UIStepper *compositionStepper;
 @property (weak, nonatomic) IBOutlet UIButton *settingsButton;
-@property (weak, nonatomic) IBOutlet UILabel *playerStatusLabel;
-@property (weak, nonatomic) IBOutlet UILabel *gestureStatusLabel;
-@property (weak, nonatomic) IBOutlet UILabel *ensembleStatusLabel;
-@property (weak,nonatomic) IBOutlet UILabel  *setupDescription;
+
 // Composition
 @property (strong,nonatomic) SingingBowlComposition *composition;
 @property (strong, nonatomic) NSDate* timeOfLastNewIdea;
@@ -76,6 +74,7 @@
     [self.distortSlider setHidden:YES];
     [self.compositionStepper setHidden:NO];
     [self.oscStatusLabel setHidden:NO];
+    [self.setupDescription setHidden:NO];
     
     // Setup Pd
     if([self.audioController configurePlaybackWithSampleRate:44100 numberChannels:2 inputEnabled:NO mixingEnabled:YES] != PdAudioOK) {
@@ -98,15 +97,9 @@
     // Ensemble Heads Up Display
     if (ENSEMBLE_STATUS_MODE) {
         NSLog(@"Displaying Ensemble Status UI");
-        [self.ensembleStatusLabel setHidden:NO];
-        [self.playerStatusLabel setHidden:NO];
-        [self.gestureStatusLabel setHidden:NO];
         [self.ensembleView setHidden:NO];
     } else {
         NSLog(@"Hiding Ensemble Status UI");
-        [self.ensembleStatusLabel setHidden:YES];
-        [self.playerStatusLabel setHidden:YES];
-        [self.gestureStatusLabel setHidden:YES];
         [self.ensembleView setHidden:YES];
     }
 }
@@ -129,31 +122,32 @@
     NSArray *notes = @[[NSNumber numberWithInteger:note1],[NSNumber numberWithInteger:note2],[NSNumber numberWithInteger:note3]];
     NSArray *scales = @[[scalesList objectAtIndex:scale_1],[scalesList objectAtIndex:scale_2],[scalesList objectAtIndex:scale_3]];
     
-    NSLog(@"Choosing Composition:");
+    NSLog(@"COMPOSITION OPENING: Opening composition");
+
     
     switch (compositionSetting) {
         case 1:
-            NSLog(@"Study in Bowls");
+            NSLog(@"COMPOSITION OPENING: Study in Bowls");
             notes = @[@41,@42,@48];
             scales = @[@"MIXOLYDIAN",@"LYDIAN",@"LYDIANSHARPFIVE"];
             break;
         case 2:
-            NSLog(@"Amores");
+            NSLog(@"COMPOSITION OPENING: Amores");
             notes = @[@36,@37,@41];
             scales = @[@"MIXOFLATSIX",@"OCTATONIC",@"WHOLETONE"];
             break;
         case 3:
-            NSLog(@"MixoSteps");
+            NSLog(@"COMPOSITION OPENING: MixoSteps");
             notes = @[@36,@38,@41];
             scales = @[@"MIXOLYDIAN",@"MIXOLYDIAN",@"MIXOLYDIAN"];
             break;
         case 4:
-            NSLog(@"Scheimpflug Principle");
+            NSLog(@"COMPOSITION OPENING: Scheimpflug Principle");
             notes = @[@36,@38,@40];
             scales = @[@"WHOLETONE",@"MIXOFLATSIX",@"LOCHRIAN"];
             break;
         default:
-            NSLog(@"Custom composition");
+            NSLog(@"COMPOSITION OPENING: Custom composition");
             notes = @[[NSNumber numberWithInteger:note1],[NSNumber numberWithInteger:note2],[NSNumber numberWithInteger:note3]];
             scales = @[[scalesList objectAtIndex:scale_1],[scalesList objectAtIndex:scale_2],[scalesList objectAtIndex:scale_3]];
             break;
@@ -161,14 +155,13 @@
     
     NSLog(@"COMPOSITION OPENING: Base notes will be: %@, %@, %@",notes[0],notes[1],notes[2]);
     NSLog(@"COMPOSITION OPENING: Scales will be %@, %@, %@",scales[0],scales[1],scales[2]);
-    NSLog(@"COMPOSITION OPENING: Opening composition");
     
     self.composition = [[GenerativeSetupComposition alloc] initWithRootNotes:notes andScales:scales];
-    
     [self.compositionStepper setMinimumValue:0];
     [self.compositionStepper setMaximumValue:[self.composition numberOfSetups] - 1];
     [self.compositionStepper setWraps:YES];
-    
+    [self updateSetupDescription:0];
+
     // Update bowl view.
     self.bowlSetup = [[SingingBowlSetup alloc] initWithPitches:[NSMutableArray arrayWithArray:[self.composition firstSetup]]];
     self.viewRadius = [self calculateMaximumRadius];
@@ -190,7 +183,6 @@
         patchName = PHASE_SYNTH_PATCH;
         NSLog(@"PATCH OPENING: Patch not found, defaulting to %@",PHASE_SYNTH_PATCH);
     }
-    //    [PdBase openFile:patchName path:[[NSBundle mainBundle] bundlePath]];
     
     if (![self.openFile.baseName isEqualToString:patchName]) {
         NSLog(@"PATCH OPENING: Patch not open, opening now.");
@@ -208,16 +200,21 @@
     [self.bowlView drawSetup:self.bowlSetup];
 }
 
+- (void) updateSetupDescription:(int)state {
+    NSString *newDescription = [[(GenerativeSetupComposition *) self.composition setupDescriptions] objectAtIndex:state];
+    [self.setupDescription setText:newDescription];
+    //    [self.setupDescription setHidden:NO];
+    NSLog(@"SETUP DESCRIPTION: %@",newDescription);
+}
+
+
 - (void) viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
-    NSLog(@"View is changing size!! Do something about it."); // Doesn't work yet!
 }
 
 - (void) viewWillAppear:(BOOL)animated {
-    NSLog(@"View will appear.");
 }
 
 - (void) viewDidLayoutSubviews {
-    NSLog(@"View Will layout subviews.");
     [self.bowlView drawSetup:self.bowlSetup];
 }
 
@@ -290,10 +287,8 @@
 - (IBAction)steppedMoved:(UIStepper *)sender {
     int state = (int) sender.value;
     NSArray *newSetup = [self.composition setupForState:state];
-    [self.setupDescription setText:[[(GenerativeSetupComposition *) self.composition setupDescriptions] objectAtIndex:state]];
-    [self.setupDescription setHidden:NO];
-    NSLog(@"%@",[[(GenerativeSetupComposition *) self.composition setupDescriptions] objectAtIndex:state]);
     [self applyNewSetup:newSetup];
+    [self updateSetupDescription:state];
     [self.networkManager sendMetatoneMessage:@"CompositionStep" withState:[NSString stringWithFormat:@"%d",state]];
 }
 - (IBAction)sliderMoved:(UISlider *)sender {
@@ -302,6 +297,7 @@
 -(void)setDistortion:(float)level {
     [PdBase sendFloat:level toReceiver:@"distortlevel"];
 }
+
 
 
 #pragma mark - Utils
@@ -354,7 +350,7 @@
         clientNames = [clientNames stringByAppendingString:name];
         clientNames = [clientNames stringByAppendingString:@"\n"];
     }
-    [self.playerStatusLabel setText:clientNames];
+    //    [self.playerStatusLabel setText:clientNames];
     [self.ensembleView drawEnsemble:self.metatoneClients];
 }
 
@@ -381,6 +377,7 @@
         [self.compositionStepper setValue:newSetupNumber];
         NSArray *newSetup = [self.composition setupForState:newSetupNumber];
         [self applyNewSetup:newSetup];
+        [self updateSetupDescription:newSetupNumber];
     }
 }
 
@@ -398,12 +395,12 @@
 
 -(void)didReceiveGestureMessageFor:(NSString *)device withClass:(NSString *)class {
     NSLog(@"Gesture: %@",class);
-    [self.gestureStatusLabel setText:class];
+    //    [self.gestureStatusLabel setText:class];
 }
 
 -(void)didReceiveEnsembleState:(NSString *)state withSpread:(NSNumber *)spread withRatio:(NSNumber*) ratio{
     NSLog(@"Ensemble State: %@",state);
-    [self.ensembleStatusLabel setText:state];
+//    [self.ensembleStatusLabel setText:state];
     if ([state isEqualToString:@"divergence"] && [spread floatValue] < 10.0 && [spread floatValue] > -10.0) {
         float newDistort = [spread floatValue];
         [self.distortSlider setValue:newDistort animated:YES];
