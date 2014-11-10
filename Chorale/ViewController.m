@@ -161,6 +161,11 @@
     [self.compositionStepper setMaximumValue:[self.composition numberOfSetups] - 1];
     [self.compositionStepper setWraps:YES];
     [self updateSetupDescription:0];
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"setup_label"]) {
+        [self.setupDescription setHidden:NO];
+    } else {
+        [self.setupDescription setHidden:YES];
+    }
 
     // Update bowl view.
     self.bowlSetup = [[SingingBowlSetup alloc] initWithPitches:[NSMutableArray arrayWithArray:[self.composition firstSetup]]];
@@ -203,7 +208,6 @@
 - (void) updateSetupDescription:(int)state {
     NSString *newDescription = [[(GenerativeSetupComposition *) self.composition setupDescriptions] objectAtIndex:state];
     [self.setupDescription setText:newDescription];
-    //    [self.setupDescription setHidden:NO];
     NSLog(@"SETUP DESCRIPTION: %@",newDescription);
 }
 
