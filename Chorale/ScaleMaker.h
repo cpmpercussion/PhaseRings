@@ -25,4 +25,5 @@
 +(int) wholeTone:(int)base withNote:(int)note;
 
 +(int) noteForScale:(NSString *)scale withBase:(int)base withNote:(int)note;
++(NSString *) prettyScaleString:(NSString *)scale;
 @end

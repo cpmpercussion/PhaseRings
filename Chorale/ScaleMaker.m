@@ -176,4 +176,44 @@
     NSLog(@"Scale: %@ not found! Using Ionian instead.",scale);
     return [self ionian:base withNote:note];
 }
+
++(NSString *) prettyScaleString:(NSString *)scale {
+    
+    if ([scale isEqualToString:@"LOCHRIAN"]) {
+        return @"Lochrian";
+    }
+    if ([scale isEqualToString:@"PHRYGIAN"]) {
+        return @"Phrygian";
+    }
+    if ([scale isEqualToString:@"AEOLIAN"]) {
+        return @"Aeolian";
+    }
+    if ([scale isEqualToString:@"DORIAN"]) {
+        return @"Dorian";
+    }
+    if ([scale isEqualToString:@"MIXOLYDIAN"]) {
+        return @"Mixolydian";
+    }
+    if ([scale isEqualToString:@"IONIAN"]) {
+        return @"Ionian";
+    }
+    if ([scale isEqualToString:@"LYDIAN"]) {
+        return @"Lydian";
+    }
+    if ([scale isEqualToString:@"LYDIANSHARPFIVE"]) {
+        return @"Lydian ♯5";
+    }
+    if ([scale isEqualToString:@"MIXOFLATSIX"]) {
+        return @"Mixo ♭6";
+    }
+    if ([scale isEqualToString:@"OCTATONIC"]) {
+        return @"Octatonic";
+    }
+    if ([scale isEqualToString:@"WHOLETONE"]) {
+        return @"Whole Tone";
+    }
+    NSLog(@"Scale: %@ not found! Using Ionian instead.",scale);
+    return @"Ionian";
+}
+
 @end

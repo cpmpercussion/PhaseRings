@@ -146,6 +146,11 @@
             notes = @[@36,@38,@41];
             scales = @[@"MIXOLYDIAN",@"MIXOLYDIAN",@"MIXOLYDIAN"];
             break;
+        case 4:
+            NSLog(@"Scheimpflug Principle");
+            notes = @[@36,@38,@40];
+            scales = @[@"WHOLETONE",@"MIXOFLATSIX",@"LOCHRIAN"];
+            break;
         default:
             NSLog(@"Custom composition");
             notes = @[[NSNumber numberWithInteger:note1],[NSNumber numberWithInteger:note2],[NSNumber numberWithInteger:note3]];
@@ -288,13 +293,11 @@
     int state = (int) sender.value;
     NSArray *newSetup = [self.composition setupForState:state];
     [self applyNewSetup:newSetup];
-    //    [PdBase sendFloat:(float) arc4random_uniform(6) toReceiver:@"changesound"];
+    [self.networkManager sendMetatoneMessage:@"CompositionStep" withState:[NSString stringWithFormat:@"%d",state]];
 }
 - (IBAction)sliderMoved:(UISlider *)sender {
     [self setDistortion:[sender value]];
 }
-
-
 -(void)setDistortion:(float)level {
     [PdBase sendFloat:level toReceiver:@"distortlevel"];
 }
@@ -365,7 +368,19 @@
 }
 
 -(void)didReceiveMetatoneMessageFrom:(NSString *)device withName:(NSString *)name andState:(NSString *)state {
-    //NSLog([NSString stringWithFormat:@"METATONE: Received app message from:%@ with state:%@",device,state]);
+    NSLog(@"METATONE: Received app message from:%@ with state:%@",device,state);
+//        [self.networkManager sendMetatoneMessage:@"CompositionStep" withState:[NSString stringWithFormat:@"%d",state]];
+    if ([name isEqualToString:@"CompositionStep"]) {
+        int newSetupNumber = [state intValue];
+        if (newSetupNumber > self.compositionStepper.maximumValue) {
+                    NSLog(@"METATONE: Can't set composition to state %d, above maximum value: %f", newSetupNumber,self.compositionStepper.maximumValue);
+                    newSetupNumber = self.compositionStepper.maximumValue;
+        }
+        NSLog(@"METATONE: Setting composition to state %d",newSetupNumber);
+        [self.compositionStepper setValue:newSetupNumber];
+        NSArray *newSetup = [self.composition setupForState:newSetupNumber];
+        [self applyNewSetup:newSetup];
+    }
 }
 
 -(void)didReceiveEnsembleEvent:(NSString *)event forDevice:(NSString *)device withMeasure:(NSNumber *)measure {
@@ -409,12 +424,11 @@
     return YES;
 }
 
-
 -(void) receivePrint:(NSString *)message {
     NSLog(@"Pd: %@",message);
 }
 
-#pragma mark IASK Methods
+#pragma mark In App Settings Kit Methods
 
 - (IASKAppSettingsViewController*)appSettingsViewController {
     if (!_appSettingsViewController) {
@@ -448,9 +462,7 @@
 
     UIPopoverController *popover = [[UIPopoverController alloc] initWithContentViewController:navController];
     popover.delegate = self;
-//    [popover setDelegate:self];
     [popover presentPopoverFromRect:sender.frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
-    //    [popover presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionUp animated:NO];
     self.currentPopoverController = popover;
 }
 

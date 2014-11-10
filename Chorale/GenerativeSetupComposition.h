@@ -12,6 +12,7 @@
 @property (strong,nonatomic) NSArray *contents;
 @property (strong,nonatomic) NSArray *rootNotes;
 @property (strong,nonatomic) NSArray *scales;
+@property (strong,nonatomic) NSArray *setupDescriptions;
 
 - (GenerativeSetupComposition *) initWithRootNotes:(NSArray *)roots andScales:(NSArray *)scales;
 

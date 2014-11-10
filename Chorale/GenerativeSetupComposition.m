@@ -8,6 +8,7 @@
 
 #import "GenerativeSetupComposition.h"
 #import "ScaleMaker.h"
+#import "SingingBowlSetup.h"
 
 #define SETUP_SIZE @[@3,@5,@8,@11]
 #define NUMBER_SETUPS_PER_ROOT 2
@@ -23,6 +24,7 @@
     self.rootNotes = roots;
     self.scales = scales;
     self.contents = [self generateSetups];
+    self.setupDescriptions = [self generateDescriptions];
     return self;
 }
 
@@ -33,7 +35,20 @@
     self.rootNotes = DEFAULT_ROOTS;
     self.scales = DEFAULT_SCALES;
     self.contents = [self generateSetups];
+    self.setupDescriptions = [self generateDescriptions];
     return self;
+}
+
+-(NSArray *) generateDescriptions {
+    NSMutableArray *result = [[NSMutableArray alloc] init];
+    for (int i = 0; i<[self.rootNotes count]; i++) {
+        NSString *note = [SingingBowlSetup noteNameForMidiNumber:[[self.rootNotes objectAtIndex:i] intValue]];
+        NSString *scale = [ScaleMaker prettyScaleString:[self.scales objectAtIndex:i]];
+        for (int j = 0; j< NUMBER_SETUPS_PER_ROOT; j++) {
+            [result addObject: [NSString stringWithFormat:@"%@ %@",note,scale]];
+        }
+    }
+    return [NSArray arrayWithArray:result];
 }
 
 -(NSArray *) generateSetups {
