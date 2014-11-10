@@ -41,7 +41,7 @@
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="A♯ Mixolydian" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="amy-rP-Abp">
                                 <rect key="frame" x="20" y="626" width="207" height="21"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="3S3-eK-9qJ"/>
+                                    <constraint firstAttribute="width" constant="125" id="3S3-eK-9qJ"/>
                                     <constraint firstAttribute="width" constant="207" id="RuE-oj-V3F"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>

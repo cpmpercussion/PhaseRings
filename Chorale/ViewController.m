@@ -291,6 +291,7 @@
     int state = (int) sender.value;
     NSArray *newSetup = [self.composition setupForState:state];
     [self.setupDescription setText:[[(GenerativeSetupComposition *) self.composition setupDescriptions] objectAtIndex:state]];
+    [self.setupDescription setHidden:NO];
     NSLog(@"%@",[[(GenerativeSetupComposition *) self.composition setupDescriptions] objectAtIndex:state]);
     [self applyNewSetup:newSetup];
     [self.networkManager sendMetatoneMessage:@"CompositionStep" withState:[NSString stringWithFormat:@"%d",state]];
