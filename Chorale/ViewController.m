@@ -364,7 +364,8 @@
     [self.oscStatusLabel setText:[NSString stringWithFormat:@"connected to %@ 👍", hostname]];
     // cancel manual mode.
     [self.distortSlider setHidden:YES];
-    [self.compositionStepper setHidden:YES];
+//    [self.compositionStepper setHidden:YES];
+    [self.compositionStepper setHidden:NO];
     [self.oscStatusLabel setHidden:NO];
 }
 
