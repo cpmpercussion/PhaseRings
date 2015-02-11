@@ -1,0 +1,10 @@
+PODS:
+  - Audiobus (2.1.5)
+
+DEPENDENCIES:
+  - Audiobus (~> 2.1)
+
+SPEC CHECKSUMS:
+  Audiobus: 04babaf08578450bc7302f062e776b55ac44cdd5
+
+COCOAPODS: 0.35.0
