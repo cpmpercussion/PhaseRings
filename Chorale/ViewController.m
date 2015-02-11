@@ -40,6 +40,7 @@
 @property (strong,nonatomic) PdAudioController *audioController;
 @property (strong,nonatomic) PdFile *openFile;
 @property (strong, nonatomic) SingingBowlSetup *bowlSetup;
+@property (nonatomic) UInt8 currentlyPanningPitch;
 // Network
 @property (strong,nonatomic) MetatoneNetworkManager *networkManager;
 @property (strong,nonatomic) NSMutableDictionary *metatoneClients;
@@ -53,6 +54,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *setupDescription;
 @property (weak, nonatomic) IBOutlet UIStepper *compositionStepper;
 @property (weak, nonatomic) IBOutlet UIButton *settingsButton;
+
 
 // Composition
 @property (strong,nonatomic) SingingBowlComposition *composition;
@@ -232,8 +234,13 @@
         if (velocity < 0) velocity = 0;
         [PdBase sendNoteOn:1 pitch:[self noteFromPosition:point] velocity:velocity];
         [self.networkManager sendMessageWithTouch:point Velocity:0.0];
+        const UInt8 noteOn[]  = { 0x90, [self noteFromPosition:point], velocity };
+        [self.midiManager.midi sendBytes:noteOn size:sizeof(noteOn)];
+        const UInt8 noteOff[]  = { 0x80, [self noteFromPosition:point], velocity };
+        [self.midiManager.midi sendBytes:noteOff size:sizeof(noteOff)];
     }
 }
+
 
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
     for (UITouch *touch in [touches objectEnumerator]) {
@@ -247,6 +254,7 @@
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     for (UITouch *touch in [touches objectEnumerator]) {
         [self.networkManager sendMessageTouchEnded];
+        
     }
 }
 
@@ -263,7 +271,9 @@
     if ([sender state] == UIGestureRecognizerStateBegan) { // pan began
         [PdBase sendFloat:1 toReceiver:@"sing"];
         [PdBase sendFloat:(float) [self noteFromPosition:[sender locationInView:self.view]] toReceiver:@"singpitch"];
-        
+        self.currentlyPanningPitch = (UInt8) [self noteFromPosition:[sender locationInView:self.view]];
+        const UInt8 noteOn[] = {0x90,self.currentlyPanningPitch,(UInt8) (velocity * 127)};
+        [self.midiManager.midi sendBytes:noteOn size:sizeof(noteOn)];
         [self.bowlView continuouslyAnimateBowlAtRadius:[self calculateDistanceFromCenter:[sender locationInView:self.view]]];
         
     } else if ([sender state] == UIGestureRecognizerStateChanged) { // pan changed
@@ -280,11 +290,19 @@
         //NSLog(@"%f",trans);
         [PdBase sendFloat:trans toReceiver:@"panTranslation"];
         [self.bowlView changeContinuousAnimationSpeed:(3*trans) + 0.1];
+        // Send Translation as MIDI CC
+//        UInt8 translation[] = {0x00,(UInt8) (trans * 127)};
+        // Send Angle as MIDI CC
+        // Send Velocity as note aftertouch.
+        const UInt8 aftertouch[] = {0xA0,self.currentlyPanningPitch,(UInt8) (velocity * 127)};
+        [self.midiManager.midi sendBytes:aftertouch size:sizeof(aftertouch)];
         
     } else if (([sender state] == UIGestureRecognizerStateEnded) || ([sender state] == UIGestureRecognizerStateCancelled)) { // panended
         [PdBase sendFloat:0 toReceiver:@"singlevel"];
         [PdBase sendFloat:0 toReceiver:@"sing"];
         [self.bowlView stopAnimatingBowl];
+        const UInt8 noteOff[] = {0x80,self.currentlyPanningPitch,(UInt8) (velocity * 127)};
+        [self.midiManager.midi sendBytes:noteOff size:sizeof(noteOff)];
     }
 }
 
@@ -310,7 +328,6 @@
     CGFloat yDist = (self.view.center.y);
     return sqrt((xDist * xDist) + (yDist * yDist));
 }
-
 
 -(CGFloat)calculateDistanceFromCenter:(CGPoint)touchPoint {
     CGFloat xDist = (touchPoint.x - self.view.center.x);
