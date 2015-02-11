@@ -2,6 +2,21 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>AudioComponents</key>
+	<array>
+		<dict>
+			<key>manufacturer</key>
+			<string>cmpc</string>
+			<key>name</key>
+			<string>Charles Martin: PhaseRings</string>
+			<key>subtype</key>
+			<string>synt</string>
+			<key>type</key>
+			<string>aurg</string>
+			<key>version</key>
+			<string>1</string>
+		</dict>
+	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
