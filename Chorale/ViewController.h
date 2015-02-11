@@ -12,6 +12,8 @@
 #import "PdFile.h"
 #import "MetatoneNetworkManager.h"
 #import "MetatoneMidiManager.h"
+#import "Audiobus.h"
+
 
 // Settings:
 #import "IASKAppSettingsViewController.h"
@@ -23,7 +25,8 @@
 @property (strong, nonatomic) MetatoneMidiManager* midiManager;
 @property (strong, nonatomic) IASKAppSettingsViewController *appSettingsViewController;
 @property (weak, nonatomic) UIPopoverController* currentPopoverController;
-
+@property (strong, nonatomic) ABAudiobusController *audiobusController;
+@property (strong, nonatomic) ABSenderPort *senderport;
 
 
 - (void) openPdPatch;
