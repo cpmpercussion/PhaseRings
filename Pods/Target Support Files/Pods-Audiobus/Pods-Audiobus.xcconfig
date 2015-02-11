@@ -1,0 +1,2 @@
+PODS_AUDIOBUS_LIBRARY_SEARCH_PATHS = $(SRCROOT)/Pods/Audiobus/ "$(PODS_ROOT)/Audiobus"
+PODS_AUDIOBUS_OTHER_LDFLAGS = -l"Audiobus" -framework "Accelerate" -framework "AudioToolbox" -framework "CoreGraphics" -framework "QuartzCore" -framework "Security"
