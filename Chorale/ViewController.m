@@ -93,11 +93,16 @@
     } else { NSLog(@"LIBPD: audioController initialised."); }
     
     // Audiobus Controller init.
-    self.audiobusController = [[ABAudiobusController alloc] initWithApiKey:@"MTQyNDgzNTg0NCoqKlBoYXNlUmluZ3MqKipQaGFzZVJpbmdzLTEuMS5hdWRpb2J1czovLw==:UkbJM7BrMK0slooZq3s7erwytbvKj4nEn8dSZo33/lUhjKhZ3r8dsd+SZRg2Y+7cFcfR6R8WsGJK2QP9GcgiLP0BpdI7TvABROHhZxZySyAKsmMhXA+PgY2z8OT+GB0x"];
+    self.audiobusController = [[ABAudiobusController alloc] initWithApiKey:@"MTQyNDg0NTg1MioqKlBoYXNlUmluZ3MqKipQaGFzZVJpbmdzLTEuMS5hdWRpb2J1czovLw==:q+O1DkroA7nZ0GxninLR1QNY1vrJeIruJOUQVYmE4G+CFJ9niZ4r+MVQhfKW1rrhZbXbuycZOy15jBjqoifSRmI1TIOzXAM8UwlBPln8BWDKZLuDFQW05LYOfaA3q4wv"];
     
-    self.senderport = [[ABSenderPort alloc] initWithName:@"Audio Outpt" title:@"Main App Output" audioComponentDescription:(AudioComponentDescription) {.componentType = kAudioUnitType_RemoteGenerator,
-        .componentSubType = 'synt',
-        .componentManufacturer = 'cmpc'} audioUnit:self.audioController.audioUnit.audioUnit];
+    self.senderport = [[ABSenderPort alloc] initWithName:@"Charles Martin: PhaseRings"
+                                                   title:@"Main App Output"
+                               audioComponentDescription:(AudioComponentDescription) {
+                                   .componentType = kAudioUnitType_RemoteGenerator,
+                                   .componentSubType = 'synt',
+                                   .componentManufacturer = 'cmpc'
+                               }
+                                               audioUnit:self.audioController.audioUnit.audioUnit];
     
     [self openPdPatch];
     [self.audioController setActive:YES];

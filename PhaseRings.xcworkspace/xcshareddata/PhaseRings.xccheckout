@@ -16,6 +16,8 @@
 		<string>git://github.com/libpd/libpd.git</string>
 		<key>5C788FB45371F7A39B6FFB445D10D0EF209EBAE3</key>
 		<string>https://github.com/cpmpercussion/MetatoneMIDI</string>
+		<key>6F7A20C0CDB7BDCD5180DBA15CA6EBFFD435B7B5</key>
+		<string>git://git.code.sf.net/p/pure-data/pure-data</string>
 		<key>778D08CA7C55C6E283FAC4140D174E64889DF148</key>
 		<string>git://github.com/libpd/pd-for-ios.git</string>
 		<key>8290155778CD077C9D8A85EC03BEA069395BD6EA</key>
@@ -28,15 +30,17 @@
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>1712FC0BC3C9AABD8B7B5376E310E93FBDB3BCFA</key>
-		<string>..InAppSettingsKit/</string>
+		<string>..InAppSettingsKit</string>
 		<key>1A0B07D1631AC7F0F17FCE76695E42D64F01958F</key>
 		<string>../../pd-for-ios/libpd</string>
 		<key>5C788FB45371F7A39B6FFB445D10D0EF209EBAE3</key>
-		<string>..MetatoneMIDI/</string>
+		<string>..MetatoneMIDI</string>
+		<key>6F7A20C0CDB7BDCD5180DBA15CA6EBFFD435B7B5</key>
+		<string>../../pd-for-ios/libpd/pure-data</string>
 		<key>778D08CA7C55C6E283FAC4140D174E64889DF148</key>
 		<string>../../pd-for-ios</string>
 		<key>8290155778CD077C9D8A85EC03BEA069395BD6EA</key>
-		<string>..MetatoneOSC/</string>
+		<string>..MetatoneOSC</string>
 		<key>92714FB683A6AC2A1ACFEC6654CCEE2DDCA24404</key>
 		<string>..</string>
 	</dict>
@@ -52,33 +56,9 @@
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>1712FC0BC3C9AABD8B7B5376E310E93FBDB3BCFA</string>
-			<key>IDESourceControlWCCName</key>
-			<string>InAppSettingsKit</string>
-		</dict>
-		<dict>
-			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
-			<string>public.vcs.git</string>
-			<key>IDESourceControlWCCIdentifierKey</key>
 			<string>1A0B07D1631AC7F0F17FCE76695E42D64F01958F</string>
 			<key>IDESourceControlWCCName</key>
 			<string>libpd</string>
-		</dict>
-		<dict>
-			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
-			<string>public.vcs.git</string>
-			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>5C788FB45371F7A39B6FFB445D10D0EF209EBAE3</string>
-			<key>IDESourceControlWCCName</key>
-			<string>MetatoneMIDI</string>
-		</dict>
-		<dict>
-			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
-			<string>public.vcs.git</string>
-			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>8290155778CD077C9D8A85EC03BEA069395BD6EA</string>
-			<key>IDESourceControlWCCName</key>
-			<string>MetatoneOSC</string>
 		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
@@ -95,6 +75,38 @@
 			<string>92714FB683A6AC2A1ACFEC6654CCEE2DDCA24404</string>
 			<key>IDESourceControlWCCName</key>
 			<string>PhaseRings</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>1712FC0BC3C9AABD8B7B5376E310E93FBDB3BCFA</string>
+			<key>IDESourceControlWCCName</key>
+			<string>PhaseRingsInAppSettingsKit</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>5C788FB45371F7A39B6FFB445D10D0EF209EBAE3</string>
+			<key>IDESourceControlWCCName</key>
+			<string>PhaseRingsMetatoneMIDI</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>8290155778CD077C9D8A85EC03BEA069395BD6EA</string>
+			<key>IDESourceControlWCCName</key>
+			<string>PhaseRingsMetatoneOSC</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>6F7A20C0CDB7BDCD5180DBA15CA6EBFFD435B7B5</string>
+			<key>IDESourceControlWCCName</key>
+			<string>pure-data</string>
 		</dict>
 	</array>
 </dict>
