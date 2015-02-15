@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import "AudioBus.h"
 
 
 @implementation AppDelegate
@@ -60,6 +61,10 @@
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
     [self.viewController stopOSCLogging];
+//    if ( !self.viewController.audiobusController.connected && !self.viewController.audiobusController.memberOfActiveAudiobusSession ) {
+//        // Fade out and stop the audio engine, suspending the app, if we're not connected, and we're not part of an active Audiobus session
+//        [ABAudioUnitFader fadeOutAudioUnit:self.viewController.audioController.audioUnit completionBlock:^{ [_audioEngine stop]; }];
+//    }
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
