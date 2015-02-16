@@ -8,13 +8,13 @@
 			<key>manufacturer</key>
 			<string>cmpc</string>
 			<key>name</key>
-			<string>Charles Martin: PhaseRings</string>
+			<string>PhaseRings</string>
 			<key>subtype</key>
 			<string>synt</string>
 			<key>type</key>
 			<string>aurg</string>
 			<key>version</key>
-			<string>1</string>
+			<integer>1</integer>
 		</dict>
 	</array>
 	<key>CFBundleDevelopmentRegion</key>

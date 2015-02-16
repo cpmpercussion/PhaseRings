@@ -32,8 +32,6 @@
     application.idleTimerDisabled = YES;
     self.viewController = (ViewController*) self.window.rootViewController;
     
-    
-    
     // NSNotification for NSUserDefaults.
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(defaultsDidChange:) name:NSUserDefaultsDidChangeNotification

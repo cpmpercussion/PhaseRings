@@ -22,6 +22,8 @@
 #define SOUND_SCHEMES @[PHASE_SYNTH_PATCH,STRING_SYNTH_PATCH,BOWL_SYNTH_PATCH,GONG_SYNTH_PATCH,CROTALES_SYNTH_PATCH,POT_SYNTH_PATCH,MARIMBA_SYNTH_PATCH]
 #define BASE_A 33
 
+#define AUDIOBUS_API_KEY @"MCoqKlBoYXNlUmluZ3MqKipQaGFzZVJpbmdzLTEuMS5hdWRpb2J1czovLw==:jTpvhuIUrdRrePgvcT7+ZUXZwsDApvArFO7iOO5+91PWD6l9brvWT8lZu3Jxq85v0uK10mdzragYHbm+1K7rvB0G6FnkVrvC/WjQ4ELkA40s+idjVA7fgnaRu3csGFy4"
+
 #import "ViewController.h"
 #import "ScaleMaker.h"
 #import "SingingBowlSetup.h"
@@ -78,25 +80,41 @@
     [self.oscStatusLabel setHidden:NO];
     [self.setupDescription setHidden:NO];
     
-    // Set Audio Session Properties
-    NSString *category = AVAudioSessionCategoryPlayAndRecord;
-    AVAudioSessionCategoryOptions options = AVAudioSessionCategoryOptionMixWithOthers;
-    NSError *error = nil;
-    if ( ![[AVAudioSession sharedInstance] setCategory:category withOptions:options error:&error] ) {
-        NSLog(@"Couldn't set audio session category: %@", error);
-    }
-    // End Set Audio Session Properties
+
     
     // Setup Pd
-    if([self.audioController configurePlaybackWithSampleRate:44100 numberChannels:2 inputEnabled:NO mixingEnabled:YES] != PdAudioOK) {
-        NSLog(@"LIBPD: failed to initialise audioController");
-    } else { NSLog(@"LIBPD: audioController initialised."); }
+    //[self.audioController configureAmbientWithSampleRate:44100 numberChannels:2 mixingEnabled:YES];
+    [self.audioController configurePlaybackWithSampleRate:44100 numberChannels:2 inputEnabled:NO mixingEnabled:YES];
+//    [self.audioController configureTicksPerBuffer:8];
+//    if([self.audioController configurePlaybackWithSampleRate:44100 numberChannels:2 inputEnabled:NO mixingEnabled:YES] != PdAudioOK) {
+//        NSLog(@"LIBPD: failed to initialise audioController");
+//    } else { NSLog(@"LIBPD: audioController initialised."); }
+    
+
+    
+    [self openPdPatch];
+    [self.audioController setActive:YES];
+    [self.audioController print];
+    
+     //Set Audio Session Properties
+        NSString *category = AVAudioSessionCategoryPlayAndRecord;
+        AVAudioSessionCategoryOptions options = AVAudioSessionCategoryOptionMixWithOthers;
+        NSError *error = nil;
+        if ( ![[AVAudioSession sharedInstance] setCategory:category withOptions:options error:&error] ) {
+            NSLog(@"Couldn't set audio session category: %@", error);
+        } else {
+            NSLog(@"Audio Session Properties seem to be saved.");
+        }
+     //End Set Audio Session Properties
+    
     
     // Audiobus Controller init.
-    self.audiobusController = [[ABAudiobusController alloc] initWithApiKey:@"MTQyNDg0NTg1MioqKlBoYXNlUmluZ3MqKipQaGFzZVJpbmdzLTEuMS5hdWRpb2J1czovLw==:q+O1DkroA7nZ0GxninLR1QNY1vrJeIruJOUQVYmE4G+CFJ9niZ4r+MVQhfKW1rrhZbXbuycZOy15jBjqoifSRmI1TIOzXAM8UwlBPln8BWDKZLuDFQW05LYOfaA3q4wv"];
+    self.audiobusController = [[ABAudiobusController alloc] initWithApiKey:AUDIOBUS_API_KEY];
+    [self.audiobusController setConnectionPanelPosition:ABConnectionPanelPositionRight];
     
-    self.senderport = [[ABSenderPort alloc] initWithName:@"Charles Martin: PhaseRings"
-                                                   title:@"Main App Output"
+    
+    self.senderport = [[ABSenderPort alloc] initWithName:@"PhaseRings"
+                                                   title:@"Audio Output"
                                audioComponentDescription:(AudioComponentDescription) {
                                    .componentType = kAudioUnitType_RemoteGenerator,
                                    .componentSubType = 'synt',
@@ -104,9 +122,8 @@
                                }
                                                audioUnit:self.audioController.audioUnit.audioUnit];
     
-    [self openPdPatch];
-    [self.audioController setActive:YES];
-    [self.audioController print];
+    [self.audiobusController addSenderPort:self.senderport];
+    
     [PdBase setDelegate:self];
     self.midiManager = [[MetatoneMidiManager alloc] init];
     
@@ -125,6 +142,10 @@
         NSLog(@"Hiding Ensemble Status UI");
         [self.ensembleView setHidden:YES];
     }
+}
+
+-(void) receivePrint:(NSString *)message {
+    NSLog(@"Pd: %@",message);
 }
 
 - (void) openComposition {
@@ -222,6 +243,8 @@
     [PdBase sendFloat:[[NSUserDefaults standardUserDefaults] integerForKey:@"sound"] toReceiver:@"selectsound"];
 }
 
+
+#pragma mark - UI Methods
 - (void) applyNewSetup: (NSArray *) setup {
     NSLog(@"Drawing new setup.");
     self.bowlSetup = [[SingingBowlSetup alloc] initWithPitches:[NSMutableArray arrayWithArray:setup]];
@@ -245,7 +268,7 @@
     [self.bowlView drawSetup:self.bowlSetup];
 }
 
-#pragma mark - Touch Methods
+#pragma mark - Touch and Performance Methods
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
     for (UITouch * touch in [touches objectEnumerator]) {
@@ -275,7 +298,7 @@
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     for (UITouch *touch in [touches objectEnumerator]) {
         [self.networkManager sendMessageTouchEnded];
-        
+        // Maybe handle noteOff here for ending touches.
     }
 }
 
@@ -341,9 +364,7 @@
     [PdBase sendFloat:level toReceiver:@"distortlevel"];
 }
 
-
-
-#pragma mark - Utils
+#pragma mark - For note calculation.
 -(CGFloat)calculateMaximumRadius {
     CGFloat xDist = (self.view.center.x);
     CGFloat yDist = (self.view.center.y);
@@ -364,7 +385,7 @@
     return note;
 }
 
-#pragma mark - Metatone Network Methods
+#pragma mark - Metatone Classifier and Network Methods
 -(void)stopOSCLogging
 {
     [self.networkManager stopSearches];
@@ -460,17 +481,14 @@
     }
 }
 
-- (BOOL)prefersStatusBarHidden
-{
-    return YES;
-}
+//- (BOOL)prefersStatusBarHidden
+//{
+//    return YES;
+//}
 
--(void) receivePrint:(NSString *)message {
-    NSLog(@"Pd: %@",message);
-}
+
 
 #pragma mark In App Settings Kit Methods
-
 - (IASKAppSettingsViewController*)appSettingsViewController {
     if (!_appSettingsViewController) {
         _appSettingsViewController = [[IASKAppSettingsViewController alloc] init];
@@ -541,12 +559,5 @@
     [self openPdPatch];
     return YES;
 }
-
-
-#pragma mark TODO: Make the settings button work somehow.
-- (IBAction)settingsPressed:(UIButton *)sender {
-    NSLog(@"Settings Pressed!");
-}
-
 
 @end
