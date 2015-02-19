@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		56157B601A958CFE00FBFF97 /* floatVolToDb.pd in Resources */ = {isa = PBXBuildFile; fileRef = 56157B5F1A958CFE00FBFF97 /* floatVolToDb.pd */; };
 		5623759A19F7610F004F1281 /* MetatoneMidiManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5623759019F7610F004F1281 /* MetatoneMidiManager.m */; };
 		5623759B19F7610F004F1281 /* PGMidi.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5623759319F7610F004F1281 /* PGMidi.mm */; };
 		5623759C19F7610F004F1281 /* PGMidiAllSources.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5623759519F7610F004F1281 /* PGMidiAllSources.mm */; };
@@ -140,6 +141,7 @@
 
 /* Begin PBXFileReference section */
 		2A767881EF35032B37757989 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
+		56157B5F1A958CFE00FBFF97 /* floatVolToDb.pd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = floatVolToDb.pd; sourceTree = "<group>"; };
 		5623758E19F7610F004F1281 /* iOSVersionDetection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iOSVersionDetection.h; sourceTree = "<group>"; };
 		5623758F19F7610F004F1281 /* MetatoneMidiManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetatoneMidiManager.h; sourceTree = "<group>"; };
 		5623759019F7610F004F1281 /* MetatoneMidiManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MetatoneMidiManager.m; sourceTree = "<group>"; };
@@ -508,6 +510,7 @@
 		5630CFB219FE06ED00B3DC89 /* control */ = {
 			isa = PBXGroup;
 			children = (
+				56157B5F1A958CFE00FBFF97 /* floatVolToDb.pd */,
 				5630CFB319FE06ED00B3DC89 /* dispatch.pd */,
 				5630CFB419FE06ED00B3DC89 /* monopan.pd */,
 				5630CFB519FE06ED00B3DC89 /* stereovol.pd */,
@@ -826,6 +829,7 @@
 				568BDC171A03488B0056CF22 /* u_listmap.pd in Resources */,
 				568BDC221A0349300056CF22 /* crotale.wav in Resources */,
 				5630CFD419FE06ED00B3DC89 /* m_mixolydian.pd in Resources */,
+				56157B601A958CFE00FBFF97 /* floatVolToDb.pd in Resources */,
 				568BDC151A03488B0056CF22 /* SoundScraperSynthEnvironment.pd in Resources */,
 				5630CFD119FE06ED00B3DC89 /* loadMetaPdLibs.pd in Resources */,
 				5630CFCA19FE06ED00B3DC89 /* feedbackdelay.pd in Resources */,

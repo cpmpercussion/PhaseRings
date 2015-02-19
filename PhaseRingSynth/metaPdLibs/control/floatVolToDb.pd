@@ -1,0 +1,10 @@
+#N canvas 1123 479 281 253 10;
+#X obj 16 10 inlet;
+#X obj 16 101 outlet;
+#X obj 16 78 rmstodb;
+#X obj 16 57 max 0;
+#X obj 16 34 min 2;
+#X connect 0 0 4 0;
+#X connect 2 0 1 0;
+#X connect 3 0 2 0;
+#X connect 4 0 3 0;
