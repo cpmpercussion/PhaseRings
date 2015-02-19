@@ -28,8 +28,8 @@
                                @"midi_in":@YES,
                                @"midi_out":@YES,
                                @"process_effects":@YES,
-                               @"reverb_volume":@0.8,
-                               @"master_volume":@0.8};
+                               @"reverb_volume":@0.95,
+                               @"master_volume":@1.0};
     
     [[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
     

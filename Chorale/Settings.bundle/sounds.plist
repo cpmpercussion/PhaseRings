@@ -16,7 +16,7 @@
 			<key>Key</key>
 			<string>master_volume</string>
 			<key>DefaultValue</key>
-			<real>0.8</real>
+			<real>1</real>
 			<key>MinimumValue</key>
 			<integer>0</integer>
 			<key>MaximumValue</key>
@@ -34,7 +34,7 @@
 			<key>Key</key>
 			<string>reverb_volume</string>
 			<key>DefaultValue</key>
-			<real>0.8</real>
+			<real>0.95</real>
 			<key>MinimumValue</key>
 			<integer>0</integer>
 			<key>MaximumValue</key>
