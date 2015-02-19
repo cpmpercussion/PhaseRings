@@ -4,61 +4,58 @@
 <dict>
 	<key>PreferenceSpecifiers</key>
 	<array>
-<!--    Master Volume Control    -->
 		<dict>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
 			<string>Master Volume</string>
 		</dict>
-        <dict>
-            <key>Type</key>
-            <string>PSSliderSpecifier</string>
-            <key>Key</key>
-            <string>Volume</string>
-            <key>DefaultValue</key>
-            <real>0.8</real>
-            <key>MinimumValue</key>
-            <integer>0</integer>
-            <key>MaximumValue</key>
-            <integer>1</integer>
-        </dict>
-<!--    Reverb Volume    -->
+		<dict>
+			<key>Type</key>
+			<string>PSSliderSpecifier</string>
+			<key>Key</key>
+			<string>master_volume</string>
+			<key>DefaultValue</key>
+			<real>0.8</real>
+			<key>MinimumValue</key>
+			<integer>0</integer>
+			<key>MaximumValue</key>
+			<integer>1</integer>
+		</dict>
 		<dict>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
 			<string>Reverb Volume</string>
 		</dict>
-        <dict>
-            <key>Type</key>
-            <string>PSSliderSpecifier</string>
-            <key>Key</key>
-            <string>Reverb</string>
-            <key>DefaultValue</key>
-            <real>0.8</real>
-            <key>MinimumValue</key>
-            <integer>0</integer>
-            <key>MaximumValue</key>
-            <integer>1</integer>
-        </dict>
-<!--    Switches for turning off FX    -->
-        <dict>
-            <key>Type</key>
-            <string>PSGroupSpecifier</string>
-            <key>Title</key>
-            <string>Other Audio Settings</string>
-        </dict>
-        <dict>
-            <key>Type</key>
-            <string>PSToggleSwitchSpecifier</string>
-            <key>Title</key>
-            <string>Process Audio Effects</string>
-            <key>Key</key>
-            <string>process_effects</string>
-            <key>DefaultValue</key>
-            <true/>
-        </dict>
+		<dict>
+			<key>Type</key>
+			<string>PSSliderSpecifier</string>
+			<key>Key</key>
+			<string>reverb_volume</string>
+			<key>DefaultValue</key>
+			<real>0.8</real>
+			<key>MinimumValue</key>
+			<integer>0</integer>
+			<key>MaximumValue</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Other Audio Settings</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Process Audio Effects</string>
+			<key>Key</key>
+			<string>process_effects</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
 	</array>
 </dict>
 </plist>

@@ -4,12 +4,15 @@
 <dict>
 	<key>PreferenceSpecifiers</key>
 	<array>
+<!--    Main Settings    -->
 		<dict>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
 			<string>General Settings</string>
 		</dict>
+        
+<!--    Sound Scheme    -->
 		<dict>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
@@ -40,6 +43,8 @@
 				<string>Marimba</string>
 			</array>
 		</dict>
+        
+<!--    Composition    -->
 		<dict>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
@@ -66,6 +71,30 @@
 				<string>Scheimpflug Principle</string>
 			</array>
 		</dict>
+        
+        <!--    Switches for displaying UI elements    -->
+        <dict>
+            <key>Type</key>
+            <string>PSToggleSwitchSpecifier</string>
+            <key>Title</key>
+            <string>Show Note Labels</string>
+            <key>Key</key>
+            <string>note_labels</string>
+            <key>DefaultValue</key>
+            <true/>
+        </dict>
+        <dict>
+            <key>Type</key>
+            <string>PSToggleSwitchSpecifier</string>
+            <key>Title</key>
+            <string>Show Setup Description</string>
+            <key>Key</key>
+            <string>setup_label</string>
+            <key>DefaultValue</key>
+            <true/>
+        </dict>
+        
+<!--    Audio and MIDI child panes    -->
 		<dict>
 			<key>Type</key>
 			<string>PSChildPaneSpecifier</string>
@@ -82,26 +111,8 @@
             <key>File</key>
             <string>midi</string>
         </dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Show Note Labels</string>
-			<key>Key</key>
-			<string>note_labels</string>
-			<key>DefaultValue</key>
-			<true/>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Show Setup Description</string>
-			<key>Key</key>
-			<string>setup_label</string>
-			<key>DefaultValue</key>
-			<true/>
-		</dict>
+
+<!--    Settings for Custom Composition    -->
 		<dict>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>

@@ -24,7 +24,12 @@
                                @"note_3":@4,
                                @"scale_1":@3,
                                @"scale_2":@8,
-                               @"scale_3":@9};
+                               @"scale_3":@9,
+                               @"midi_in":@YES,
+                               @"midi_out":@YES,
+                               @"process_effects":@YES,
+                               @"reverb_volume":@0.8,
+                               @"master_volume":@0.8};
     
     [[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
     
