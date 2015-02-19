@@ -32,6 +32,8 @@
 - (void) openPdPatch;
 - (void) openComposition;
 - (IBAction)showSettingsModal:(id)sender;
+- (void) shutdownSoundProcessing;
+- (void) restartSoundProcessing;
 
 -(void) setupOSCLogging;
 -(void) stopOSCLogging;

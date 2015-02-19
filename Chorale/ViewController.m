@@ -23,6 +23,7 @@
 #define BASE_A 33
 
 #define AUDIOBUS_API_KEY @"MCoqKlBoYXNlUmluZ3MqKipQaGFzZVJpbmdzLTEuMS5hdWRpb2J1czovLw==:jTpvhuIUrdRrePgvcT7+ZUXZwsDApvArFO7iOO5+91PWD6l9brvWT8lZu3Jxq85v0uK10mdzragYHbm+1K7rvB0G6FnkVrvC/WjQ4ELkA40s+idjVA7fgnaRu3csGFy4"
+#define BACKGROUND_SOUND_ALWAYS_ON YES
 
 #import "ViewController.h"
 #import "ScaleMaker.h"
@@ -57,7 +58,6 @@
 @property (weak, nonatomic) IBOutlet UIStepper *compositionStepper;
 @property (weak, nonatomic) IBOutlet UIButton *settingsButton;
 
-
 // Composition
 @property (strong,nonatomic) SingingBowlComposition *composition;
 @property (strong, nonatomic) NSDate* timeOfLastNewIdea;
@@ -80,49 +80,8 @@
     [self.oscStatusLabel setHidden:NO];
     [self.setupDescription setHidden:NO];
     
-
-    
-    // Setup Pd
-    //[self.audioController configureAmbientWithSampleRate:44100 numberChannels:2 mixingEnabled:YES];
-    [self.audioController configurePlaybackWithSampleRate:44100 numberChannels:2 inputEnabled:NO mixingEnabled:YES];
-//    [self.audioController configureTicksPerBuffer:8];
-//    if([self.audioController configurePlaybackWithSampleRate:44100 numberChannels:2 inputEnabled:NO mixingEnabled:YES] != PdAudioOK) {
-//        NSLog(@"LIBPD: failed to initialise audioController");
-//    } else { NSLog(@"LIBPD: audioController initialised."); }
-    
-
-    
-    [self openPdPatch];
-    [self.audioController setActive:YES];
-    [self.audioController print];
-    
-     //Set Audio Session Properties
-        NSString *category = AVAudioSessionCategoryPlayAndRecord;
-        AVAudioSessionCategoryOptions options = AVAudioSessionCategoryOptionMixWithOthers;
-        NSError *error = nil;
-        if ( ![[AVAudioSession sharedInstance] setCategory:category withOptions:options error:&error] ) {
-            NSLog(@"Couldn't set audio session category: %@", error);
-        } else {
-            NSLog(@"Audio Session Properties seem to be saved.");
-        }
-     //End Set Audio Session Properties
-    
-    
-    // Audiobus Controller init.
-    self.audiobusController = [[ABAudiobusController alloc] initWithApiKey:AUDIOBUS_API_KEY];
-    [self.audiobusController setConnectionPanelPosition:ABConnectionPanelPositionRight];
-    
-    
-    self.senderport = [[ABSenderPort alloc] initWithName:@"PhaseRings"
-                                                   title:@"Audio Output"
-                               audioComponentDescription:(AudioComponentDescription) {
-                                   .componentType = kAudioUnitType_RemoteGenerator,
-                                   .componentSubType = 'synt',
-                                   .componentManufacturer = 'cmpc'
-                               }
-                                               audioUnit:self.audioController.audioUnit.audioUnit];
-    
-    [self.audiobusController addSenderPort:self.senderport];
+    [self startAudioEngine];
+    [self setupAudioBus];
     
     [PdBase setDelegate:self];
     self.midiManager = [[MetatoneMidiManager alloc] init];
@@ -143,6 +102,65 @@
         [self.ensembleView setHidden:YES];
     }
 }
+
+- (void) setupAudioBus {
+    //Set Audio Session Properties
+    NSString *category = AVAudioSessionCategoryPlayAndRecord;
+    AVAudioSessionCategoryOptions options = AVAudioSessionCategoryOptionMixWithOthers;
+    NSError *error = nil;
+    if ( ![[AVAudioSession sharedInstance] setCategory:category withOptions:options error:&error] ) {
+        NSLog(@"Couldn't set audio session category: %@", error);
+    } else {
+        NSLog(@"Audio Session Properties seem to be saved.");
+    }
+    //End Set Audio Session Properties
+    
+    // Audiobus Controller init.
+    self.audiobusController = [[ABAudiobusController alloc] initWithApiKey:AUDIOBUS_API_KEY];
+    [self.audiobusController setConnectionPanelPosition:ABConnectionPanelPositionRight];
+    self.senderport = [[ABSenderPort alloc] initWithName:@"PhaseRings"
+                                                   title:@"Audio Output"
+                               audioComponentDescription:(AudioComponentDescription) {
+                                   .componentType = kAudioUnitType_RemoteGenerator,
+                                   .componentSubType = 'synt',
+                                   .componentManufacturer = 'cmpc'
+                               }
+                                               audioUnit:self.audioController.audioUnit.audioUnit];
+    
+    [self.audiobusController addSenderPort:self.senderport];
+}
+
+
+#define SAMPLE_RATE 44100
+#define SOUND_OUTPUT_CHANNELS 2
+#define TICKS_PER_BUFFER 4
+
+- (void) startAudioEngine {
+    // Setup libPd sound engine
+    [self.audioController configurePlaybackWithSampleRate:SAMPLE_RATE numberChannels:SOUND_OUTPUT_CHANNELS inputEnabled:NO mixingEnabled:YES];
+    [self.audioController configureTicksPerBuffer:TICKS_PER_BUFFER];
+    //    if([self.audioController configurePlaybackWithSampleRate:44100 numberChannels:2 inputEnabled:NO mixingEnabled:YES] != PdAudioOK) {
+    //        NSLog(@"LIBPD: failed to initialise audioController");
+    //    } else { NSLog(@"LIBPD: audioController initialised."); }
+    [self openPdPatch];
+    [self.audioController setActive:YES];
+    [self.audioController print];
+    NSLog(@"Ticks Per Buffer: %d",self.audioController.ticksPerBuffer);
+}
+
+- (void) shutdownSoundProcessing {
+    if (!BACKGROUND_SOUND_ALWAYS_ON) {
+        [self.audioController setActive:YES];
+    }
+}
+
+- (void) restartSoundProcessing {
+    if (!self.audioController.isActive) {
+        [self openPdPatch];
+        [self.audioController setActive:YES];
+    }
+}
+
 
 -(void) receivePrint:(NSString *)message {
     NSLog(@"Pd: %@",message);
