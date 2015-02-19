@@ -1,4 +1,4 @@
-#N canvas 340 37 1466 813 10;
+#N canvas 16 197 1466 813 10;
 #X declare -path samples;
 #X declare -path metaPdLibs;
 #X declare -path metaPdLibs/control;
@@ -427,7 +427,7 @@
 #X restore 448 614 pd floatTo100;
 #X obj 427 685 stereovol 98;
 #X obj 439 543 stereovol 100;
-#X obj 515 488 r processeffects;
+#X obj 452 495 r processeffects;
 #N canvas 363 321 450 300 floatTo100 0;
 #X obj 109 38 inlet;
 #X obj 108 137 outlet;
@@ -438,7 +438,7 @@
 #X connect 2 0 3 0;
 #X connect 3 0 4 0;
 #X connect 4 0 1 0;
-#X restore 515 512 pd floatTo100;
+#X restore 452 519 pd floatTo100;
 #X obj 290 739 stereovol 100;
 #X text -16 641 synth bus;
 #X text 724 607 fx bus;
