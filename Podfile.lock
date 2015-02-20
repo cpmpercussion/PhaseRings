@@ -1,10 +1,13 @@
 PODS:
   - Audiobus (2.1.5)
+  - SocketRocket (0.3.1-beta2)
 
 DEPENDENCIES:
   - Audiobus (~> 2.1)
+  - SocketRocket (= 0.3.1-beta2)
 
 SPEC CHECKSUMS:
   Audiobus: 04babaf08578450bc7302f062e776b55ac44cdd5
+  SocketRocket: 79a68ae186063c65e1fe6f638b1ae2927aa5f304
 
 COCOAPODS: 0.35.0

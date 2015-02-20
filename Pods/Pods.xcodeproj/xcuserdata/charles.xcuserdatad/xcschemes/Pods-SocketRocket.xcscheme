@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "12F7AAA6B003D2571FFBB17B"
-               BuildableName = "libPods-Audiobus.a"
-               BlueprintName = "Pods-Audiobus"
+               BlueprintIdentifier = "2E7BE8403A4C7E601B8C5387"
+               BuildableName = "libPods-SocketRocket.a"
+               BlueprintName = "Pods-SocketRocket"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>

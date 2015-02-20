@@ -3,3 +3,4 @@
 platform :ios, '8.0'
 
 pod 'Audiobus', '~> 2.1'
+pod 'SocketRocket', '0.3.1-beta2'
