@@ -35,7 +35,7 @@
 //#import "StudyInBowls1.h"
 #import "GenerativeSetupComposition.h"
 
-
+#define CLOUD_SERVER_TESTING_MODE YES
 
 
 @interface ViewController ()
@@ -92,6 +92,11 @@
     // Setup Network
     [self setupOSCLogging];
     self.timeOfLastNewIdea = [NSDate date];
+    
+    if (CLOUD_SERVER_TESTING_MODE) {
+        NSLog(@"Trying to connect to cloud server.");
+        [self.networkManager attemptCloudServerConnection];
+    }
     
     // Ensemble Heads Up Display
     if (ENSEMBLE_STATUS_MODE) {
