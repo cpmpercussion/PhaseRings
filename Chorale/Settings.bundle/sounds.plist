@@ -20,7 +20,7 @@
 			<key>MinimumValue</key>
 			<integer>0</integer>
 			<key>MaximumValue</key>
-			<integer>1</integer>
+			<real>1.5</real>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -34,7 +34,7 @@
 			<key>Key</key>
 			<string>reverb_volume</string>
 			<key>DefaultValue</key>
-			<real>0.95</real>
+			<real>0.5</real>
 			<key>MinimumValue</key>
 			<integer>0</integer>
 			<key>MaximumValue</key>
