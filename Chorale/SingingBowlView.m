@@ -46,11 +46,15 @@
 -(void) setLightScheme {
     self.backgroundColor = [UIColor clearColor];
     self.rimColour = [UIColor whiteColor];
+    self.textColour = [UIColor blackColor];
+
 }
 
 -(void) setDarkScheme {
     self.backgroundColor = [UIColor blackColor];
     self.rimColour = [UIColor whiteColor];
+    self.textColour = [UIColor whiteColor];
+
 }
 
 -(void) setOppositeScheme {
