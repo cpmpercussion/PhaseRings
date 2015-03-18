@@ -93,10 +93,10 @@
     [self setupOSCLogging];
     self.timeOfLastNewIdea = [NSDate date];
     
-    if (CLOUD_SERVER_TESTING_MODE) {
-        NSLog(@"Trying to connect to cloud server.");
-        [self.networkManager attemptCloudServerConnection];
-    }
+//    if (CLOUD_SERVER_TESTING_MODE) {
+//        NSLog(@"Trying to connect to cloud server.");
+//        [self.networkManager attemptCloudServerConnection];
+//    }
     
     // Ensemble Heads Up Display
     if (ENSEMBLE_STATUS_MODE) {
@@ -108,7 +108,10 @@
     }
 }
 
-- (void) setupAudioBus {
+
+#pragma mark - Audio Setup Methods.
+
+-(void) setupAudioBus {
     //Set Audio Session Properties
     NSString *category = AVAudioSessionCategoryPlayAndRecord;
     AVAudioSessionCategoryOptions options = AVAudioSessionCategoryOptionMixWithOthers;
@@ -430,6 +433,7 @@
 -(void)stopOSCLogging
 {
     [self.networkManager stopSearches];
+    [self.networkManager closeClassifierWebSocket];
 }
 
 -(void)setupOSCLogging {
