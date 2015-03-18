@@ -471,6 +471,8 @@
 //    [self.compositionStepper setHidden:YES];
     [self.compositionStepper setHidden:NO];
     [self.oscStatusLabel setHidden:NO];
+    [self.bowlView setDarkScheme];
+    [self.bowlView drawSetup:self.bowlSetup];
 }
 
 -(void)didReceiveMetatoneMessageFrom:(NSString *)device withName:(NSString *)name andState:(NSString *)state {
