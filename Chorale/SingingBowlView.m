@@ -28,7 +28,6 @@
     if (self) {
         // Initialization code
         self.backgroundColor = [UIColor clearColor];
-
         self.rimColour = [UIColor blackColor];
         self.textColour = [UIColor blackColor];
         self.tapColour = [UIColor blueColor];
@@ -41,6 +40,23 @@
     }
     return self;
 }
+
+#pragma mark - Colour Scheme
+
+-(void) setLightScheme {
+    self.backgroundColor = [UIColor clearColor];
+    self.rimColour = [UIColor whiteColor];
+}
+
+-(void) setDarkScheme {
+    self.backgroundColor = [UIColor blackColor];
+    self.rimColour = [UIColor whiteColor];
+}
+
+-(void) setOppositeScheme {
+    NSLog(@"Doesn't work yet...");
+}
+
 
 -(void) drawSetup:(SingingBowlSetup *) setup
 {

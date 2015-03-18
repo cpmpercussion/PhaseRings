@@ -21,6 +21,10 @@
 -(void) stopAnimatingBowl;
 -(void) changeContinuousColour:(CGFloat) amount forRadius:(CGFloat)radius;
 
+-(void) setLightScheme;
+-(void) setDarkScheme;
+-(void) setOppositeScheme;
+
 @property (nonatomic) bool displayNoteNames;
 @property (strong,nonatomic) UIColor *rimColour;
 @property (strong,nonatomic) UIColor *textColour;
