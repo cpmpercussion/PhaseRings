@@ -449,6 +449,9 @@
 
 -(void)stoppedSearchingForLoggingServer {
     [self.oscStatusLabel setText:@"classifier not found! 😰"];
+    // Buttons reappear
+    [self.compositionStepper setHidden:NO];
+    [self.settingsButton setHidden:NO];
 }
 
 -(void)metatoneClientFoundWithAddress:(NSString *)address andPort:(int)port andHostname:(NSString *)hostname {
@@ -468,11 +471,14 @@
     [self.oscStatusLabel setText:[NSString stringWithFormat:@"connected to %@ 👍", hostname]];
     // cancel manual mode.
     [self.distortSlider setHidden:YES];
-//    [self.compositionStepper setHidden:YES];
+
     [self.compositionStepper setHidden:NO];
     [self.oscStatusLabel setHidden:NO];
     [self.bowlView setDarkScheme];
     [self.bowlView drawSetup:self.bowlSetup];
+    
+    [self.compositionStepper setHidden:YES];
+    [self.settingsButton setHidden:YES];
 }
 
 -(void)didReceiveMetatoneMessageFrom:(NSString *)device withName:(NSString *)name andState:(NSString *)state {

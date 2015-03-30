@@ -18,7 +18,7 @@
     NSDictionary *defaults = @{@"sound":@2,
                                @"note_labels":@YES,
                                @"setup_label":@YES,
-                               @"composition":@3,
+                               @"composition":@1,
                                @"note_1":@1,
                                @"note_2":@3,
                                @"note_3":@4,
