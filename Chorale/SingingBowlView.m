@@ -18,6 +18,7 @@
 @property (strong,nonatomic) NSMutableDictionary *tapEdgeLayers;
 @property (weak,nonatomic) SingingBowlSetup* currentSetup;
 @property (nonatomic) CGFloat currentRimWidth;
+@property (nonatomic) bool currentThemeDark;
 @end
 
 @implementation SingingBowlView
@@ -27,9 +28,11 @@
     self = [super initWithCoder:aDecoder];
     if (self) {
         // Initialization code
-        self.backgroundColor = [UIColor clearColor];
-        self.rimColour = [UIColor blackColor];
-        self.textColour = [UIColor blackColor];
+        
+        [self setLightScheme];
+//        self.backgroundColor = [UIColor clearColor];
+//        self.rimColour = [UIColor blackColor];
+//        self.textColour = [UIColor blackColor];
         self.tapColour = [UIColor blueColor];
         self.swirlColour = [UIColor greenColor];
         self.rimSubLayer = [[CALayer alloc] init];
@@ -44,23 +47,26 @@
 #pragma mark - Colour Scheme
 
 -(void) setLightScheme {
+    self.currentThemeDark = NO;
     self.backgroundColor = [UIColor clearColor];
-    self.rimColour = [UIColor whiteColor];
+    self.rimColour = [UIColor blackColor];
     self.textColour = [UIColor blackColor];
-
 }
 
 -(void) setDarkScheme {
+    self.currentThemeDark = YES;
     self.backgroundColor = [UIColor blackColor];
     self.rimColour = [UIColor whiteColor];
     self.textColour = [UIColor whiteColor];
-
 }
 
 -(void) setOppositeScheme {
-    NSLog(@"Doesn't work yet...");
+    if (self.currentThemeDark) {
+        [self setLightScheme];
+    } else {
+        [self setDarkScheme];
+    }
 }
-
 
 -(void) drawSetup:(SingingBowlSetup *) setup
 {
