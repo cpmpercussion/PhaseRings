@@ -110,7 +110,6 @@
 
 
 #pragma mark - Audio Setup Methods.
-
 -(void) setupAudioBus {
     //Set Audio Session Properties
     NSString *category = AVAudioSessionCategoryPlayAndRecord;
@@ -121,9 +120,6 @@
     } else {
         NSLog(@"Audio Session Properties seem to be saved.");
     }
-    //End Set Audio Session Properties
-    
-    // Audiobus Controller init.
     self.audiobusController = [[ABAudiobusController alloc] initWithApiKey:AUDIOBUS_API_KEY];
     [self.audiobusController setConnectionPanelPosition:ABConnectionPanelPositionRight];
     self.senderport = [[ABSenderPort alloc] initWithName:@"PhaseRings"
@@ -138,7 +134,6 @@
     [self.audiobusController addSenderPort:self.senderport];
 }
 
-
 #define SAMPLE_RATE 44100
 #define SOUND_OUTPUT_CHANNELS 2
 #define TICKS_PER_BUFFER 4
@@ -146,10 +141,10 @@
 - (void) startAudioEngine {
     // Setup libPd sound engine
     [self.audioController configurePlaybackWithSampleRate:SAMPLE_RATE numberChannels:SOUND_OUTPUT_CHANNELS inputEnabled:NO mixingEnabled:YES];
-    [self.audioController configureTicksPerBuffer:TICKS_PER_BUFFER];
-    //    if([self.audioController configurePlaybackWithSampleRate:44100 numberChannels:2 inputEnabled:NO mixingEnabled:YES] != PdAudioOK) {
+    //    if([self.audioController configurePlaybackWithSampleRate:SAMPLE_RATE numberChannels:SOUND_OUTPUT_CHANNELS inputEnabled:NO mixingEnabled:YES] != PdAudioOK) {
     //        NSLog(@"LIBPD: failed to initialise audioController");
     //    } else { NSLog(@"LIBPD: audioController initialised."); }
+    [self.audioController configureTicksPerBuffer:TICKS_PER_BUFFER];
     [self openPdPatch];
     [self.audioController setActive:YES];
     [self.audioController print];
@@ -315,6 +310,7 @@
             [self.networkManager sendMessageWithTouch:point Velocity:0.0];
             const UInt8 noteOn[]  = { 0x90, [self noteFromPosition:point], velocity };
             [self.midiManager.midi sendBytes:noteOn size:sizeof(noteOn)];
+            // TODO delay noteOff message by a short amount - say 20ms.
             const UInt8 noteOff[]  = { 0x80, [self noteFromPosition:point], velocity };
             [self.midiManager.midi sendBytes:noteOff size:sizeof(noteOff)];
         }
@@ -332,6 +328,9 @@
 }
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+//    for (int i = 0; i < [touches count]; i++ ){
+//        [self.networkManager sendMessageTouchEnded];
+//    }
     for (UITouch *touch in [touches objectEnumerator]) {
         [self.networkManager sendMessageTouchEnded];
         // Maybe handle noteOff here for ending touches.
@@ -443,12 +442,13 @@
 
 
 -(void)searchingForLoggingServer {
-//    [self.oscStatusLabel setText:@"searching for classifier 😒"];
+    // [self.oscStatusLabel setText:@"searching for classifier 😒"];
     [self.oscStatusLabel setText:@""];
 }
 
 -(void)stoppedSearchingForLoggingServer {
-    [self.oscStatusLabel setText:@"classifier not found! 😰"];
+    [self.oscStatusLabel setText:@""];
+    // [self.oscStatusLabel setText:@"classifier not found! 😰"];
     // Buttons reappear
     [self.compositionStepper setHidden:NO];
     [self.settingsButton setHidden:NO];
