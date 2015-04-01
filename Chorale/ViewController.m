@@ -93,11 +93,6 @@
     [self setupOSCLogging];
     self.timeOfLastNewIdea = [NSDate date];
     
-//    if (CLOUD_SERVER_TESTING_MODE) {
-//        NSLog(@"Trying to connect to cloud server.");
-//        [self.networkManager attemptCloudServerConnection];
-//    }
-    
     // Ensemble Heads Up Display
     if (ENSEMBLE_STATUS_MODE) {
         NSLog(@"Displaying Ensemble Status UI");
@@ -130,7 +125,6 @@
                                    .componentManufacturer = 'cmpc'
                                }
                                                audioUnit:self.audioController.audioUnit.audioUnit];
-    
     [self.audiobusController addSenderPort:self.senderport];
 }
 
@@ -437,21 +431,26 @@
 
 -(void)setupOSCLogging {
     self.metatoneClients = [[NSMutableDictionary alloc] init];
-    self.networkManager = [[MetatoneNetworkManager alloc] initWithDelegate:self shouldOscLog:YES];
+    self.networkManager = [[MetatoneNetworkManager alloc] initWithDelegate:self shouldOscLog:YES shouldConnectToWebClassifier:NO];
+//    self.networkManager = [[MetatoneNetworkManager alloc] initWithDelegate:self shouldOscLog:YES shouldConnectToWebClassifier:YES];
 }
-
 
 -(void)searchingForLoggingServer {
     // [self.oscStatusLabel setText:@"searching for classifier 😒"];
     [self.oscStatusLabel setText:@""];
+    [self.oscStatusLabel setHidden:YES];
+    [self.bowlView setLightScheme];
 }
 
 -(void)stoppedSearchingForLoggingServer {
     [self.oscStatusLabel setText:@""];
+    [self.oscStatusLabel setHidden:YES];
     // [self.oscStatusLabel setText:@"classifier not found! 😰"];
     // Buttons reappear
+    // goto light scheme
     [self.compositionStepper setHidden:NO];
     [self.settingsButton setHidden:NO];
+    [self.bowlView setLightScheme];
 }
 
 -(void)metatoneClientFoundWithAddress:(NSString *)address andPort:(int)port andHostname:(NSString *)hostname {
@@ -469,16 +468,20 @@
 
 -(void)loggingServerFoundWithAddress:(NSString *)address andPort:(int)port andHostname:(NSString *)hostname {
     [self.oscStatusLabel setText:[NSString stringWithFormat:@"connected to %@ 👍", hostname]];
+    [self.oscStatusLabel setHidden:NO];
     // cancel manual mode.
     [self.distortSlider setHidden:YES];
-
+    
     [self.compositionStepper setHidden:NO];
+    [self.settingsButton setHidden:NO];
+
     [self.oscStatusLabel setHidden:NO];
     [self.bowlView setDarkScheme];
     [self.bowlView drawSetup:self.bowlSetup];
     
-    [self.compositionStepper setHidden:YES];
-    [self.settingsButton setHidden:YES];
+    // For iPad Ensemble Performances!
+//    [self.compositionStepper setHidden:YES];
+//    [self.settingsButton setHidden:YES];
 }
 
 -(void)didReceiveMetatoneMessageFrom:(NSString *)device withName:(NSString *)name andState:(NSString *)state {
