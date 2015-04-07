@@ -431,26 +431,35 @@
 
 -(void)setupOSCLogging {
     self.metatoneClients = [[NSMutableDictionary alloc] init];
-    self.networkManager = [[MetatoneNetworkManager alloc] initWithDelegate:self shouldOscLog:YES shouldConnectToWebClassifier:NO];
-//    self.networkManager = [[MetatoneNetworkManager alloc] initWithDelegate:self shouldOscLog:YES shouldConnectToWebClassifier:YES];
+    
+    self.webClassifierSearchEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"web_classifier"];
+    self.localClassifierSearchEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"local_classifier"];
+    
+    self.networkManager = [[MetatoneNetworkManager alloc] initWithDelegate:self shouldOscLog:YES shouldConnectToWebClassifier:self.webClassifierSearchEnabled];
+}
+
+-(void)updateClassifierSettings {
+    self.webClassifierSearchEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"web_classifier"];
+    self.localClassifierSearchEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"local_classifier"];
+    self.displayClassifierInfo = (bool) [[NSUserDefaults standardUserDefaults] boolForKey:@"display_classifier_information"];
+    [self.oscStatusLabel setHidden:!self.displayClassifierInfo];
 }
 
 -(void)searchingForLoggingServer {
-    // [self.oscStatusLabel setText:@"searching for classifier 😒"];
-    [self.oscStatusLabel setText:@""];
-    [self.oscStatusLabel setHidden:YES];
+    [self.oscStatusLabel setText:@"searching for classifier 😒"];
+    [self.oscStatusLabel setHidden:!self.displayClassifierInfo];
     [self.bowlView setLightScheme];
 }
 
 -(void)stoppedSearchingForLoggingServer {
-    [self.oscStatusLabel setText:@""];
-    [self.oscStatusLabel setHidden:YES];
-    // [self.oscStatusLabel setText:@"classifier not found! 😰"];
+    [self.oscStatusLabel setText:@"classifier not found! 😰"];
+    [self.oscStatusLabel setHidden:!self.displayClassifierInfo];
+    [self.bowlView setLightScheme];
     // Buttons reappear
     // goto light scheme
     [self.compositionStepper setHidden:NO];
     [self.settingsButton setHidden:NO];
-    [self.bowlView setLightScheme];
+
 }
 
 -(void)metatoneClientFoundWithAddress:(NSString *)address andPort:(int)port andHostname:(NSString *)hostname {
@@ -468,14 +477,12 @@
 
 -(void)loggingServerFoundWithAddress:(NSString *)address andPort:(int)port andHostname:(NSString *)hostname {
     [self.oscStatusLabel setText:[NSString stringWithFormat:@"connected to %@ 👍", hostname]];
-    [self.oscStatusLabel setHidden:NO];
+    [self.oscStatusLabel setHidden:!self.displayClassifierInfo];
+    
     // cancel manual mode.
     [self.distortSlider setHidden:YES];
-    
     [self.compositionStepper setHidden:NO];
     [self.settingsButton setHidden:NO];
-
-    [self.oscStatusLabel setHidden:NO];
     [self.bowlView setDarkScheme];
     [self.bowlView drawSetup:self.bowlSetup];
     

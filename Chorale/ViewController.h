@@ -28,9 +28,13 @@
 @property (strong, nonatomic) ABAudiobusController *audiobusController;
 @property (strong, nonatomic) ABSenderPort *senderport;
 
+@property (nonatomic) bool webClassifierSearchEnabled;
+@property (nonatomic) bool localClassifierSearchEnabled;
+@property (nonatomic) bool displayClassifierInfo;
 
 - (void) openPdPatch;
 - (void) openComposition;
+- (void) updateClassifierSettings;
 - (IBAction)showSettingsModal:(id)sender;
 - (void) shutdownSoundProcessing;
 - (void) restartSoundProcessing;

@@ -14,9 +14,19 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>Connect to Performance Classifier</string>
+			<string>Worldwide Performance Classifier</string>
 			<key>Key</key>
 			<string>web_classifier</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Local Performance Classifier</string>
+			<key>Key</key>
+			<string>local_classifier</string>
 			<key>DefaultValue</key>
 			<true/>
 		</dict>
@@ -24,11 +34,11 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>Connect to Local Classifier</string>
+			<string>Display Classifier Status</string>
 			<key>Key</key>
-			<string>local_classifier</string>
+			<string>display_classifier_information</string>
 			<key>DefaultValue</key>
-			<true/>
+			<false/>
 		</dict>
 	</array>
 </dict>

@@ -31,7 +31,10 @@
                                @"midi_out":@YES,
                                @"process_effects":@YES,
                                @"reverb_volume":@0.5,
-                               @"master_volume":@1.0};
+                               @"master_volume":@1.0,
+                               @"web_classifier":@NO,
+                               @"local_classifier":@YES,
+                               @"display_classifier_information":@NO};
     
     [[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
     
@@ -72,13 +75,22 @@
                                             forKeyPath:@"scale_3"
                                                options:NSKeyValueObservingOptionNew
                                                context:NULL];
+    [[NSUserDefaults standardUserDefaults] addObserver:self
+                                            forKeyPath:@"web_classifier"
+                                               options:NSKeyValueObservingOptionNew
+                                               context:NULL];
+    [[NSUserDefaults standardUserDefaults] addObserver:self
+                                            forKeyPath:@"local_classifier"
+                                               options:NSKeyValueObservingOptionNew
+                                               context:NULL];
     return YES;
 }
 
 - (void)defaultsDidChange:(NSNotification *)aNotification
 {
-    NSLog(@"SETTINGS NOTIFICATION: Update PdPatch.");
+    NSLog(@"SETTINGS NOTIFICATION: Settings changed.");
     [self.viewController openPdPatch];
+    [self.viewController updateClassifierSettings];
 }
 
 -(void)observeValueForKeyPath:(NSString *)aKeyPath ofObject:(id)anObject
@@ -89,6 +101,10 @@
     if ([aKeyPath isEqualToString:@"composition"]) {
         compositionChanged = YES;
         NSLog(@"APP DELEGATE: Changed Composition");
+    } else if ([aKeyPath isEqualToString:@"web_classifier"]) {
+        // trigger change to webclassifier connection
+    } else if ([aKeyPath isEqualToString:@"local_classifier"]) {
+        // trigger change to localclassifier connection.
     }
     
     if ([CUSTOM_COMPOSITION_PROPERTIES containsObject:aKeyPath] &&
