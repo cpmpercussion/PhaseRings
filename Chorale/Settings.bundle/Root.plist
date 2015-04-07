@@ -93,7 +93,6 @@
             <key>DefaultValue</key>
             <true/>
         </dict>
-        
 <!--    Audio and MIDI child panes    -->
 		<dict>
 			<key>Type</key>
@@ -103,14 +102,14 @@
 			<key>File</key>
 			<string>sounds</string>
 		</dict>
-        <dict>
-            <key>Type</key>
-            <string>PSChildPaneSpecifier</string>
-            <key>Title</key>
-            <string>MIDI Preferences</string>
-            <key>File</key>
-            <string>midi</string>
-        </dict>
+    <dict>
+       <key>Type</key>
+       <string>PSChildPaneSpecifier</string>
+       <key>Title</key>
+       <string>MIDI Preferences</string>
+       <key>File</key>
+       <string>midi</string>
+    </dict>
 <!--    Custom Composition Child Pane    -->
 		<dict>
 			<key>Type</key>
@@ -120,6 +119,15 @@
 			<key>File</key>
 			<string>custom_composition</string>
 		</dict>
+<!--    Network Child Pane               -->
+    <dict>
+       <key>Type</key>
+       <string>PSChildPaneSpecifier</string>
+       <key>Title</key>
+       <string>Network Preferences</string>
+       <key>File</key>
+       <string>network</string>
+    </dict>
 	</array>
 	<key>StringsTable</key>
 	<string>Root</string>
