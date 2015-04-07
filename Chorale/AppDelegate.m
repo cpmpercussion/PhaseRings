@@ -9,6 +9,8 @@
 #import "AppDelegate.h"
 #import "AudioBus.h"
 
+#define CUSTOM_COMPOSITION_PROPERTIES @[@"note_1",@"note_2",@"note_3",@"scale_1",@"scale_2",@"scale_3"]
+#define CUSTOM_COMPOSITION_NUMBER 0
 
 @implementation AppDelegate
 
@@ -41,17 +43,66 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(defaultsDidChange:) name:NSUserDefaultsDidChangeNotification
                                                object:nil];
+    
+    [[NSUserDefaults standardUserDefaults] addObserver:self
+                                            forKeyPath:@"composition"
+                                               options:NSKeyValueObservingOptionNew
+                                               context:NULL];
+    [[NSUserDefaults standardUserDefaults] addObserver:self
+                                            forKeyPath:@"note_1"
+                                               options:NSKeyValueObservingOptionNew
+                                               context:NULL];
+    [[NSUserDefaults standardUserDefaults] addObserver:self
+                                            forKeyPath:@"note_2"
+                                               options:NSKeyValueObservingOptionNew
+                                               context:NULL];
+    [[NSUserDefaults standardUserDefaults] addObserver:self
+                                            forKeyPath:@"note_3"
+                                               options:NSKeyValueObservingOptionNew
+                                               context:NULL];
+    [[NSUserDefaults standardUserDefaults] addObserver:self
+                                            forKeyPath:@"scale_1"
+                                               options:NSKeyValueObservingOptionNew
+                                               context:NULL];
+    [[NSUserDefaults standardUserDefaults] addObserver:self
+                                            forKeyPath:@"scale_2"
+                                               options:NSKeyValueObservingOptionNew
+                                               context:NULL];
+    [[NSUserDefaults standardUserDefaults] addObserver:self
+                                            forKeyPath:@"scale_3"
+                                               options:NSKeyValueObservingOptionNew
+                                               context:NULL];
     return YES;
 }
 
 - (void)defaultsDidChange:(NSNotification *)aNotification
 {
-    NSLog(@"SETTINGS NOTIFICATION: Something Changed, Updating.");
-    [self.viewController openComposition];
+    NSLog(@"SETTINGS NOTIFICATION: Update PdPatch.");
     [self.viewController openPdPatch];
-
 }
 
+-(void)observeValueForKeyPath:(NSString *)aKeyPath ofObject:(id)anObject
+                       change:(NSDictionary *)aChange context:(void *)aContext
+{
+    NSLog(@"APP DELEGATE: Value Changed for Keypath: %@",aKeyPath);
+    bool compositionChanged = NO;
+    if ([aKeyPath isEqualToString:@"composition"]) {
+        compositionChanged = YES;
+        NSLog(@"APP DELEGATE: Changed Composition");
+    }
+    
+    if ([CUSTOM_COMPOSITION_PROPERTIES containsObject:aKeyPath] &&
+        ([[NSUserDefaults standardUserDefaults] integerForKey:@"composition"] == CUSTOM_COMPOSITION_NUMBER)) {
+        compositionChanged = YES;
+        NSLog(@"APP DELEGATE: Changing scale/note while Custom is open");
+    }
+    
+    if (compositionChanged) {
+        [self.viewController openComposition];
+    } else {
+        NSLog(@"APP DELEGATE: settings change not for composition.");
+    }
+}
 							
 - (void)applicationWillResignActive:(UIApplication *)application
 {
@@ -59,8 +110,7 @@
         !self.viewController.audiobusController.audiobusAppRunning) {
         [self.viewController shutdownSoundProcessing];
     }
-    [self.viewController stopOSCLogging];
-    
+//    [self.viewController stopOSCLogging];
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
 }
@@ -83,7 +133,7 @@
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
 //    NSLog(@"Application will enter foreground - checking to see if patch needs to be reopened...");
     [self.viewController openPdPatch];
-    [self.viewController setupOSCLogging];
+//    [self.viewController setupOSCLogging];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
