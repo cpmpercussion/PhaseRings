@@ -441,6 +441,15 @@
 -(void)updateClassifierSettings {
     self.webClassifierSearchEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"web_classifier"];
     self.localClassifierSearchEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"local_classifier"];
+    
+    if (self.webClassifierSearchEnabled) {
+        [self searchingForLoggingServer];
+        [self.networkManager startConnectingToWebClassifier];
+    } else {
+        [self stoppedSearchingForLoggingServer];
+        [self.networkManager stopConnectingToWebClassifier];
+    }
+    
     self.displayClassifierInfo = (bool) [[NSUserDefaults standardUserDefaults] boolForKey:@"display_classifier_information"];
     [self.oscStatusLabel setHidden:!self.displayClassifierInfo];
 }
@@ -452,7 +461,7 @@
 }
 
 -(void)stoppedSearchingForLoggingServer {
-    [self.oscStatusLabel setText:@"classifier not found! 😰"];
+    [self.oscStatusLabel setText:@"classifier not connected. 😰"];
     [self.oscStatusLabel setHidden:!self.displayClassifierInfo];
     [self.bowlView setLightScheme];
     // Buttons reappear
@@ -487,8 +496,8 @@
     [self.bowlView drawSetup:self.bowlSetup];
     
     // For iPad Ensemble Performances!
-//    [self.compositionStepper setHidden:YES];
-//    [self.settingsButton setHidden:YES];
+    //    [self.compositionStepper setHidden:YES];
+    //    [self.settingsButton setHidden:YES];
 }
 
 -(void)didReceiveMetatoneMessageFrom:(NSString *)device withName:(NSString *)name andState:(NSString *)state {
