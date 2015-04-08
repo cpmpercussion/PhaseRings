@@ -31,6 +31,8 @@
 @property (nonatomic) bool webClassifierSearchEnabled;
 @property (nonatomic) bool localClassifierSearchEnabled;
 @property (nonatomic) bool displayClassifierInfo;
+@property (weak, nonatomic) IBOutlet UIButton *experimentNewSetupButton;
+- (IBAction)experimentNewSetupButtonPressed:(UIButton *)sender;
 
 - (void) openPdPatch;
 - (void) openComposition;

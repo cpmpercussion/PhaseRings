@@ -24,6 +24,9 @@
 
 #define AUDIOBUS_API_KEY @"MCoqKlBoYXNlUmluZ3MqKipQaGFzZVJpbmdzLTEuMS5hdWRpb2J1czovLw==:jTpvhuIUrdRrePgvcT7+ZUXZwsDApvArFO7iOO5+91PWD6l9brvWT8lZu3Jxq85v0uK10mdzragYHbm+1K7rvB0G6FnkVrvC/WjQ4ELkA40s+idjVA7fgnaRu3csGFy4"
 #define BACKGROUND_SOUND_ALWAYS_ON YES
+#define SAMPLE_RATE 44100
+#define SOUND_OUTPUT_CHANNELS 2
+#define TICKS_PER_BUFFER 4
 
 #import "ViewController.h"
 #import "ScaleMaker.h"
@@ -36,6 +39,8 @@
 #import "GenerativeSetupComposition.h"
 
 #define CLOUD_SERVER_TESTING_MODE YES
+
+#define EXPERIMENT_MODE YES
 
 
 @interface ViewController ()
@@ -76,6 +81,7 @@
 {
     [super viewDidLoad];
     [self.distortSlider setHidden:YES];
+    [self.experimentNewSetupButton setHidden:YES];
     [self.compositionStepper setHidden:NO];
     [self.oscStatusLabel setHidden:NO];
     [self.setupDescription setHidden:NO];
@@ -100,6 +106,14 @@
     } else {
         NSLog(@"Hiding Ensemble Status UI");
         [self.ensembleView setHidden:YES];
+    }
+    
+    if (EXPERIMENT_MODE) {
+        NSLog(@"Starting Experiment Mode.");
+        [self startExperimentMode];
+    } else {
+        NSLog(@"Starting Normal Mode.");
+        [self stopExperimentMode];
     }
 }
 
@@ -128,9 +142,7 @@
     [self.audiobusController addSenderPort:self.senderport];
 }
 
-#define SAMPLE_RATE 44100
-#define SOUND_OUTPUT_CHANNELS 2
-#define TICKS_PER_BUFFER 4
+
 
 - (void) startAudioEngine {
     // Setup libPd sound engine
@@ -236,6 +248,9 @@
 
 // Checks settings to which sound scheme is selected. If it's different from what
 // is currently open or nothing is open, the new scheme's Pd patch is opened.
+- (IBAction)experimentNewSetupButtonPressed:(UIButton *)sender {
+}
+
 - (void) openPdPatch {
     [[NSUserDefaults standardUserDefaults] synchronize];
     NSInteger soundScheme = [[NSUserDefaults standardUserDefaults] integerForKey:@"sound"];
@@ -489,9 +504,6 @@
     [self.oscStatusLabel setHidden:!self.displayClassifierInfo];
     
     // cancel manual mode.
-    [self.distortSlider setHidden:YES];
-    [self.compositionStepper setHidden:NO];
-    [self.settingsButton setHidden:NO];
     [self.bowlView setDarkScheme];
     [self.bowlView drawSetup:self.bowlSetup];
     
@@ -558,7 +570,21 @@
 //    return YES;
 //}
 
+-(void)startExperimentMode {
+    NSLog(@"Entering Experiment Mode: Configuring UI Elements...");
+    [self.compositionStepper setHidden:YES];
+    [self.settingsButton setHidden:YES];
+    [self.setupDescription setHidden:YES];
+    [self.experimentNewSetupButton setHidden:NO];
+}
 
+-(void)stopExperimentMode {
+    NSLog(@"Entering Normal Mode: Configuring UI Elements...");
+    [self.compositionStepper setHidden:NO];
+    [self.settingsButton setHidden:NO];
+    [self.setupDescription setHidden:NO];
+    [self.experimentNewSetupButton setHidden:YES];
+}
 
 #pragma mark In App Settings Kit Methods
 - (IASKAppSettingsViewController*)appSettingsViewController {

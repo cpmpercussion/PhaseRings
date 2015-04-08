@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6751" systemVersion="14C1514" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
@@ -38,6 +38,20 @@
                                     <action selector="steppedMoved:" destination="BYZ-38-t0r" eventType="valueChanged" id="gSs-4Y-ajv"/>
                                 </connections>
                             </stepper>
+                            <button contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nUd-ij-qeo" userLabel="New Setup Button (Experiment)" colorLabel="IBBuiltInLabel-Red">
+                                <rect key="frame" x="224" y="205" width="120" height="70"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="120" id="TLm-2r-XDr"/>
+                                    <constraint firstAttribute="height" constant="70" id="UAq-sm-BIa"/>
+                                </constraints>
+                                <state key="normal" title="New Setup!">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="experimentNewSetupButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="rpc-iY-6z7"/>
+                                </connections>
+                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BfF-Lc-5IP">
                                 <rect key="frame" x="339" y="274" width="30" height="48"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="30"/>
@@ -81,6 +95,7 @@
                         <color key="backgroundColor" red="0.80000001192092896" green="0.80000001192092896" blue="0.80000001192092896" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="Mg1-8A-slj" firstAttribute="top" secondItem="kC3-j3-ajz" secondAttribute="bottom" constant="8" symbolic="YES" id="4u8-DM-BIt"/>
+                            <constraint firstItem="kC3-j3-ajz" firstAttribute="top" secondItem="nUd-ij-qeo" secondAttribute="bottom" constant="8" symbolic="YES" id="A68-bL-VHr"/>
                             <constraint firstItem="8bC-Xf-vdC" firstAttribute="top" secondItem="yNT-f6-f79" secondAttribute="top" id="AHF-S1-bLV"/>
                             <constraint firstAttribute="centerX" secondItem="kC3-j3-ajz" secondAttribute="centerX" id="KcM-XM-goG"/>
                             <constraint firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailing" id="MCR-Fp-NX3"/>
@@ -94,6 +109,7 @@
                             <constraint firstItem="Owk-aY-7Io" firstAttribute="top" secondItem="yNT-f6-f79" secondAttribute="top" constant="20" symbolic="YES" id="pbB-Eq-Uqf"/>
                             <constraint firstItem="8bC-Xf-vdC" firstAttribute="leading" secondItem="yNT-f6-f79" secondAttribute="leading" id="sD1-Xa-R37"/>
                             <constraint firstItem="kC3-j3-ajz" firstAttribute="leading" secondItem="cHI-gy-7VR" secondAttribute="trailing" constant="8" symbolic="YES" id="vXy-eF-jMK"/>
+                            <constraint firstAttribute="centerX" secondItem="nUd-ij-qeo" secondAttribute="centerX" id="vcj-cG-u6U"/>
                         </constraints>
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
@@ -105,6 +121,7 @@
                         <outlet property="bowlView" destination="8bC-Xf-vdC" id="nlM-eX-Hll"/>
                         <outlet property="compositionStepper" destination="kC3-j3-ajz" id="hRX-Me-Sdf"/>
                         <outlet property="ensembleView" destination="U7q-YO-31Y" id="ZNB-dX-Vdk"/>
+                        <outlet property="experimentNewSetupButton" destination="nUd-ij-qeo" id="pR2-nD-S7M"/>
                         <outlet property="oscStatusLabel" destination="Owk-aY-7Io" id="o3y-7Q-Yn0"/>
                         <outlet property="settingsButton" destination="BfF-Lc-5IP" id="LDh-K3-1WA"/>
                         <outlet property="setupDescription" destination="cHI-gy-7VR" id="XRm-ro-mvT"/>
@@ -117,7 +134,7 @@
                     </connections>
                 </panGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="-73.5" y="-59.5"/>
+            <point key="canvasLocation" x="-74" y="-60"/>
         </scene>
     </scenes>
 </document>
