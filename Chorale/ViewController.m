@@ -40,8 +40,9 @@
 
 #define CLOUD_SERVER_TESTING_MODE YES
 
-#define EXPERIMENT_MODE YES
-
+#define EXPERIMENT_MODE NO
+#define EXPERIMENT_MODE_BUTTON NO
+#define EXPERIMENT_MODE_SERVER NO
 
 @interface ViewController ()
 // Audio
@@ -142,14 +143,8 @@
     [self.audiobusController addSenderPort:self.senderport];
 }
 
-
-
 - (void) startAudioEngine {
-    // Setup libPd sound engine
     [self.audioController configurePlaybackWithSampleRate:SAMPLE_RATE numberChannels:SOUND_OUTPUT_CHANNELS inputEnabled:NO mixingEnabled:YES];
-    //    if([self.audioController configurePlaybackWithSampleRate:SAMPLE_RATE numberChannels:SOUND_OUTPUT_CHANNELS inputEnabled:NO mixingEnabled:YES] != PdAudioOK) {
-    //        NSLog(@"LIBPD: failed to initialise audioController");
-    //    } else { NSLog(@"LIBPD: audioController initialised."); }
     [self.audioController configureTicksPerBuffer:TICKS_PER_BUFFER];
     [self openPdPatch];
     [self.audioController setActive:YES];
@@ -171,6 +166,7 @@
 }
 
 
+#pragma mark - Pd Send/Receive Methods
 -(void) receivePrint:(NSString *)message {
     NSLog(@"Pd: %@",message);
 }
@@ -180,7 +176,6 @@
     [[NSUserDefaults standardUserDefaults] synchronize];
     // 36 -- C two below middle C
     // 33 - A below that.
-    
     NSInteger compositionSetting = [[NSUserDefaults standardUserDefaults] integerForKey:@"composition"];
     NSInteger note1 = BASE_A + [[NSUserDefaults standardUserDefaults] integerForKey:@"note_1"];
     NSInteger note2 = BASE_A + [[NSUserDefaults standardUserDefaults] integerForKey:@"note_2"];
@@ -192,10 +187,6 @@
     
     NSArray *notes = @[[NSNumber numberWithInteger:note1],[NSNumber numberWithInteger:note2],[NSNumber numberWithInteger:note3]];
     NSArray *scales = @[[scalesList objectAtIndex:scale_1],[scalesList objectAtIndex:scale_2],[scalesList objectAtIndex:scale_3]];
-    
-    NSLog(@"COMPOSITION OPENING: Opening composition");
-
-    
     switch (compositionSetting) {
         case 1:
             NSLog(@"COMPOSITION OPENING: Study in Bowls");
@@ -223,7 +214,6 @@
             scales = @[[scalesList objectAtIndex:scale_1],[scalesList objectAtIndex:scale_2],[scalesList objectAtIndex:scale_3]];
             break;
     }
-    
     NSLog(@"COMPOSITION OPENING: Base notes will be: %@, %@, %@",notes[0],notes[1],notes[2]);
     NSLog(@"COMPOSITION OPENING: Scales will be %@, %@, %@",scales[0],scales[1],scales[2]);
     
@@ -248,9 +238,6 @@
 
 // Checks settings to which sound scheme is selected. If it's different from what
 // is currently open or nothing is open, the new scheme's Pd patch is opened.
-- (IBAction)experimentNewSetupButtonPressed:(UIButton *)sender {
-}
-
 - (void) openPdPatch {
     [[NSUserDefaults standardUserDefaults] synchronize];
     NSInteger soundScheme = [[NSUserDefaults standardUserDefaults] integerForKey:@"sound"];
@@ -414,6 +401,22 @@
 }
 -(void)setDistortion:(float)level {
     [PdBase sendFloat:level toReceiver:@"distortlevel"];
+}
+
+// New Setup Button just for Experiment Mode!
+#pragma mark TODO make this button change the sound as well!
+- (IBAction)experimentNewSetupButtonPressed:(UIButton *)sender {
+    NSLog(@"New Setup Button Pressed!");
+    int state = (int) (self.compositionStepper.value + 1) % (int) (self.compositionStepper.maximumValue + 1);
+    NSLog(@"New Setup Number is: %d",state);
+    [self.compositionStepper setValue:state];
+    NSArray *newSetup = [self.composition setupForState:state];
+    [self applyNewSetup:newSetup];
+    [self updateSetupDescription:state];
+    
+    // Now randomise sound!
+    
+    [self.networkManager sendMetatoneMessage:@"CompositionStep" withState:[NSString stringWithFormat:@"%d",state]];
 }
 
 #pragma mark - For note calculation.

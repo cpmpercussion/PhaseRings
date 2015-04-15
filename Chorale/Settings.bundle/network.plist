@@ -9,6 +9,8 @@
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
 			<string>Network Settings</string>
+            <key>FooterText</key>
+            <string>The worldwide performance classifier is a web server which automatically tracks the gestures of PhaseRings users who are performing at the same time. When the server detects new ideas among the performers, the app will advance to the next setup. This is an experimental feature - but it's fun!</string>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -20,16 +22,16 @@
 			<key>DefaultValue</key>
 			<false/>
 		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Local Performance Classifier</string>
-			<key>Key</key>
-			<string>local_classifier</string>
-			<key>DefaultValue</key>
-			<true/>
-		</dict>
+<!--		<dict>-->
+<!--			<key>Type</key>-->
+<!--			<string>PSToggleSwitchSpecifier</string>-->
+<!--			<key>Title</key>-->
+<!--			<string>Local Performance Classifier</string>-->
+<!--			<key>Key</key>-->
+<!--			<string>local_classifier</string>-->
+<!--			<key>DefaultValue</key>-->
+<!--			<true/>-->
+<!--		</dict>-->
 		<dict>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>

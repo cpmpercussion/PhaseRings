@@ -10,6 +10,8 @@
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
 			<string>General Settings</string>
+            <key>FooterText</key>
+            <string>PhaseRings is an app for performing expressive music with touch gestures. Each ring on the screen represents a different note. You can change to a new setup of notes using the "+" and "-" buttons. There are usually six setups available, which take notes from different scales and keys. You can setup your own scales and keys using the "Custom Composition" setting. This is an experimental instrument developed as part of my research, so thanks for trying it out! --Charles Martin.</string>
 		</dict>
         
 <!--    Sound Scheme    -->
