@@ -31,6 +31,11 @@
 @property (nonatomic) bool webClassifierSearchEnabled;
 @property (nonatomic) bool localClassifierSearchEnabled;
 @property (nonatomic) bool displayClassifierInfo;
+
+@property (nonatomic) int currentPerformanceType;
+@property (nonatomic) bool listenToMetatoneClassifierMessages;
+
+
 @property (weak, nonatomic) IBOutlet UIButton *experimentNewSetupButton;
 - (IBAction)experimentNewSetupButtonPressed:(UIButton *)sender;
 

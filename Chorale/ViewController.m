@@ -9,6 +9,12 @@
 #define TEST_PITCHES @[@36,@39,@43,@47,@51,@58,@62,@76,@80]
 #define METATONE_NEWSECTION_MESSAGE @"NEWSECTION"
 #define METATONE_NEWIDEA_MESSAGE @"new_idea"
+
+#define METATONE_EXPERIMENT_BOTH @"/metatone/experiment/both"
+#define METATONE_EXPERIMENT_BUTTON @"/metatone/experiment/button"
+#define METATONE_EXPERIMENT_SERVER @"/metatone/experiment/server"
+#define METATONE_EXPERIMENT_NONE @"/metatone/experiment/none"
+
 #define IPAD_SCREEN_DIAGONAL_LENGTH 1280
 #define ENSEMBLE_STATUS_MODE NO
 
@@ -20,6 +26,7 @@
 #define POT_SYNTH_PATCH @"SoundScraperSynthEnvironment.pd"
 #define MARIMBA_SYNTH_PATCH @"SoundScraperSynthEnvironment.pd"
 #define SOUND_SCHEMES @[PHASE_SYNTH_PATCH,STRING_SYNTH_PATCH,BOWL_SYNTH_PATCH,GONG_SYNTH_PATCH,CROTALES_SYNTH_PATCH,POT_SYNTH_PATCH,MARIMBA_SYNTH_PATCH]
+#define NUMBER_COMPOSITIONS_AVAILABLE 5
 #define BASE_A 33
 
 #define AUDIOBUS_API_KEY @"MCoqKlBoYXNlUmluZ3MqKipQaGFzZVJpbmdzLTEuMS5hdWRpb2J1czovLw==:jTpvhuIUrdRrePgvcT7+ZUXZwsDApvArFO7iOO5+91PWD6l9brvWT8lZu3Jxq85v0uK10mdzragYHbm+1K7rvB0G6FnkVrvC/WjQ4ELkA40s+idjVA7fgnaRu3csGFy4"
@@ -40,9 +47,17 @@
 
 #define CLOUD_SERVER_TESTING_MODE YES
 
-#define EXPERIMENT_MODE NO
-#define EXPERIMENT_MODE_BUTTON NO
-#define EXPERIMENT_MODE_SERVER NO
+//#define EXPERIMENT_MODE YES
+//#define EXPERIMENT_MODE_BUTTON NO
+//#define EXPERIMENT_MODE_SERVER NO
+
+#define PERFORMANCE_TYPE_LOCAL 0
+#define PERFORMANCE_TYPE_REMOTE 1
+#define EXPERIMENT_TYPE_BOTH 2
+#define EXPERIMENT_TYPE_NONE 3
+#define EXPERIMENT_TYPE_BUTTON 4
+#define EXPERIMENT_TYPE_SERVER 5
+
 
 @interface ViewController ()
 // Audio
@@ -109,13 +124,16 @@
         [self.ensembleView setHidden:YES];
     }
     
-    if (EXPERIMENT_MODE) {
-        NSLog(@"Starting Experiment Mode.");
-        [self startExperimentMode];
-    } else {
-        NSLog(@"Starting Normal Mode.");
-        [self stopExperimentMode];
-    }
+//    if (EXPERIMENT_MODE) {
+//        NSLog(@"Starting Experiment Mode.");
+//        [self startExperimentMode];
+//    } else {
+//        NSLog(@"Starting Normal Mode.");
+//        [self stopExperimentMode];
+//    }
+    
+    [self.experimentNewSetupButton setHidden:YES];
+    self.listenToMetatoneClassifierMessages = YES;
 }
 
 
@@ -329,7 +347,12 @@
 //    }
     for (UITouch *touch in [touches objectEnumerator]) {
         [self.networkManager sendMessageTouchEnded];
+        CGPoint touchFirstPoint = [touch locationInView:self.view];
         // Maybe handle noteOff here for ending touches.
+        // TODO delay noteOff message by a short amount - say 20ms.
+#pragma mark TODO: make sure note off is working properly.
+        const UInt8 noteOff[]  = { 0x80, [self noteFromPosition:touchFirstPoint], 0 };
+        [self.midiManager.midi sendBytes:noteOff size:sizeof(noteOff)];
     }
 }
 
@@ -415,7 +438,10 @@
     [self updateSetupDescription:state];
     
     // Now randomise sound!
+    int newSound = arc4random_uniform((u_int32_t) [SOUND_SCHEMES count]);
+    [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newSound] forKey:@"sound"];
     
+    // Send to everyone in the network.
     [self.networkManager sendMetatoneMessage:@"CompositionStep" withState:[NSString stringWithFormat:@"%d",state]];
 }
 
@@ -484,9 +510,6 @@
     [self.bowlView setLightScheme];
     // Buttons reappear
     // goto light scheme
-    [self.compositionStepper setHidden:NO];
-    [self.settingsButton setHidden:NO];
-
 }
 
 -(void)metatoneClientFoundWithAddress:(NSString *)address andPort:(int)port andHostname:(NSString *)hostname {
@@ -544,6 +567,90 @@
     }
 }
 
+#pragma mark TODO make sure that Performance Start Events are working
+// performance start events should be of the form:
+// /metatone/performance/start (string) deviceID (int) type (composition) int
+// the type should be
+//#define PERFORMANCE_TYPE_LOCAL 0
+//#define PERFORMANCE_TYPE_REMOTE 1
+//#define EXPERIMENT_TYPE_BOTH 2
+//#define EXPERIMENT_TYPE_NONE 3
+//#define EXPERIMENT_TYPE_BUTTON 4
+//#define EXPERIMENT_TYPE_SERVER 5
+//
+// the composition is an int that corresponds to one of the available compositions,
+// for the experiment, the int can be random (as long as everybody has the same one).
+-(void)didReceivePerformanceStartEvent:(NSString *)event forDevice:(NSString *)device withType:(NSNumber *)type andComposition:(NSNumber *)composition {
+    // Open the new composition
+    int newComposition = [composition intValue] % NUMBER_COMPOSITIONS_AVAILABLE;
+    [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
+    [self openComposition];
+    // Arrange the UI for the Performance Type
+    self.currentPerformanceType = [type intValue];
+    switch ([type intValue]) {
+        case PERFORMANCE_TYPE_LOCAL:
+            // Local
+            NSLog(@"PERFORMANCE: Starting Local Mode.");
+            [self.compositionStepper setHidden:YES];
+            [self.settingsButton setHidden:YES];
+            [self.setupDescription setHidden:NO];
+            [self.experimentNewSetupButton setHidden:YES];
+            self.listenToMetatoneClassifierMessages = YES;
+            break;
+        case PERFORMANCE_TYPE_REMOTE:
+            // Remote
+            NSLog(@"PERFORMANCE: Starting Remote Mode. Normal");
+            [self.compositionStepper setHidden:NO];
+            [self.settingsButton setHidden:NO];
+            [self.setupDescription setHidden:NO];
+            [self.experimentNewSetupButton setHidden:YES];
+            self.listenToMetatoneClassifierMessages = YES;
+            break;
+        case EXPERIMENT_TYPE_BUTTON:
+            // Button
+            NSLog(@"EXPERIMENT: Starting Button Mode.");
+            [self.compositionStepper setHidden:YES];
+            [self.settingsButton setHidden:YES];
+            [self.setupDescription setHidden:YES];
+            [self.experimentNewSetupButton setHidden:NO];
+            self.listenToMetatoneClassifierMessages = NO;
+            break;
+        case EXPERIMENT_TYPE_SERVER:
+            NSLog(@"EXPERIMENT: Starting Server Mode.");
+
+            // Server
+            [self.compositionStepper setHidden:YES];
+            [self.settingsButton setHidden:YES];
+            [self.setupDescription setHidden:YES];
+            [self.experimentNewSetupButton setHidden:YES];
+            self.listenToMetatoneClassifierMessages = YES;
+            break;
+        case EXPERIMENT_TYPE_NONE:
+            NSLog(@"EXPERIMENT: Starting None Mode.");
+
+            // None
+            [self.compositionStepper setHidden:YES];
+            [self.settingsButton setHidden:YES];
+            [self.setupDescription setHidden:YES];
+            [self.experimentNewSetupButton setHidden:YES];
+            self.listenToMetatoneClassifierMessages = NO;
+            // Set random composition position.
+            break;
+        case EXPERIMENT_TYPE_BOTH:
+            NSLog(@"EXPERIMENT: Starting Both Mode.");
+
+            // Both
+            [self.compositionStepper setHidden:YES];
+            [self.settingsButton setHidden:YES];
+            [self.setupDescription setHidden:YES];
+            [self.experimentNewSetupButton setHidden:NO];
+            self.listenToMetatoneClassifierMessages = YES;
+            break;
+        default:
+            break;
+    }
+}
+
 -(void)didReceiveGestureMessageFor:(NSString *)device withClass:(NSString *)class {
     NSLog(@"Gesture: %@",class);
     //    [self.gestureStatusLabel setText:class];
@@ -575,10 +682,7 @@
 
 -(void)startExperimentMode {
     NSLog(@"Entering Experiment Mode: Configuring UI Elements...");
-    [self.compositionStepper setHidden:YES];
-    [self.settingsButton setHidden:YES];
-    [self.setupDescription setHidden:YES];
-    [self.experimentNewSetupButton setHidden:NO];
+
 }
 
 -(void)stopExperimentMode {
