@@ -557,13 +557,42 @@
 
 -(void)didReceiveEnsembleEvent:(NSString *)event forDevice:(NSString *)device withMeasure:(NSNumber *)measure {
     NSLog(@"EnsembleEvent: %@ \n",event);
-    if ([event isEqualToString:METATONE_NEWIDEA_MESSAGE] && ([self.timeOfLastNewIdea timeIntervalSinceNow] < -10.0)) {
-        NSArray *newSetup = [self.composition nextSetup];
-        [self applyNewSetup:newSetup];
-        //[self.compositionStepper setValue:(self.compositionStepper.value + 1)];
-        self.timeOfLastNewIdea = [NSDate date];
-    } else {
-        NSLog(@"Ensemble Event Received: Too soon after last event!");
+    if (self.listenToMetatoneClassifierMessages) {
+        if ([event isEqualToString:METATONE_NEWIDEA_MESSAGE] && ([self.timeOfLastNewIdea timeIntervalSinceNow] < -10.0)) {
+            NSArray *newSetup = [self.composition nextSetup];
+            [self applyNewSetup:newSetup];
+            //[self.compositionStepper setValue:(self.compositionStepper.value + 1)];
+            self.timeOfLastNewIdea = [NSDate date];
+        } else {
+            NSLog(@"Ensemble Event Received: Too soon after last event!");
+        }
+    }
+}
+
+
+-(void)didReceiveGestureMessageFor:(NSString *)device withClass:(NSString *)class {
+    NSLog(@"Gesture: %@",class);
+    //    [self.gestureStatusLabel setText:class];
+}
+
+-(void)didReceiveEnsembleState:(NSString *)state withSpread:(NSNumber *)spread withRatio:(NSNumber*) ratio{
+    NSLog(@"Ensemble State: %@",state);
+//    [self.ensembleStatusLabel setText:state];
+    if (self.listenToMetatoneClassifierMessages) {
+        if ([state isEqualToString:@"divergence"] && [spread floatValue] < 10.0 && [spread floatValue] > -10.0) {
+            float newDistort = [spread floatValue];
+            [self.distortSlider setValue:newDistort animated:YES];
+            [self setDistortion:newDistort];
+            NSLog(@"Distortion Reduced to %f",newDistort);
+        } else {
+            float oldDistort = [self.distortSlider value];
+            float newDistort = oldDistort * 0.5;
+            if (newDistort <= 1 && newDistort >= 0) {
+                [self.distortSlider setValue:newDistort animated:YES];
+                [self setDistortion:newDistort];
+                NSLog(@"Distortion Reduced to %f",newDistort);
+            }
+        }
     }
 }
 
@@ -617,7 +646,7 @@
             break;
         case EXPERIMENT_TYPE_SERVER:
             NSLog(@"EXPERIMENT: Starting Server Mode.");
-
+            
             // Server
             [self.compositionStepper setHidden:YES];
             [self.settingsButton setHidden:YES];
@@ -627,7 +656,7 @@
             break;
         case EXPERIMENT_TYPE_NONE:
             NSLog(@"EXPERIMENT: Starting None Mode.");
-
+            
             // None
             [self.compositionStepper setHidden:YES];
             [self.settingsButton setHidden:YES];
@@ -638,7 +667,7 @@
             break;
         case EXPERIMENT_TYPE_BOTH:
             NSLog(@"EXPERIMENT: Starting Both Mode.");
-
+            
             // Both
             [self.compositionStepper setHidden:YES];
             [self.settingsButton setHidden:YES];
@@ -651,28 +680,8 @@
     }
 }
 
--(void)didReceiveGestureMessageFor:(NSString *)device withClass:(NSString *)class {
-    NSLog(@"Gesture: %@",class);
-    //    [self.gestureStatusLabel setText:class];
-}
-
--(void)didReceiveEnsembleState:(NSString *)state withSpread:(NSNumber *)spread withRatio:(NSNumber*) ratio{
-    NSLog(@"Ensemble State: %@",state);
-//    [self.ensembleStatusLabel setText:state];
-    if ([state isEqualToString:@"divergence"] && [spread floatValue] < 10.0 && [spread floatValue] > -10.0) {
-        float newDistort = [spread floatValue];
-        [self.distortSlider setValue:newDistort animated:YES];
-        [self setDistortion:newDistort];
-        NSLog(@"Distortion Reduced to %f",newDistort);
-    } else {
-        float oldDistort = [self.distortSlider value];
-        float newDistort = oldDistort * 0.5;
-        if (newDistort <= 1 && newDistort >= 0) {
-            [self.distortSlider setValue:newDistort animated:YES];
-            [self setDistortion:newDistort];
-            NSLog(@"Distortion Reduced to %f",newDistort);
-        }
-    }
+-(void)didReceivePerformanceEndEvent:(NSString *)event forDevice:(NSString *)device {
+    // Performance end - go back to default configuration.
 }
 
 //- (BOOL)prefersStatusBarHidden
