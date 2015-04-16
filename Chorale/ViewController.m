@@ -485,14 +485,14 @@
 -(void)updateClassifierSettings {
     self.webClassifierSearchEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"web_classifier"];
     self.localClassifierSearchEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"local_classifier"];
-    
-    if (self.webClassifierSearchEnabled) {
-        [self searchingForLoggingServer];
-        [self.networkManager startConnectingToWebClassifier];
-    } else {
-        [self stoppedSearchingForLoggingServer];
-        [self.networkManager stopConnectingToWebClassifier];
-    }
+#pragma mark TODO: do something when webclassifier and local classifier settings are changed.
+//    if (self.webClassifierSearchEnabled) {
+//        [self searchingForLoggingServer];
+//        [self.networkManager startConnectingToWebClassifier];
+//    } else {
+//        [self stoppedSearchingForLoggingServer];
+//        [self.networkManager stopConnectingToWebClassifier];
+//    }
     
     self.displayClassifierInfo = (bool) [[NSUserDefaults standardUserDefaults] boolForKey:@"display_classifier_information"];
     [self.oscStatusLabel setHidden:!self.displayClassifierInfo];
@@ -611,12 +611,10 @@
 // for the experiment, the int can be random (as long as everybody has the same one).
 -(void)didReceivePerformanceStartEvent:(NSString *)event forDevice:(NSString *)device withType:(NSNumber *)type andComposition:(NSNumber *)composition {
     // Open the new composition
+    NSLog(@"Received Performance Event.");
     int newComposition = [composition intValue] % NUMBER_COMPOSITIONS_AVAILABLE;
-    [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
-    [self openComposition];
-    // Arrange the UI for the Performance Type
     self.currentPerformanceType = [type intValue];
-    switch ([type intValue]) {
+    switch (self.currentPerformanceType) {
         case PERFORMANCE_TYPE_LOCAL:
             // Local
             NSLog(@"PERFORMANCE: Starting Local Mode.");
@@ -625,6 +623,8 @@
             [self.setupDescription setHidden:NO];
             [self.experimentNewSetupButton setHidden:YES];
             self.listenToMetatoneClassifierMessages = YES;
+            [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
+
             break;
         case PERFORMANCE_TYPE_REMOTE:
             // Remote
@@ -637,51 +637,76 @@
             break;
         case EXPERIMENT_TYPE_BUTTON:
             // Button
+            [self.oscStatusLabel setText:@"EXPERIMENT: Button control."];
             NSLog(@"EXPERIMENT: Starting Button Mode.");
             [self.compositionStepper setHidden:YES];
             [self.settingsButton setHidden:YES];
             [self.setupDescription setHidden:YES];
             [self.experimentNewSetupButton setHidden:NO];
             self.listenToMetatoneClassifierMessages = NO;
+            [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:arc4random_uniform((u_int32_t) [SOUND_SCHEMES count])] forKey:@"sound"];
+            [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
             break;
         case EXPERIMENT_TYPE_SERVER:
             NSLog(@"EXPERIMENT: Starting Server Mode.");
-            
+            [self.oscStatusLabel setText:@"EXPERIMENT: Server control."];
             // Server
             [self.compositionStepper setHidden:YES];
             [self.settingsButton setHidden:YES];
             [self.setupDescription setHidden:YES];
             [self.experimentNewSetupButton setHidden:YES];
             self.listenToMetatoneClassifierMessages = YES;
+            [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:arc4random_uniform((u_int32_t) [SOUND_SCHEMES count])] forKey:@"sound"];
+            [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
             break;
         case EXPERIMENT_TYPE_NONE:
             NSLog(@"EXPERIMENT: Starting None Mode.");
-            
+            [self.oscStatusLabel setText:@"EXPERIMENT: No controls."];
             // None
             [self.compositionStepper setHidden:YES];
             [self.settingsButton setHidden:YES];
             [self.setupDescription setHidden:YES];
             [self.experimentNewSetupButton setHidden:YES];
             self.listenToMetatoneClassifierMessages = NO;
+            [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:arc4random_uniform((u_int32_t) [SOUND_SCHEMES count])] forKey:@"sound"];
+            [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
             // Set random composition position.
             break;
         case EXPERIMENT_TYPE_BOTH:
             NSLog(@"EXPERIMENT: Starting Both Mode.");
-            
+            [self.oscStatusLabel setText:@"EXPERIMENT: Both controls."];
             // Both
             [self.compositionStepper setHidden:YES];
             [self.settingsButton setHidden:YES];
             [self.setupDescription setHidden:YES];
             [self.experimentNewSetupButton setHidden:NO];
             self.listenToMetatoneClassifierMessages = YES;
+            [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:arc4random_uniform((u_int32_t) [SOUND_SCHEMES count])] forKey:@"sound"];
+            [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
             break;
         default:
+            NSLog(@"PERFORMANCE: Unknown type: %d, changing to remote type!",self.currentPerformanceType);
+            self.currentPerformanceType = PERFORMANCE_TYPE_REMOTE;
+            // Remote
+            [self.oscStatusLabel setText:@"Unknown performance type."];
+            [self.compositionStepper setHidden:NO];
+            [self.settingsButton setHidden:NO];
+            [self.setupDescription setHidden:NO];
+            [self.experimentNewSetupButton setHidden:YES];
+            self.listenToMetatoneClassifierMessages = YES;
             break;
     }
 }
 
 -(void)didReceivePerformanceEndEvent:(NSString *)event forDevice:(NSString *)device {
     // Performance end - go back to default configuration.
+    NSLog(@"PERFORMANCE: Ended, going back to default state");
+    [self searchingForLoggingServer];
+    [self.compositionStepper setHidden:NO];
+    [self.settingsButton setHidden:NO];
+    [self.setupDescription setHidden:NO];
+    [self.experimentNewSetupButton setHidden:YES];
+    self.listenToMetatoneClassifierMessages = YES;
 }
 
 //- (BOOL)prefersStatusBarHidden

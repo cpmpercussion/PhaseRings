@@ -103,6 +103,7 @@
         NSLog(@"APP DELEGATE: Changed Composition");
     } else if ([aKeyPath isEqualToString:@"web_classifier"]) {
         // trigger change to webclassifier connection
+# pragma mark TODO - make sure that webclassifier gets turned on and off here!
     } else if ([aKeyPath isEqualToString:@"local_classifier"]) {
         // trigger change to localclassifier connection.
     }
