@@ -33,6 +33,7 @@
 @property (nonatomic) bool displayClassifierInfo;
 
 @property (nonatomic) int currentPerformanceType;
+@property (nonatomic) bool experimentMode;
 @property (nonatomic) bool listenToMetatoneClassifierMessages;
 
 

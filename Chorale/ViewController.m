@@ -131,8 +131,8 @@
 //        NSLog(@"Starting Normal Mode.");
 //        [self stopExperimentMode];
 //    }
-    
     [self.experimentNewSetupButton setHidden:YES];
+    self.experimentMode = NO;
     self.listenToMetatoneClassifierMessages = YES;
 }
 
@@ -438,11 +438,15 @@
     [self updateSetupDescription:state];
     
     // Now randomise sound!
-    int newSound = arc4random_uniform((u_int32_t) [SOUND_SCHEMES count]);
-    [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newSound] forKey:@"sound"];
+    [self randomiseSound];
     
     // Send to everyone in the network.
     [self.networkManager sendMetatoneMessage:@"CompositionStep" withState:[NSString stringWithFormat:@"%d",state]];
+}
+
+- (void) randomiseSound {
+    int newSound = arc4random_uniform((u_int32_t) [SOUND_SCHEMES count]);
+    [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newSound] forKey:@"sound"];
 }
 
 #pragma mark - For note calculation.
@@ -561,6 +565,7 @@
         if ([event isEqualToString:METATONE_NEWIDEA_MESSAGE] && ([self.timeOfLastNewIdea timeIntervalSinceNow] < -10.0)) {
             NSArray *newSetup = [self.composition nextSetup];
             [self applyNewSetup:newSetup];
+            if (self.experimentMode) [self randomiseSound];
             //[self.compositionStepper setValue:(self.compositionStepper.value + 1)];
             self.timeOfLastNewIdea = [NSDate date];
         } else {
@@ -623,6 +628,7 @@
             [self.setupDescription setHidden:NO];
             [self.experimentNewSetupButton setHidden:YES];
             self.listenToMetatoneClassifierMessages = YES;
+            self.experimentMode = NO;
             [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
 
             break;
@@ -634,6 +640,7 @@
             [self.setupDescription setHidden:NO];
             [self.experimentNewSetupButton setHidden:YES];
             self.listenToMetatoneClassifierMessages = YES;
+            self.experimentMode = NO;
             break;
         case EXPERIMENT_TYPE_BUTTON:
             // Button
@@ -644,6 +651,7 @@
             [self.setupDescription setHidden:YES];
             [self.experimentNewSetupButton setHidden:NO];
             self.listenToMetatoneClassifierMessages = NO;
+            self.experimentMode = YES;
             [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:arc4random_uniform((u_int32_t) [SOUND_SCHEMES count])] forKey:@"sound"];
             [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
             break;
@@ -656,6 +664,7 @@
             [self.setupDescription setHidden:YES];
             [self.experimentNewSetupButton setHidden:YES];
             self.listenToMetatoneClassifierMessages = YES;
+            self.experimentMode = YES;
             [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:arc4random_uniform((u_int32_t) [SOUND_SCHEMES count])] forKey:@"sound"];
             [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
             break;
@@ -668,6 +677,7 @@
             [self.setupDescription setHidden:YES];
             [self.experimentNewSetupButton setHidden:YES];
             self.listenToMetatoneClassifierMessages = NO;
+            self.experimentMode = YES;
             [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:arc4random_uniform((u_int32_t) [SOUND_SCHEMES count])] forKey:@"sound"];
             [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
             // Set random composition position.
@@ -681,6 +691,7 @@
             [self.setupDescription setHidden:YES];
             [self.experimentNewSetupButton setHidden:NO];
             self.listenToMetatoneClassifierMessages = YES;
+            self.experimentMode = YES;
             [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:arc4random_uniform((u_int32_t) [SOUND_SCHEMES count])] forKey:@"sound"];
             [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
             break;
@@ -694,6 +705,7 @@
             [self.setupDescription setHidden:NO];
             [self.experimentNewSetupButton setHidden:YES];
             self.listenToMetatoneClassifierMessages = YES;
+            self.experimentMode = YES;
             break;
     }
 }
