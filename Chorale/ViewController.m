@@ -441,11 +441,12 @@
     [self randomiseSound];
     
     // Send to everyone in the network.
-    [self.networkManager sendMetatoneMessage:@"CompositionStep" withState:[NSString stringWithFormat:@"%d",state]];
+    // sending via network.
+    [self.networkManager sendMetatoneMessageViaServer:@"CompositionStep" withState:[NSString stringWithFormat:@"%d",state]];
 }
 
 - (void) randomiseSound {
-    int newSound = arc4random_uniform((u_int32_t) [SOUND_SCHEMES count]);
+    int newSound = arc4random_uniform((u_int32_t) [SOUND_SCHEMES count] -2 ) + 2;
     [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newSound] forKey:@"sound"];
 }
 
@@ -499,7 +500,11 @@
 //    }
     
     self.displayClassifierInfo = (bool) [[NSUserDefaults standardUserDefaults] boolForKey:@"display_classifier_information"];
-    [self.oscStatusLabel setHidden:!self.displayClassifierInfo];
+    if (!self.experimentMode) {[self.oscStatusLabel setHidden:!self.displayClassifierInfo];
+    } else {
+        NSLog(@"EXPERIMENT MODE: Showing OSC Status!");
+        [self.oscStatusLabel setHidden:NO];
+    }
 }
 
 -(void)searchingForLoggingServer {
@@ -644,56 +649,55 @@
             break;
         case EXPERIMENT_TYPE_BUTTON:
             // Button
+            self.listenToMetatoneClassifierMessages = NO;
+            self.experimentMode = YES;
             [self.oscStatusLabel setText:@"EXPERIMENT: Button control."];
+            [self randomiseSound];
+            [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
             NSLog(@"EXPERIMENT: Starting Button Mode.");
             [self.compositionStepper setHidden:YES];
             [self.settingsButton setHidden:YES];
             [self.setupDescription setHidden:YES];
             [self.experimentNewSetupButton setHidden:NO];
-            self.listenToMetatoneClassifierMessages = NO;
-            self.experimentMode = YES;
-            [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:arc4random_uniform((u_int32_t) [SOUND_SCHEMES count])] forKey:@"sound"];
-            [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
             break;
         case EXPERIMENT_TYPE_SERVER:
             NSLog(@"EXPERIMENT: Starting Server Mode.");
             [self.oscStatusLabel setText:@"EXPERIMENT: Server control."];
             // Server
+            self.listenToMetatoneClassifierMessages = YES;
+            self.experimentMode = YES;
+            [self randomiseSound];
+            [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
             [self.compositionStepper setHidden:YES];
             [self.settingsButton setHidden:YES];
             [self.setupDescription setHidden:YES];
             [self.experimentNewSetupButton setHidden:YES];
-            self.listenToMetatoneClassifierMessages = YES;
-            self.experimentMode = YES;
-            [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:arc4random_uniform((u_int32_t) [SOUND_SCHEMES count])] forKey:@"sound"];
-            [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
             break;
         case EXPERIMENT_TYPE_NONE:
             NSLog(@"EXPERIMENT: Starting None Mode.");
             [self.oscStatusLabel setText:@"EXPERIMENT: No controls."];
             // None
+            self.listenToMetatoneClassifierMessages = NO;
+            self.experimentMode = YES;
+            [self randomiseSound];
+            [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
             [self.compositionStepper setHidden:YES];
             [self.settingsButton setHidden:YES];
             [self.setupDescription setHidden:YES];
             [self.experimentNewSetupButton setHidden:YES];
-            self.listenToMetatoneClassifierMessages = NO;
-            self.experimentMode = YES;
-            [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:arc4random_uniform((u_int32_t) [SOUND_SCHEMES count])] forKey:@"sound"];
-            [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
-            // Set random composition position.
             break;
         case EXPERIMENT_TYPE_BOTH:
             NSLog(@"EXPERIMENT: Starting Both Mode.");
             [self.oscStatusLabel setText:@"EXPERIMENT: Both controls."];
             // Both
+            self.listenToMetatoneClassifierMessages = YES;
+            self.experimentMode = YES;
+            [self randomiseSound];
+            [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
             [self.compositionStepper setHidden:YES];
             [self.settingsButton setHidden:YES];
             [self.setupDescription setHidden:YES];
             [self.experimentNewSetupButton setHidden:NO];
-            self.listenToMetatoneClassifierMessages = YES;
-            self.experimentMode = YES;
-            [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:arc4random_uniform((u_int32_t) [SOUND_SCHEMES count])] forKey:@"sound"];
-            [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
             break;
         default:
             NSLog(@"PERFORMANCE: Unknown type: %d, changing to remote type!",self.currentPerformanceType);
