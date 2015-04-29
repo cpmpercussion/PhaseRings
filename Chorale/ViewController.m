@@ -588,22 +588,23 @@
 -(void)didReceiveEnsembleState:(NSString *)state withSpread:(NSNumber *)spread withRatio:(NSNumber*) ratio{
     NSLog(@"Ensemble State: %@",state);
 //    [self.ensembleStatusLabel setText:state];
-    if (self.listenToMetatoneClassifierMessages) {
-        if ([state isEqualToString:@"divergence"] && [spread floatValue] < 10.0 && [spread floatValue] > -10.0) {
-            float newDistort = [spread floatValue];
-            [self.distortSlider setValue:newDistort animated:YES];
-            [self setDistortion:newDistort];
-            NSLog(@"Distortion Reduced to %f",newDistort);
-        } else {
-            float oldDistort = [self.distortSlider value];
-            float newDistort = oldDistort * 0.5;
-            if (newDistort <= 1 && newDistort >= 0) {
-                [self.distortSlider setValue:newDistort animated:YES];
-                [self setDistortion:newDistort];
-                NSLog(@"Distortion Reduced to %f",newDistort);
-            }
-        }
-    }
+    // Cut for experiment.
+//    if (self.listenToMetatoneClassifierMessages) {
+//        if ([state isEqualToString:@"divergence"] && [spread floatValue] < 10.0 && [spread floatValue] > -10.0) {
+//            float newDistort = [spread floatValue];
+//            [self.distortSlider setValue:newDistort animated:YES];
+//            [self setDistortion:newDistort];
+//            NSLog(@"Distortion Reduced to %f",newDistort);
+//        } else {
+//            float oldDistort = [self.distortSlider value];
+//            float newDistort = oldDistort * 0.5;
+//            if (newDistort <= 1 && newDistort >= 0) {
+//                [self.distortSlider setValue:newDistort animated:YES];
+//                [self setDistortion:newDistort];
+//                NSLog(@"Distortion Reduced to %f",newDistort);
+//            }
+//        }
+//    }
 }
 
 #pragma mark TODO make sure that Performance Start Events are working
