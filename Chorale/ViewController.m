@@ -491,13 +491,14 @@
     self.webClassifierSearchEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"web_classifier"];
     self.localClassifierSearchEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"local_classifier"];
 #pragma mark TODO: do something when webclassifier and local classifier settings are changed.
-//    if (self.webClassifierSearchEnabled) {
-//        [self searchingForLoggingServer];
-//        [self.networkManager startConnectingToWebClassifier];
-//    } else {
-//        [self stoppedSearchingForLoggingServer];
-//        [self.networkManager stopConnectingToWebClassifier];
-//    }
+//    [self setupOSCLogging];
+    if (self.webClassifierSearchEnabled) {
+        [self searchingForLoggingServer];
+        [self.networkManager startConnectingToWebClassifier];
+    } else {
+        [self stoppedSearchingForLoggingServer];
+        [self.networkManager stopConnectingToWebClassifier];
+    }
     
     self.displayClassifierInfo = (bool) [[NSUserDefaults standardUserDefaults] boolForKey:@"display_classifier_information"];
     if (!self.experimentMode) {[self.oscStatusLabel setHidden:!self.displayClassifierInfo];
@@ -561,6 +562,7 @@
         NSArray *newSetup = [self.composition setupForState:newSetupNumber];
         [self applyNewSetup:newSetup];
         [self updateSetupDescription:newSetupNumber];
+        if (self.experimentMode) [self randomiseSound];
     }
 }
 
@@ -589,22 +591,22 @@
     NSLog(@"Ensemble State: %@",state);
 //    [self.ensembleStatusLabel setText:state];
     // Cut for experiment.
-//    if (self.listenToMetatoneClassifierMessages) {
-//        if ([state isEqualToString:@"divergence"] && [spread floatValue] < 10.0 && [spread floatValue] > -10.0) {
-//            float newDistort = [spread floatValue];
-//            [self.distortSlider setValue:newDistort animated:YES];
-//            [self setDistortion:newDistort];
-//            NSLog(@"Distortion Reduced to %f",newDistort);
-//        } else {
-//            float oldDistort = [self.distortSlider value];
-//            float newDistort = oldDistort * 0.5;
-//            if (newDistort <= 1 && newDistort >= 0) {
-//                [self.distortSlider setValue:newDistort animated:YES];
-//                [self setDistortion:newDistort];
-//                NSLog(@"Distortion Reduced to %f",newDistort);
-//            }
-//        }
-//    }
+    if (self.listenToMetatoneClassifierMessages) {
+        if ([state isEqualToString:@"divergence"] && [spread floatValue] < 10.0 && [spread floatValue] > -10.0) {
+            float newDistort = [spread floatValue];
+            [self.distortSlider setValue:newDistort animated:YES];
+            [self setDistortion:newDistort];
+            NSLog(@"Distortion Reduced to %f",newDistort);
+        } else {
+            float oldDistort = [self.distortSlider value];
+            float newDistort = oldDistort * 0.5;
+            if (newDistort <= 1 && newDistort >= 0) {
+                [self.distortSlider setValue:newDistort animated:YES];
+                [self setDistortion:newDistort];
+                NSLog(@"Distortion Reduced to %f",newDistort);
+            }
+        }
+    }
 }
 
 #pragma mark TODO make sure that Performance Start Events are working
