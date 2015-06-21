@@ -581,29 +581,29 @@
     }
 }
 
-
 -(void)didReceiveGestureMessageFor:(NSString *)device withClass:(NSString *)class {
     NSLog(@"Gesture: %@",class);
     //    [self.gestureStatusLabel setText:class];
 }
 
+#pragma TODO - fix up this section so that it does something more useful.
 -(void)didReceiveEnsembleState:(NSString *)state withSpread:(NSNumber *)spread withRatio:(NSNumber*) ratio{
-    NSLog(@"Ensemble State: %@",state);
-//    [self.ensembleStatusLabel setText:state];
+    //    NSLog(@"Ensemble State: %@",state);
+    //    [self.ensembleStatusLabel setText:state];
     // Cut for experiment.
     if (self.listenToMetatoneClassifierMessages) {
         if ([state isEqualToString:@"divergence"] && [spread floatValue] < 10.0 && [spread floatValue] > -10.0) {
             float newDistort = [spread floatValue];
             [self.distortSlider setValue:newDistort animated:YES];
             [self setDistortion:newDistort];
-            NSLog(@"Distortion Reduced to %f",newDistort);
+//            NSLog(@"Distortion Reduced to %f",newDistort);
         } else {
             float oldDistort = [self.distortSlider value];
             float newDistort = oldDistort * 0.5;
             if (newDistort <= 1 && newDistort >= 0) {
                 [self.distortSlider setValue:newDistort animated:YES];
                 [self setDistortion:newDistort];
-                NSLog(@"Distortion Reduced to %f",newDistort);
+//                NSLog(@"Distortion Reduced to %f",newDistort);
             }
         }
     }
