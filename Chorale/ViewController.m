@@ -474,16 +474,14 @@
 #pragma mark - Metatone Classifier and Network Methods
 -(void)stopOSCLogging
 {
-    [self.networkManager stopSearches];
+//    [self.networkManager stopSearches];
     [self.networkManager closeClassifierWebSocket];
 }
 
 -(void)setupOSCLogging {
     self.metatoneClients = [[NSMutableDictionary alloc] init];
-    
     self.webClassifierSearchEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"web_classifier"];
     self.localClassifierSearchEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"local_classifier"];
-    
     self.networkManager = [[MetatoneNetworkManager alloc] initWithDelegate:self shouldOscLog:YES shouldConnectToWebClassifier:self.webClassifierSearchEnabled];
 }
 
@@ -492,11 +490,12 @@
     self.localClassifierSearchEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"local_classifier"];
 #pragma mark TODO: do something when webclassifier and local classifier settings are changed.
 //    [self setupOSCLogging];
+#pragma TODO: this bit is a real problem. gosh darnit.
     if (self.webClassifierSearchEnabled) {
-        [self searchingForLoggingServer];
+//        [self searchingForLoggingServer];
         [self.networkManager startConnectingToWebClassifier];
     } else {
-        [self stoppedSearchingForLoggingServer];
+//        [self stoppedSearchingForLoggingServer];
         [self.networkManager stopConnectingToWebClassifier];
     }
     
@@ -509,17 +508,17 @@
 }
 
 -(void)searchingForLoggingServer {
+    NSLog(@"VC: Searching for logging server.");
     [self.oscStatusLabel setText:@"searching for classifier 😒"];
     [self.oscStatusLabel setHidden:!self.displayClassifierInfo];
     [self.bowlView setLightScheme];
 }
 
 -(void)stoppedSearchingForLoggingServer {
+    NSLog(@"VC: Stopped searching for logging server.");
     [self.oscStatusLabel setText:@"classifier not connected. 😰"];
     [self.oscStatusLabel setHidden:!self.displayClassifierInfo];
     [self.bowlView setLightScheme];
-    // Buttons reappear
-    // goto light scheme
 }
 
 -(void)metatoneClientFoundWithAddress:(NSString *)address andPort:(int)port andHostname:(NSString *)hostname {
@@ -536,13 +535,11 @@
 -(void)metatoneClientRemovedwithAddress:(NSString *)address andPort:(int)port andHostname:(NSString *)hostname {}
 
 -(void)loggingServerFoundWithAddress:(NSString *)address andPort:(int)port andHostname:(NSString *)hostname {
+    NSLog(@"VC: Connected to logging server.");
     [self.oscStatusLabel setText:[NSString stringWithFormat:@"connected to %@ 👍", hostname]];
     [self.oscStatusLabel setHidden:!self.displayClassifierInfo];
-    
-    // cancel manual mode.
     [self.bowlView setDarkScheme];
     [self.bowlView drawSetup:self.bowlSetup];
-    
     // For iPad Ensemble Performances!
     //    [self.compositionStepper setHidden:YES];
     //    [self.settingsButton setHidden:YES];
@@ -624,9 +621,10 @@
 // for the experiment, the int can be random (as long as everybody has the same one).
 -(void)didReceivePerformanceStartEvent:(NSString *)event forDevice:(NSString *)device withType:(NSNumber *)type andComposition:(NSNumber *)composition {
     // Open the new composition
-    NSLog(@"Received Performance Event.");
+    NSLog(@"PERFORMANCE: Received Performance Event: %@, %@, %@, %@", event,device,type,composition);
     int newComposition = [composition intValue] % NUMBER_COMPOSITIONS_AVAILABLE;
     self.currentPerformanceType = [type intValue];
+//    [self.bowlView setDarkScheme];
     switch (self.currentPerformanceType) {
         case PERFORMANCE_TYPE_LOCAL:
             // Local
