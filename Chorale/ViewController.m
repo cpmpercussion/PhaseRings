@@ -57,7 +57,7 @@
 #define EXPERIMENT_TYPE_NONE 3
 #define EXPERIMENT_TYPE_BUTTON 4
 #define EXPERIMENT_TYPE_SERVER 5
-
+#define EXPERIMENT_TYPE_BUTTON_FADE 6
 
 @interface ViewController ()
 // Audio
@@ -700,6 +700,17 @@
             [self.setupDescription setHidden:YES];
             [self.experimentNewSetupButton setHidden:NO];
             break;
+        case EXPERIMENT_TYPE_BUTTON_FADE:
+            NSLog(@"EXPERIMENT: Starting Button-Fade Mode.");
+            [self.oscStatusLabel setText:@"EXPERIMENT: Button X Server."];
+            self.listenToMetatoneClassifierMessages = YES;
+            self.experimentMode = YES;
+            [self randomiseSound];
+            [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
+            [self.compositionStepper setHidden:YES];
+            [self.settingsButton setHidden:YES];
+            [self.setupDescription setHidden:YES];
+            [self.experimentNewSetupButton setHidden:NO];
         default:
             NSLog(@"PERFORMANCE: Unknown type: %d, changing to remote type!",self.currentPerformanceType);
             self.currentPerformanceType = PERFORMANCE_TYPE_REMOTE;
