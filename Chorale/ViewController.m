@@ -646,6 +646,7 @@
 //#define EXPERIMENT_TYPE_NONE 3
 //#define EXPERIMENT_TYPE_BUTTON 4
 //#define EXPERIMENT_TYPE_SERVER 5
+//#define EXPERIMENT_TYPE_BUTTON_FADE 6
 //
 // the composition is an int that corresponds to one of the available compositions,
 // for the experiment, the int can be random (as long as everybody has the same one).
@@ -664,6 +665,7 @@
             [self.setupDescription setHidden:NO];
             [self.experimentNewSetupButton setHidden:YES];
             self.listenToMetatoneClassifierMessages = YES;
+            self.buttonFadingMode = NO;
             self.experimentMode = NO;
             [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
 
@@ -672,6 +674,7 @@
             // Remote
             NSLog(@"PERFORMANCE: Starting Remote Mode. Normal");
             [self.compositionStepper setHidden:NO];
+            self.buttonFadingMode = NO;
             [self.settingsButton setHidden:NO];
             [self.setupDescription setHidden:NO];
             [self.experimentNewSetupButton setHidden:YES];
@@ -681,6 +684,7 @@
         case EXPERIMENT_TYPE_BUTTON:
             // Button
             self.listenToMetatoneClassifierMessages = NO;
+            self.buttonFadingMode = NO;
             self.experimentMode = YES;
             [self.oscStatusLabel setText:@"EXPERIMENT: Button control."];
             [self randomiseSound];
@@ -690,12 +694,14 @@
             [self.settingsButton setHidden:YES];
             [self.setupDescription setHidden:YES];
             [self.experimentNewSetupButton setHidden:NO];
+            [self fadeInNewSetupButton];
             break;
         case EXPERIMENT_TYPE_SERVER:
             NSLog(@"EXPERIMENT: Starting Server Mode.");
             [self.oscStatusLabel setText:@"EXPERIMENT: Server control."];
             // Server
             self.listenToMetatoneClassifierMessages = YES;
+            self.buttonFadingMode = NO;
             self.experimentMode = YES;
             [self randomiseSound];
             [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
@@ -703,12 +709,14 @@
             [self.settingsButton setHidden:YES];
             [self.setupDescription setHidden:YES];
             [self.experimentNewSetupButton setHidden:YES];
+            [self fadeOutNewSetupButton];
             break;
         case EXPERIMENT_TYPE_NONE:
             NSLog(@"EXPERIMENT: Starting None Mode.");
             [self.oscStatusLabel setText:@"EXPERIMENT: No controls."];
             // None
             self.listenToMetatoneClassifierMessages = NO;
+            self.buttonFadingMode = NO;
             self.experimentMode = YES;
             [self randomiseSound];
             [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
@@ -716,12 +724,14 @@
             [self.settingsButton setHidden:YES];
             [self.setupDescription setHidden:YES];
             [self.experimentNewSetupButton setHidden:YES];
+            [self fadeOutNewSetupButton];
             break;
         case EXPERIMENT_TYPE_BOTH:
             NSLog(@"EXPERIMENT: Starting Both Mode.");
-            [self.oscStatusLabel setText:@"EXPERIMENT: Both controls."];
+            [self.oscStatusLabel setText:@"EXPERIMENT: Button + Server."];
             // Both
             self.listenToMetatoneClassifierMessages = YES;
+            self.buttonFadingMode = NO;
             self.experimentMode = YES;
             [self randomiseSound];
             [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
@@ -729,12 +739,14 @@
             [self.settingsButton setHidden:YES];
             [self.setupDescription setHidden:YES];
             [self.experimentNewSetupButton setHidden:NO];
+            [self fadeInNewSetupButton];
             break;
         case EXPERIMENT_TYPE_BUTTON_FADE:
             NSLog(@"EXPERIMENT: Starting Button-Fade Mode.");
-            [self.oscStatusLabel setText:@"EXPERIMENT: Button X Server."];
+            [self.oscStatusLabel setText:@"EXPERIMENT: Button ⨯ Server."];
             // Fade
             self.listenToMetatoneClassifierMessages = YES;
+            self.buttonFadingMode = YES;
             self.experimentMode = YES;
             [self randomiseSound];
             [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
@@ -742,6 +754,7 @@
             [self.settingsButton setHidden:YES];
             [self.setupDescription setHidden:YES];
             [self.experimentNewSetupButton setHidden:NO];
+            [self fadeOutNewSetupButton];
             break;
         default:
             NSLog(@"PERFORMANCE: Unknown type: %d, changing to remote type!",self.currentPerformanceType);
@@ -753,6 +766,7 @@
             [self.setupDescription setHidden:NO];
             [self.experimentNewSetupButton setHidden:YES];
             self.listenToMetatoneClassifierMessages = YES;
+            self.buttonFadingMode = NO;
             self.experimentMode = YES;
             break;
     }
