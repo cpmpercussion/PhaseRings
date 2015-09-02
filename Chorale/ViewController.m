@@ -427,7 +427,7 @@
 }
 
 // New Setup Button just for Experiment Mode!
-#pragma mark TODO make this button change the sound as well!
+#pragma mark TODO make sure the button fades out sufficiently.
 - (IBAction)experimentNewSetupButtonPressed:(UIButton *)sender {
     NSLog(@"New Setup Button Pressed!");
     int state = (int) (self.compositionStepper.value + 1) % (int) (self.compositionStepper.maximumValue + 1);
@@ -443,6 +443,29 @@
     // Send to everyone in the network.
     // sending via network.
     [self.networkManager sendMetatoneMessageViaServer:@"CompositionStep" withState:[NSString stringWithFormat:@"%d",state]];
+    
+    if (self.buttonFadingMode) {
+        // Fading out the button.
+        [self fadeOutNewSetupButton];
+        // Should this send a message to other clients to fade out their buttons too?
+        // No maybe just use the compositionstep message to do that.
+    }
+}
+
+#define BUTTON_FADING_ANIMATION_TIME 2.0
+- (void) fadeInNewSetupButton {
+    //[self.experimentNewSetupButton setHidden:NO];
+    NSLog(@"Fading in the button");
+    [UIView animateWithDuration:BUTTON_FADING_ANIMATION_TIME animations:^{
+        self.experimentNewSetupButton.alpha = 1;
+    }];
+}
+- (void) fadeOutNewSetupButton {
+    //[self.experimentNewSetupButton setHidden:YES];
+    NSLog(@"Fading out the button");
+    [UIView animateWithDuration:BUTTON_FADING_ANIMATION_TIME animations:^{
+        self.experimentNewSetupButton.alpha = 0;
+    }];
 }
 
 - (void) randomiseSound {
@@ -560,6 +583,7 @@
         [self applyNewSetup:newSetup];
         [self updateSetupDescription:newSetupNumber];
         if (self.experimentMode) [self randomiseSound];
+        if (self.buttonFadingMode) [self fadeOutNewSetupButton]; // fade out after somebody presses the button.
     }
 }
 
@@ -567,9 +591,15 @@
     NSLog(@"EnsembleEvent: %@ \n",event);
     if (self.listenToMetatoneClassifierMessages) {
         if ([event isEqualToString:METATONE_NEWIDEA_MESSAGE] && ([self.timeOfLastNewIdea timeIntervalSinceNow] < -10.0)) {
-            NSArray *newSetup = [self.composition nextSetup];
-            [self applyNewSetup:newSetup];
-            if (self.experimentMode) [self randomiseSound];
+            if (!self.buttonFadingMode) {
+                // Change the setup and update the sound.
+                NSArray *newSetup = [self.composition nextSetup];
+                [self applyNewSetup:newSetup];
+                if (self.experimentMode) [self randomiseSound];
+            } else {
+                // Fade in the button and wait for it to be pressed.
+                [self fadeInNewSetupButton];
+            }
             //[self.compositionStepper setValue:(self.compositionStepper.value + 1)];
             self.timeOfLastNewIdea = [NSDate date];
         } else {
@@ -703,7 +733,8 @@
         case EXPERIMENT_TYPE_BUTTON_FADE:
             NSLog(@"EXPERIMENT: Starting Button-Fade Mode.");
             [self.oscStatusLabel setText:@"EXPERIMENT: Button X Server."];
-            self.listenToMetatoneClassifierMessages = YES;
+            // Fade
+            self.listenToMetatoneClassifierMessages = YES;
             self.experimentMode = YES;
             [self randomiseSound];
             [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
@@ -711,6 +742,7 @@
             [self.settingsButton setHidden:YES];
             [self.setupDescription setHidden:YES];
             [self.experimentNewSetupButton setHidden:NO];
+            break;
         default:
             NSLog(@"PERFORMANCE: Unknown type: %d, changing to remote type!",self.currentPerformanceType);
             self.currentPerformanceType = PERFORMANCE_TYPE_REMOTE;
@@ -737,11 +769,6 @@
     self.listenToMetatoneClassifierMessages = YES;
 }
 
-//- (BOOL)prefersStatusBarHidden
-//{
-//    return YES;
-//}
-
 -(void)startExperimentMode {
     NSLog(@"Entering Experiment Mode: Configuring UI Elements...");
 
@@ -754,6 +781,9 @@
     [self.setupDescription setHidden:NO];
     [self.experimentNewSetupButton setHidden:YES];
 }
+
+
+
 
 #pragma mark In App Settings Kit Methods
 - (IASKAppSettingsViewController*)appSettingsViewController {

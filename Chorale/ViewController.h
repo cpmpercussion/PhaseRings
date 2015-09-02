@@ -34,6 +34,7 @@
 
 @property (nonatomic) int currentPerformanceType;
 @property (nonatomic) bool experimentMode;
+@property (nonatomic) bool buttonFadingMode;
 @property (nonatomic) bool listenToMetatoneClassifierMessages;
 
 
