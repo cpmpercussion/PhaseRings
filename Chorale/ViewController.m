@@ -468,6 +468,11 @@
     }];
 }
 
+- (void) setVolumeReverbToDefault {
+    [PdBase sendFloat:1.0 toReceiver:@"mastervolume"];
+    [PdBase sendFloat:0.5 toReceiver:@"reverbvolume"];
+}
+
 - (void) randomiseSound {
     int newSound = arc4random_uniform((u_int32_t) [SOUND_SCHEMES count] -2 ) + 2;
     [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newSound] forKey:@"sound"];
