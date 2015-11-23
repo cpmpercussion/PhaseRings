@@ -4,17 +4,12 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>Pods-Audiobus.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-SocketRocket.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>Pods.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>SocketRocket.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -22,17 +17,12 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>12F7AAA6B003D2571FFBB17B</key>
+		<key>304661B4287D748BCA79A955B6B88876</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>2E7BE8403A4C7E601B8C5387</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>BEED543842FE698C20A3EC62</key>
+		<key>94ED2E92EC9882237E1332480D19FA18</key>
 		<dict>
 			<key>primary</key>
 			<true/>
