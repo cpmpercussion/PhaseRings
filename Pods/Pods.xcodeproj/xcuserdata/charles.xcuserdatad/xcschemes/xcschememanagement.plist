@@ -4,16 +4,6 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>InAppSettingsKit-InAppSettingsKit.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>InAppSettingsKit.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>Pods.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -32,6 +22,7 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+<<<<<<< HEAD
 		<key>10C64ABCD82E5B6A656DD608BB8A9522</key>
 		<dict>
 			<key>primary</key>
@@ -48,11 +39,14 @@
 			<true/>
 		</dict>
 		<key>D5CB46FF78498F2AA461A78B3A0C9A60</key>
+=======
+		<key>304661B4287D748BCA79A955B6B88876</key>
+>>>>>>> master
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>DBBA3758AC217FDFD7CF81D53A693D66</key>
+		<key>94ED2E92EC9882237E1332480D19FA18</key>
 		<dict>
 			<key>primary</key>
 			<true/>
