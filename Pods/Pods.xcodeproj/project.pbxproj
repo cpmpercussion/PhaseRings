@@ -7,85 +7,215 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		132C64D9BF6B98580C3707F2A265F9F9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CBC51718377FC85475D865A171A8B5CC /* Foundation.framework */; };
-		2C3DAC2583E4424C0035DEA426176376 /* NSData+SRB64Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 06EBC5997F6EE7C1A07378FFDAC4C049 /* NSData+SRB64Additions.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
-		325569A4977C06D0351441D00A4F5684 /* NSData+SRB64Additions.h in Headers */ = {isa = PBXBuildFile; fileRef = D0216B4C49C7BA5E87706D02C88D36C8 /* NSData+SRB64Additions.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		39B6E197B6FEA4F015CD9E82FEF64845 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED316EE84B1D3AAE415457D92E62A3A0 /* CFNetwork.framework */; };
-		57497A228F775EE74866FFE0DAFE5F0B /* SocketRocket-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B7CBBF51D2A59D5D61DD8446E09F406F /* SocketRocket-dummy.m */; };
-		64ABEDE4F147323C8B2CC2764EC9F15F /* SRWebSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A9C3FEF3733B4730E660E4D22161D95 /* SRWebSocket.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		72F5BCF3528384902F557DF41DE911BD /* SRWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 37C7AE68729A95325C6EBAB840A9C5C3 /* SRWebSocket.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
-		93982DD9BBB09B8A5E4C8667A0B3C96F /* base64.c in Sources */ = {isa = PBXBuildFile; fileRef = 34C8110E6873B8A19378BD48D476AB7B /* base64.c */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
-		9BE8D61661C5EC7F0E2F4CAD724F5D33 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E967D042C48D5885583D70105EF16526 /* Security.framework */; };
-		B13BABC5720DCE07181646E75A8583A2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CBC51718377FC85475D865A171A8B5CC /* Foundation.framework */; };
-		D1F0D1D28A4548EAD630F76DA56929C9 /* Pods-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 272643F56613CA0D336AE3DBF19DC404 /* Pods-dummy.m */; };
-		E5F00B2A58C8E2F5FFB4EC33B57048C8 /* base64.h in Headers */ = {isa = PBXBuildFile; fileRef = 1DFC36B173AE2FDAA400C192A23F378C /* base64.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		0533AE6E511847329C9917F5E0F693C9 /* base64.c in Sources */ = {isa = PBXBuildFile; fileRef = 860A2BC838DEDDD7BA470BBC956E1983 /* base64.c */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
+		0B58D2D935D1263E9FB3E19E61E28CE4 /* IASKSpecifierValuesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E47519217CC5D0B7F6ACE3A68A51F44 /* IASKSpecifierValuesViewController.m */; };
+		0D75C06903B9B1C7B58157211AA8D650 /* IASKSettingsStoreUserDefaults.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E132AA1D09E1955BC818B3256F5E0AC /* IASKSettingsStoreUserDefaults.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		18814E690A68B090FC59D3011B1B3FBF /* fr.lproj in Resources */ = {isa = PBXBuildFile; fileRef = C9C072D400F32B196C04CA6547C1074E /* fr.lproj */; };
+		2D1776AE245F0C3CB66357EA4CE551BE /* Pods-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 272643F56613CA0D336AE3DBF19DC404 /* Pods-dummy.m */; };
+		2D86028B483AFA4718BDBA1C6517319E /* Base.lproj in Resources */ = {isa = PBXBuildFile; fileRef = E8B7D695443924748B1EC5EE3E9EAF19 /* Base.lproj */; };
+		2D8A4C33F21757F4773818763C930139 /* NSData+SRB64Additions.h in Headers */ = {isa = PBXBuildFile; fileRef = 6D1791D66D4D589F8951192CA56442AE /* NSData+SRB64Additions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		30F5426A515012B9F31057D59401B39C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE5AC0DE1699C7255EFE7B345BD3C9FB /* Foundation.framework */; };
+		324723D42EA89AB163AEF2034EA15448 /* IASKMultipleValueSelection.h in Headers */ = {isa = PBXBuildFile; fileRef = FF92CD29934B61914D2C9FE52D43C16F /* IASKMultipleValueSelection.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		334C1E3226E1BD20324C18573E4077DD /* IASKViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 9F5255F9AC02FD5F85558592A5CF6056 /* IASKViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		34E9409F7192967FFC572E88262C8968 /* pt-PT.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 56E686E3C5743852C85DC82208596BA7 /* pt-PT.lproj */; };
+		376C8A6FA0DD7038ACADD41306C12130 /* IASKPSSliderSpecifierViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FD1C202EAF4EF8F73E2EF25C68C83616 /* IASKPSSliderSpecifierViewCell.m */; };
+		3940294198309EDDCFA64CBC56821BBA /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10E8288DB53B7588DDF6DA55D4401170 /* Security.framework */; };
+		3C873DC87FEB5ED40338942A1A49A4B3 /* IASKAppSettingsViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 94E695AD89E4E7558680085F5FCEB998 /* IASKAppSettingsViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3E200BEF589490886F34708FF24000A0 /* IASKAppSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17EE3FF657C160703BEDC275F3A64F34 /* IASKAppSettingsViewController.m */; };
+		3F4F89F98D898F2ED8DF3FFBC73DBA6C /* IASKSpecifier.h in Headers */ = {isa = PBXBuildFile; fileRef = E2D9B6A6F5A8C2E94D49CCEE088067E3 /* IASKSpecifier.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		45BF66873EA63E7D3605FC7FD6AEEF87 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE5AC0DE1699C7255EFE7B345BD3C9FB /* Foundation.framework */; };
+		46ACEEC58899E48D98C9B336BA1F7C64 /* SRWebSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 7EF6393D039638DC267AC0F76778C073 /* SRWebSocket.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		47DF461475984D6352D3ED37E9532AF6 /* IASKPSTextFieldSpecifierViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B97D76760456A6D597E285BED648DC40 /* IASKPSTextFieldSpecifierViewCell.m */; };
+		48778268B460790C317FBA3EAA28E534 /* IASKSettingsReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 79425F52598B2372A5BB83BF8D6CB38C /* IASKSettingsReader.m */; };
+		4F7DE189C080125895D917D4840932EB /* IASKSettingsStoreUserDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = E514A4A19A9EC402C031CD12D63D8C28 /* IASKSettingsStoreUserDefaults.m */; };
+		4FCBA19093E3E3E342B2FC9FA384FAF3 /* IASKPSSliderSpecifierViewCell.h in Headers */ = {isa = PBXBuildFile; fileRef = FD7674B2E9643258A7E0EDC9FA975CED /* IASKPSSliderSpecifierViewCell.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		53A51FB38931B2FF7D6A2ACEEC2FF8D1 /* IASKSettingsStore.h in Headers */ = {isa = PBXBuildFile; fileRef = FA596C0CB39FE59DFE2C20851DADE703 /* IASKSettingsStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		57F27FBB20068C8E77AB20619C8AEF82 /* ru.lproj in Resources */ = {isa = PBXBuildFile; fileRef = E231EB9F6AA821403FB7363CFAA5C761 /* ru.lproj */; };
+		58C5385F128ECE454ACD1B5FBAA23DFF /* SocketRocket-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = E3F1F9C2C8D432E426C32FB80C956F69 /* SocketRocket-dummy.m */; };
+		5B0C46741864F7208D65F06340E2ACBA /* IASKSwitch.h in Headers */ = {isa = PBXBuildFile; fileRef = 7E624D71B82E8AEB9452480085487FFE /* IASKSwitch.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		619EF66827BB7A07CE0CE661C6C90AE8 /* de.lproj in Resources */ = {isa = PBXBuildFile; fileRef = B532893BE78C91101DD5D541DFC1E435 /* de.lproj */; };
+		6AF223759901D32F87F7BC171E135D4F /* IASKSettingsStoreFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 8817B130F518FB70FC734B8DC8AC0465 /* IASKSettingsStoreFile.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		6D594B164DBEFC15450AF94A6DEEA9E9 /* sv.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 5C80385C58933A048279BC846A9113F4 /* sv.lproj */; };
+		6F6092C4A3F226CF25BF4BB35EA41B1C /* it.lproj in Resources */ = {isa = PBXBuildFile; fileRef = CC1ACF938D805C9A4EAB9AF29B88D059 /* it.lproj */; };
+		705A657E4C5867D6C8A7DEC608D5097C /* el.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 892C4AC11A1B4262DFBB32EC6628C424 /* el.lproj */; };
+		708A539A2236D93E0E1A73CEFD76FBC2 /* IASKSpecifier.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C8DA06190546B73C16EEA76C8F5DEC6 /* IASKSpecifier.m */; };
+		7480844EF7BC2567FA29A254DED1B042 /* IASKAppSettingsWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD977206E5197F8EA7402F40307783DB /* IASKAppSettingsWebViewController.m */; };
+		760687CA512309BB3A7F410EE8778FFE /* IASKPSTextFieldSpecifierViewCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 45FB38E1D591BF022B701CD84AA31BF9 /* IASKPSTextFieldSpecifierViewCell.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		769938DB04DD8E42C5BEB575F9BAB05A /* IASKSettingsStoreFile.m in Sources */ = {isa = PBXBuildFile; fileRef = DB05CC11685BDD5DBB1C8ADAEBF809FB /* IASKSettingsStoreFile.m */; };
+		7A743392B4FAC0118A51D8F91A59B8B6 /* InAppSettingsKit-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F342CE7FD45E8B8955841964CBC4932 /* InAppSettingsKit-dummy.m */; };
+		7A7DEFC32FD72445F2E3B06E6645B6CF /* nl.lproj in Resources */ = {isa = PBXBuildFile; fileRef = F73897414A276452B10825F379EECF15 /* nl.lproj */; };
+		808B9B4F583DFD52B3AA0559DE7C2787 /* IASKSettingsStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F2F7665488DB3C8EA9D8088B75FD84D6 /* IASKSettingsStore.m */; };
+		8971CA3D1EC4901FBEC33AA874267A73 /* tr.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 1DB95D66FE04DA52D68FDD086975FC53 /* tr.lproj */; };
+		9302D0220C1BF51AC109E589684CCE6A /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08371D28A8F24DA680B4756E76970ECB /* MessageUI.framework */; };
+		94AD35615B062FDDCE9FCEB09405A850 /* NSData+SRB64Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = FCD73F014ADC285F3D299D1AA45F0DDC /* NSData+SRB64Additions.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
+		9506EDC16378774C9FAF5E35142CE566 /* SRWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 48C11FDFD60440EA1A633AAE478ABE64 /* SRWebSocket.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
+		A19EC9FCD4135D8E5DF3EBC2162E0AE5 /* IASKAppSettingsWebViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = CDFF64F9BEA794BE0D8544F76DF36D3F /* IASKAppSettingsWebViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A55B9907A8AD3A91DBAE9447945E6458 /* IASKSpecifierValuesViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D56A344D46841DAA3CAD0EC024E340E /* IASKSpecifierValuesViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A586BEB7703E81E8806E67410E0549C1 /* base64.h in Headers */ = {isa = PBXBuildFile; fileRef = 6BCD09ECA73F1489FBC8148BD2DC7DA0 /* base64.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		ADE8DB8FBA1B3732C4FCC58CA1EBE118 /* en.lproj in Resources */ = {isa = PBXBuildFile; fileRef = A2717B1B9F770D6DAA67B2EA8092AE9A /* en.lproj */; };
+		AF17EADB4191BE7D5FCC120BB88E8515 /* IASKSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D0BE74A73E4C729C315EEB8A987F827 /* IASKSwitch.m */; };
+		C00452458576796B6906FA617FE31C53 /* es.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 1FED57C22930918679A1496272D64BB0 /* es.lproj */; };
+		C2E9FC5DB80CDBE97CBE740BD00AFA22 /* ja.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 6280EBD6D666DE1C74C8F5B03E255EF0 /* ja.lproj */; };
+		C6B640F5504A8A6FBDD7F445B4FA5558 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CA6C0430172B049E09A05A7193346A73 /* CFNetwork.framework */; };
+		C78CF159A140AA57509A09314E5D96D0 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37525ECA322B33CED5D676CA2A539D37 /* UIKit.framework */; };
+		C89EDCB3AB5EF2E5DC67FCA208E5C565 /* IASKSettingsReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 86C47ECA7CC03EF2F2CF8D99E65B4E84 /* IASKSettingsReader.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DECBB08A451041E9E0DC79E8F2F960CD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE5AC0DE1699C7255EFE7B345BD3C9FB /* Foundation.framework */; };
+		E18B76068747A9183120CDCE54FBE899 /* th.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 13F2F09F27865E42779284AB1C78F731 /* th.lproj */; };
+		E455C9FE38DFC683930CB020CEBC064D /* IASKSlider.h in Headers */ = {isa = PBXBuildFile; fileRef = D154CA49F3F134865B023AC5CBE6F833 /* IASKSlider.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EAAC98344292E511E882517957C4FDC0 /* IASKSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = CCE991AD8835BABB87231B77AF6E7054 /* IASKSlider.m */; };
+		EFD504A80C146460C64389BDDF927CE4 /* pt.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 877ED46C1FF359B6F57D0305B6636EDB /* pt.lproj */; };
+		F9C20BAF3BFEF76851F22E43B03319ED /* IASKTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = C5DD0758DADF9D684B21FCADCA35E45D /* IASKTextField.m */; };
+		FB85406A99F62FDFEB33660ECE01D24A /* IASKTextField.h in Headers */ = {isa = PBXBuildFile; fileRef = F4EDA3100FBABB55C897109E32ED1AD2 /* IASKTextField.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FCC7D94DF844CB2309AA473E874F08E5 /* IASKMultipleValueSelection.m in Sources */ = {isa = PBXBuildFile; fileRef = 83A0811BE7DF64CCE3927E970E62DEF4 /* IASKMultipleValueSelection.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		9002153A723B7CB4D02F648F129B1EA6 /* PBXContainerItemProxy */ = {
+		C9C00D8F0F3048D29C24FDF26116686E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 304661B4287D748BCA79A955B6B88876;
+			remoteGlobalIDString = DBBA3758AC217FDFD7CF81D53A693D66;
+			remoteInfo = "InAppSettingsKit-InAppSettingsKit";
+		};
+		F2AF4B68E06FD001AB86DF88397EA56B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 43C6B2448799EC3ADC13D88E84922FC7;
 			remoteInfo = SocketRocket;
+		};
+		FC7812B75E89A05DF4F7DF93BE80F424 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6FA38DEBB462720D4EBB9B5EB99499B9;
+			remoteInfo = InAppSettingsKit;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		06EBC5997F6EE7C1A07378FFDAC4C049 /* NSData+SRB64Additions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSData+SRB64Additions.m"; path = "SocketRocket/NSData+SRB64Additions.m"; sourceTree = "<group>"; };
-		0B09E5B37BBC9744C24CECD69152C5CF /* ABCommon.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABCommon.h; path = Audiobus/ABCommon.h; sourceTree = "<group>"; };
+		08371D28A8F24DA680B4756E76970ECB /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.0.sdk/System/Library/Frameworks/MessageUI.framework; sourceTree = DEVELOPER_DIR; };
 		10834806BD7B412BC24F347361FA2C8E /* Pods-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-acknowledgements.plist"; sourceTree = "<group>"; };
-		1A9C3FEF3733B4730E660E4D22161D95 /* SRWebSocket.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SRWebSocket.h; path = SocketRocket/SRWebSocket.h; sourceTree = "<group>"; };
-		1DFC36B173AE2FDAA400C192A23F378C /* base64.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = base64.h; path = SocketRocket/base64.h; sourceTree = "<group>"; };
+		10837DA6440928DFDAF926A1EEF9CF9A /* ABCommon.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABCommon.h; path = Audiobus/ABCommon.h; sourceTree = "<group>"; };
+		10E8288DB53B7588DDF6DA55D4401170 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.0.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
+		13F2F09F27865E42779284AB1C78F731 /* th.lproj */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; name = th.lproj; path = InAppSettingsKit/Resources/th.lproj; sourceTree = "<group>"; };
+		17EE3FF657C160703BEDC275F3A64F34 /* IASKAppSettingsViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = IASKAppSettingsViewController.m; path = InAppSettingsKit/Controllers/IASKAppSettingsViewController.m; sourceTree = "<group>"; };
+		19C0680340E2F5E1037743A07F21D11E /* SocketRocket-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SocketRocket-prefix.pch"; sourceTree = "<group>"; };
+		1C38CFD165F55BD820612911AC114DB9 /* ABFilterPort.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABFilterPort.h; path = Audiobus/ABFilterPort.h; sourceTree = "<group>"; };
+		1DB95D66FE04DA52D68FDD086975FC53 /* tr.lproj */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; name = tr.lproj; path = InAppSettingsKit/Resources/tr.lproj; sourceTree = "<group>"; };
+		1F342CE7FD45E8B8955841964CBC4932 /* InAppSettingsKit-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "InAppSettingsKit-dummy.m"; sourceTree = "<group>"; };
+		1FED57C22930918679A1496272D64BB0 /* es.lproj */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; name = es.lproj; path = InAppSettingsKit/Resources/es.lproj; sourceTree = "<group>"; };
 		272643F56613CA0D336AE3DBF19DC404 /* Pods-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-dummy.m"; sourceTree = "<group>"; };
-		34C8110E6873B8A19378BD48D476AB7B /* base64.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = base64.c; path = SocketRocket/base64.c; sourceTree = "<group>"; };
-		37C7AE68729A95325C6EBAB840A9C5C3 /* SRWebSocket.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SRWebSocket.m; path = SocketRocket/SRWebSocket.m; sourceTree = "<group>"; };
+		28C96B25B507BCD18022C752A8A44BB9 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		29B7208AEA5CE0158FC1C253C381C64C /* ABTrigger.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABTrigger.h; path = Audiobus/ABTrigger.h; sourceTree = "<group>"; };
+		2E132AA1D09E1955BC818B3256F5E0AC /* IASKSettingsStoreUserDefaults.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = IASKSettingsStoreUserDefaults.h; path = InAppSettingsKit/Models/IASKSettingsStoreUserDefaults.h; sourceTree = "<group>"; };
+		37525ECA322B33CED5D676CA2A539D37 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.0.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		37DB56D75062CC75FCB0966E1C6E8A8E /* Pods-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-acknowledgements.markdown"; sourceTree = "<group>"; };
-		3AABC6977C967406F157A9E91E9C5F19 /* ABPeer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABPeer.h; path = Audiobus/ABPeer.h; sourceTree = "<group>"; };
-		3BBEBD1CED1FFD417B924006E4C94EA1 /* ABButtonTrigger.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABButtonTrigger.h; path = Audiobus/ABButtonTrigger.h; sourceTree = "<group>"; };
-		492C1B262C98A693E749BABBBF18FD05 /* SocketRocket-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SocketRocket-prefix.pch"; sourceTree = "<group>"; };
+		3D0BE74A73E4C729C315EEB8A987F827 /* IASKSwitch.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = IASKSwitch.m; path = InAppSettingsKit/Views/IASKSwitch.m; sourceTree = "<group>"; };
+		3DA68E70E891F27970B2808C5C570758 /* libAudiobus.a */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = archive.ar; path = libAudiobus.a; sourceTree = "<group>"; };
+		45FB38E1D591BF022B701CD84AA31BF9 /* IASKPSTextFieldSpecifierViewCell.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = IASKPSTextFieldSpecifierViewCell.h; path = InAppSettingsKit/Views/IASKPSTextFieldSpecifierViewCell.h; sourceTree = "<group>"; };
+		47263915563836B989949F2C7EC51D69 /* ABAudioUnitFader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABAudioUnitFader.h; path = Audiobus/ABAudioUnitFader.h; sourceTree = "<group>"; };
+		48C11FDFD60440EA1A633AAE478ABE64 /* SRWebSocket.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SRWebSocket.m; path = SocketRocket/SRWebSocket.m; sourceTree = "<group>"; };
+		4C8DA06190546B73C16EEA76C8F5DEC6 /* IASKSpecifier.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = IASKSpecifier.m; path = InAppSettingsKit/Models/IASKSpecifier.m; sourceTree = "<group>"; };
+		4D56A344D46841DAA3CAD0EC024E340E /* IASKSpecifierValuesViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = IASKSpecifierValuesViewController.h; path = InAppSettingsKit/Controllers/IASKSpecifierValuesViewController.h; sourceTree = "<group>"; };
 		4E762F23EC34ED4A6FF3312D84E33A40 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Pods.debug.xcconfig; sourceTree = "<group>"; };
-		52DC8ACB1842AE17871EE069A8C34DEA /* libSocketRocket.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSocketRocket.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		56E686E3C5743852C85DC82208596BA7 /* pt-PT.lproj */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; name = "pt-PT.lproj"; path = "InAppSettingsKit/Resources/pt-PT.lproj"; sourceTree = "<group>"; };
+		5C80385C58933A048279BC846A9113F4 /* sv.lproj */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; name = sv.lproj; path = InAppSettingsKit/Resources/sv.lproj; sourceTree = "<group>"; };
+		6280EBD6D666DE1C74C8F5B03E255EF0 /* ja.lproj */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; name = ja.lproj; path = InAppSettingsKit/Resources/ja.lproj; sourceTree = "<group>"; };
 		6911BECA35E7518D864239B7E898EEF3 /* Pods-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-frameworks.sh"; sourceTree = "<group>"; };
-		7804D78E94B59380AD7EA65A40BBC1F4 /* ABFilterPort.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABFilterPort.h; path = Audiobus/ABFilterPort.h; sourceTree = "<group>"; };
-		7EDA3137BB0BC35E459A3230C7B1AA07 /* ABTrigger.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABTrigger.h; path = Audiobus/ABTrigger.h; sourceTree = "<group>"; };
-		8D6A0F593085970D3C37A0574BAFCF06 /* ABAudiobusController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABAudiobusController.h; path = Audiobus/ABAudiobusController.h; sourceTree = "<group>"; };
-		945FA74662DED956BBA896F5E8F1D4C0 /* libAudiobus.a */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = archive.ar; path = libAudiobus.a; sourceTree = "<group>"; };
+		6BCD09ECA73F1489FBC8148BD2DC7DA0 /* base64.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = base64.h; path = SocketRocket/base64.h; sourceTree = "<group>"; };
+		6D1791D66D4D589F8951192CA56442AE /* NSData+SRB64Additions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSData+SRB64Additions.h"; path = "SocketRocket/NSData+SRB64Additions.h"; sourceTree = "<group>"; };
+		79425F52598B2372A5BB83BF8D6CB38C /* IASKSettingsReader.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = IASKSettingsReader.m; path = InAppSettingsKit/Models/IASKSettingsReader.m; sourceTree = "<group>"; };
+		7E47519217CC5D0B7F6ACE3A68A51F44 /* IASKSpecifierValuesViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = IASKSpecifierValuesViewController.m; path = InAppSettingsKit/Controllers/IASKSpecifierValuesViewController.m; sourceTree = "<group>"; };
+		7E624D71B82E8AEB9452480085487FFE /* IASKSwitch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = IASKSwitch.h; path = InAppSettingsKit/Views/IASKSwitch.h; sourceTree = "<group>"; };
+		7EF6393D039638DC267AC0F76778C073 /* SRWebSocket.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SRWebSocket.h; path = SocketRocket/SRWebSocket.h; sourceTree = "<group>"; };
+		83A0811BE7DF64CCE3927E970E62DEF4 /* IASKMultipleValueSelection.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = IASKMultipleValueSelection.m; path = InAppSettingsKit/Controllers/IASKMultipleValueSelection.m; sourceTree = "<group>"; };
+		860A2BC838DEDDD7BA470BBC956E1983 /* base64.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = base64.c; path = SocketRocket/base64.c; sourceTree = "<group>"; };
+		86C47ECA7CC03EF2F2CF8D99E65B4E84 /* IASKSettingsReader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = IASKSettingsReader.h; path = InAppSettingsKit/Models/IASKSettingsReader.h; sourceTree = "<group>"; };
+		877ED46C1FF359B6F57D0305B6636EDB /* pt.lproj */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; name = pt.lproj; path = InAppSettingsKit/Resources/pt.lproj; sourceTree = "<group>"; };
+		8817B130F518FB70FC734B8DC8AC0465 /* IASKSettingsStoreFile.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = IASKSettingsStoreFile.h; path = InAppSettingsKit/Models/IASKSettingsStoreFile.h; sourceTree = "<group>"; };
+		892C4AC11A1B4262DFBB32EC6628C424 /* el.lproj */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; name = el.lproj; path = InAppSettingsKit/Resources/el.lproj; sourceTree = "<group>"; };
+		94E695AD89E4E7558680085F5FCEB998 /* IASKAppSettingsViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = IASKAppSettingsViewController.h; path = InAppSettingsKit/Controllers/IASKAppSettingsViewController.h; sourceTree = "<group>"; };
 		98C98CDFB3F20F2925F6CD1F141BB14F /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Pods.release.xcconfig; sourceTree = "<group>"; };
+		9AC83806FE5905BFF1A32083113D83F1 /* ABSenderPort.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABSenderPort.h; path = Audiobus/ABSenderPort.h; sourceTree = "<group>"; };
+		9F5255F9AC02FD5F85558592A5CF6056 /* IASKViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = IASKViewController.h; path = InAppSettingsKit/Controllers/IASKViewController.h; sourceTree = "<group>"; };
+		9FCC67CA10858A73D56741D437F9A226 /* libInAppSettingsKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libInAppSettingsKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1A36D34413696BE466E2CA0AFF194DA /* Pods-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-resources.sh"; sourceTree = "<group>"; };
-		A2A43840E83C24AE3B3F4CC153893A6D /* ABAudioUnitFader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABAudioUnitFader.h; path = Audiobus/ABAudioUnitFader.h; sourceTree = "<group>"; };
-		A6ECCDDAF4B304F7BF2905B3CEAC17FD /* ABReceiverPort.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABReceiverPort.h; path = Audiobus/ABReceiverPort.h; sourceTree = "<group>"; };
-		B20789E25FDA13298E61603B615BFA61 /* SocketRocket.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SocketRocket.xcconfig; sourceTree = "<group>"; };
-		B2ADA5E2BFA6133CF5CBB09DE8A72968 /* ABSenderPort.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABSenderPort.h; path = Audiobus/ABSenderPort.h; sourceTree = "<group>"; };
-		B7CBBF51D2A59D5D61DD8446E09F406F /* SocketRocket-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "SocketRocket-dummy.m"; sourceTree = "<group>"; };
+		A2717B1B9F770D6DAA67B2EA8092AE9A /* en.lproj */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; name = en.lproj; path = InAppSettingsKit/Resources/en.lproj; sourceTree = "<group>"; };
+		A80674B1C183172C650D34F0BF7B35C5 /* ABPort.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABPort.h; path = Audiobus/ABPort.h; sourceTree = "<group>"; };
+		A9AB2C81495B59D464715B029626A210 /* InAppSettingsKit-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "InAppSettingsKit-prefix.pch"; sourceTree = "<group>"; };
+		B0E5CEA356B886A8B693030C1AE85734 /* ABMultiStreamBuffer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABMultiStreamBuffer.h; path = Audiobus/ABMultiStreamBuffer.h; sourceTree = "<group>"; };
+		B37C6124CA6CD9A44D19BC89CF9A62F1 /* libSocketRocket.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSocketRocket.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		B532893BE78C91101DD5D541DFC1E435 /* de.lproj */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; name = de.lproj; path = InAppSettingsKit/Resources/de.lproj; sourceTree = "<group>"; };
+		B97D76760456A6D597E285BED648DC40 /* IASKPSTextFieldSpecifierViewCell.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = IASKPSTextFieldSpecifierViewCell.m; path = InAppSettingsKit/Views/IASKPSTextFieldSpecifierViewCell.m; sourceTree = "<group>"; };
 		BA6428E9F66FD5A23C0A2E06ED26CD2F /* Podfile */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		CBC51718377FC85475D865A171A8B5CC /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
-		D0216B4C49C7BA5E87706D02C88D36C8 /* NSData+SRB64Additions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSData+SRB64Additions.h"; path = "SocketRocket/NSData+SRB64Additions.h"; sourceTree = "<group>"; };
-		D8DC677A6EDD20C8D4640F3A2AF3DC8C /* Audiobus.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = Audiobus.h; path = Audiobus/Audiobus.h; sourceTree = "<group>"; };
-		DA0D184496DC72240FA25DC633C04FE0 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		E03A0BB283FF804D2FEE9791E66488F0 /* ABPort.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABPort.h; path = Audiobus/ABPort.h; sourceTree = "<group>"; };
-		E9087C55AD3DC6B7CB660FF29287541A /* ABMultiStreamBuffer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABMultiStreamBuffer.h; path = Audiobus/ABMultiStreamBuffer.h; sourceTree = "<group>"; };
-		E967D042C48D5885583D70105EF16526 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.0.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
-		EB5E645FC4430F02EEB8CAB5E50785AF /* ABLocalPort.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABLocalPort.h; path = Audiobus/ABLocalPort.h; sourceTree = "<group>"; };
-		ED316EE84B1D3AAE415457D92E62A3A0 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.0.sdk/System/Library/Frameworks/CFNetwork.framework; sourceTree = DEVELOPER_DIR; };
+		C5DD0758DADF9D684B21FCADCA35E45D /* IASKTextField.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = IASKTextField.m; path = InAppSettingsKit/Views/IASKTextField.m; sourceTree = "<group>"; };
+		C9C072D400F32B196C04CA6547C1074E /* fr.lproj */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; name = fr.lproj; path = InAppSettingsKit/Resources/fr.lproj; sourceTree = "<group>"; };
+		CA6C0430172B049E09A05A7193346A73 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.0.sdk/System/Library/Frameworks/CFNetwork.framework; sourceTree = DEVELOPER_DIR; };
+		CC1ACF938D805C9A4EAB9AF29B88D059 /* it.lproj */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; name = it.lproj; path = InAppSettingsKit/Resources/it.lproj; sourceTree = "<group>"; };
+		CCA63781E45FE2D1CE7B8BD974958CFA /* ABLocalPort.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABLocalPort.h; path = Audiobus/ABLocalPort.h; sourceTree = "<group>"; };
+		CCE991AD8835BABB87231B77AF6E7054 /* IASKSlider.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = IASKSlider.m; path = InAppSettingsKit/Views/IASKSlider.m; sourceTree = "<group>"; };
+		CD977206E5197F8EA7402F40307783DB /* IASKAppSettingsWebViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = IASKAppSettingsWebViewController.m; path = InAppSettingsKit/Controllers/IASKAppSettingsWebViewController.m; sourceTree = "<group>"; };
+		CDFF64F9BEA794BE0D8544F76DF36D3F /* IASKAppSettingsWebViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = IASKAppSettingsWebViewController.h; path = InAppSettingsKit/Controllers/IASKAppSettingsWebViewController.h; sourceTree = "<group>"; };
+		D154CA49F3F134865B023AC5CBE6F833 /* IASKSlider.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = IASKSlider.h; path = InAppSettingsKit/Views/IASKSlider.h; sourceTree = "<group>"; };
+		D86D4D1802DEC5F2FA81EF0FB4EAEF97 /* ABButtonTrigger.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABButtonTrigger.h; path = Audiobus/ABButtonTrigger.h; sourceTree = "<group>"; };
+		D8C192B75B78B2DE44168F7C246418BF /* ABReceiverPort.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABReceiverPort.h; path = Audiobus/ABReceiverPort.h; sourceTree = "<group>"; };
+		DA00A3DDBE50461C1182E6180DDE2458 /* InAppSettingsKit.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = InAppSettingsKit.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		DB05CC11685BDD5DBB1C8ADAEBF809FB /* IASKSettingsStoreFile.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = IASKSettingsStoreFile.m; path = InAppSettingsKit/Models/IASKSettingsStoreFile.m; sourceTree = "<group>"; };
+		DCA8BB5CD8C1E6453651BBA05FB2C2DB /* ABAudiobusController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABAudiobusController.h; path = Audiobus/ABAudiobusController.h; sourceTree = "<group>"; };
+		DE5AC0DE1699C7255EFE7B345BD3C9FB /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		E231EB9F6AA821403FB7363CFAA5C761 /* ru.lproj */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; name = ru.lproj; path = InAppSettingsKit/Resources/ru.lproj; sourceTree = "<group>"; };
+		E29431C56C1071022E76C8AB474212EA /* InAppSettingsKit.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = InAppSettingsKit.xcconfig; sourceTree = "<group>"; };
+		E2D9B6A6F5A8C2E94D49CCEE088067E3 /* IASKSpecifier.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = IASKSpecifier.h; path = InAppSettingsKit/Models/IASKSpecifier.h; sourceTree = "<group>"; };
+		E3F1F9C2C8D432E426C32FB80C956F69 /* SocketRocket-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "SocketRocket-dummy.m"; sourceTree = "<group>"; };
+		E514A4A19A9EC402C031CD12D63D8C28 /* IASKSettingsStoreUserDefaults.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = IASKSettingsStoreUserDefaults.m; path = InAppSettingsKit/Models/IASKSettingsStoreUserDefaults.m; sourceTree = "<group>"; };
+		E625572B5C9688ABB503E71F2AC070A0 /* ABPeer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABPeer.h; path = Audiobus/ABPeer.h; sourceTree = "<group>"; };
+		E8B7D695443924748B1EC5EE3E9EAF19 /* Base.lproj */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; name = Base.lproj; path = InAppSettingsKit/Resources/Base.lproj; sourceTree = "<group>"; };
+		F0BE00D19F909F499F7EABDC8C9E7CE6 /* SocketRocket.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SocketRocket.xcconfig; sourceTree = "<group>"; };
+		F2F7665488DB3C8EA9D8088B75FD84D6 /* IASKSettingsStore.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = IASKSettingsStore.m; path = InAppSettingsKit/Models/IASKSettingsStore.m; sourceTree = "<group>"; };
+		F4EDA3100FBABB55C897109E32ED1AD2 /* IASKTextField.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = IASKTextField.h; path = InAppSettingsKit/Views/IASKTextField.h; sourceTree = "<group>"; };
+		F73897414A276452B10825F379EECF15 /* nl.lproj */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; name = nl.lproj; path = InAppSettingsKit/Resources/nl.lproj; sourceTree = "<group>"; };
+		F9966FD5E70C2F3285F92DE38763DACF /* Audiobus.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = Audiobus.h; path = Audiobus/Audiobus.h; sourceTree = "<group>"; };
+		FA596C0CB39FE59DFE2C20851DADE703 /* IASKSettingsStore.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = IASKSettingsStore.h; path = InAppSettingsKit/Models/IASKSettingsStore.h; sourceTree = "<group>"; };
+		FCD73F014ADC285F3D299D1AA45F0DDC /* NSData+SRB64Additions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSData+SRB64Additions.m"; path = "SocketRocket/NSData+SRB64Additions.m"; sourceTree = "<group>"; };
+		FD1C202EAF4EF8F73E2EF25C68C83616 /* IASKPSSliderSpecifierViewCell.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = IASKPSSliderSpecifierViewCell.m; path = InAppSettingsKit/Views/IASKPSSliderSpecifierViewCell.m; sourceTree = "<group>"; };
+		FD7674B2E9643258A7E0EDC9FA975CED /* IASKPSSliderSpecifierViewCell.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = IASKPSSliderSpecifierViewCell.h; path = InAppSettingsKit/Views/IASKPSSliderSpecifierViewCell.h; sourceTree = "<group>"; };
+		FF92CD29934B61914D2C9FE52D43C16F /* IASKMultipleValueSelection.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = IASKMultipleValueSelection.h; path = InAppSettingsKit/Controllers/IASKMultipleValueSelection.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		4B5BAFA0BF7ACD4DF01C9F290604C12E /* Frameworks */ = {
+		04CCDA4F8281FF08930655905A716566 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				39B6E197B6FEA4F015CD9E82FEF64845 /* CFNetwork.framework in Frameworks */,
-				B13BABC5720DCE07181646E75A8583A2 /* Foundation.framework in Frameworks */,
-				9BE8D61661C5EC7F0E2F4CAD724F5D33 /* Security.framework in Frameworks */,
+				C6B640F5504A8A6FBDD7F445B4FA5558 /* CFNetwork.framework in Frameworks */,
+				DECBB08A451041E9E0DC79E8F2F960CD /* Foundation.framework in Frameworks */,
+				3940294198309EDDCFA64CBC56821BBA /* Security.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		6921011E786EF6D972E6E6EB0134DEEA /* Frameworks */ = {
+		40C3447499EC6CF02262D4E3C5FBED5D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				132C64D9BF6B98580C3707F2A265F9F9 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8A170B564E0A99FF9AF5B2E241D511C4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				45BF66873EA63E7D3605FC7FD6AEEF87 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F7B06C5D7772E652E0561CB65407BB1E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				30F5426A515012B9F31057D59401B39C /* Foundation.framework in Frameworks */,
+				9302D0220C1BF51AC109E589684CCE6A /* MessageUI.framework in Frameworks */,
+				C78CF159A140AA57509A09314E5D96D0 /* UIKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -100,63 +230,144 @@
 			name = "Targets Support Files";
 			sourceTree = "<group>";
 		};
-		122DA2E5084A4393C29BE363C764795C /* Frameworks */ = {
+		1B2D9C52B2527ED0612F9CA9F9628140 /* InAppSettingsKit */ = {
 			isa = PBXGroup;
 			children = (
-				B728418FA3338AB680410C5B26CF547F /* iOS */,
+				94E695AD89E4E7558680085F5FCEB998 /* IASKAppSettingsViewController.h */,
+				17EE3FF657C160703BEDC275F3A64F34 /* IASKAppSettingsViewController.m */,
+				CDFF64F9BEA794BE0D8544F76DF36D3F /* IASKAppSettingsWebViewController.h */,
+				CD977206E5197F8EA7402F40307783DB /* IASKAppSettingsWebViewController.m */,
+				FF92CD29934B61914D2C9FE52D43C16F /* IASKMultipleValueSelection.h */,
+				83A0811BE7DF64CCE3927E970E62DEF4 /* IASKMultipleValueSelection.m */,
+				FD7674B2E9643258A7E0EDC9FA975CED /* IASKPSSliderSpecifierViewCell.h */,
+				FD1C202EAF4EF8F73E2EF25C68C83616 /* IASKPSSliderSpecifierViewCell.m */,
+				45FB38E1D591BF022B701CD84AA31BF9 /* IASKPSTextFieldSpecifierViewCell.h */,
+				B97D76760456A6D597E285BED648DC40 /* IASKPSTextFieldSpecifierViewCell.m */,
+				86C47ECA7CC03EF2F2CF8D99E65B4E84 /* IASKSettingsReader.h */,
+				79425F52598B2372A5BB83BF8D6CB38C /* IASKSettingsReader.m */,
+				FA596C0CB39FE59DFE2C20851DADE703 /* IASKSettingsStore.h */,
+				F2F7665488DB3C8EA9D8088B75FD84D6 /* IASKSettingsStore.m */,
+				8817B130F518FB70FC734B8DC8AC0465 /* IASKSettingsStoreFile.h */,
+				DB05CC11685BDD5DBB1C8ADAEBF809FB /* IASKSettingsStoreFile.m */,
+				2E132AA1D09E1955BC818B3256F5E0AC /* IASKSettingsStoreUserDefaults.h */,
+				E514A4A19A9EC402C031CD12D63D8C28 /* IASKSettingsStoreUserDefaults.m */,
+				D154CA49F3F134865B023AC5CBE6F833 /* IASKSlider.h */,
+				CCE991AD8835BABB87231B77AF6E7054 /* IASKSlider.m */,
+				E2D9B6A6F5A8C2E94D49CCEE088067E3 /* IASKSpecifier.h */,
+				4C8DA06190546B73C16EEA76C8F5DEC6 /* IASKSpecifier.m */,
+				4D56A344D46841DAA3CAD0EC024E340E /* IASKSpecifierValuesViewController.h */,
+				7E47519217CC5D0B7F6ACE3A68A51F44 /* IASKSpecifierValuesViewController.m */,
+				7E624D71B82E8AEB9452480085487FFE /* IASKSwitch.h */,
+				3D0BE74A73E4C729C315EEB8A987F827 /* IASKSwitch.m */,
+				F4EDA3100FBABB55C897109E32ED1AD2 /* IASKTextField.h */,
+				C5DD0758DADF9D684B21FCADCA35E45D /* IASKTextField.m */,
+				9F5255F9AC02FD5F85558592A5CF6056 /* IASKViewController.h */,
+				40AA56348AF2B166211218BAADC3D0B0 /* Resources */,
+				9F57F9CC36EF3E3A7C9DD8666379D20C /* Support Files */,
+			);
+			path = InAppSettingsKit;
+			sourceTree = "<group>";
+		};
+		1DC2ECF11007D1BB232D7B28E2902CA4 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				45BCEA0E618F403A14ADAC88236250A3 /* Audiobus */,
+				1B2D9C52B2527ED0612F9CA9F9628140 /* InAppSettingsKit */,
+				DA9D4CE6384433CFAC6849F2E8D63F47 /* SocketRocket */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		20B56609144CE204DFA8221F742B2D76 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E8BCB1E7A48FED669F39B4D6CBA9AFD1 /* iOS */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		203182CB4E0154149AD0651716BD202F /* Products */ = {
+		365AA24991124CB472594362F176162F /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				DA0D184496DC72240FA25DC633C04FE0 /* libPods.a */,
-				52DC8ACB1842AE17871EE069A8C34DEA /* libSocketRocket.a */,
+				DA00A3DDBE50461C1182E6180DDE2458 /* InAppSettingsKit.bundle */,
+				9FCC67CA10858A73D56741D437F9A226 /* libInAppSettingsKit.a */,
+				28C96B25B507BCD18022C752A8A44BB9 /* libPods.a */,
+				B37C6124CA6CD9A44D19BC89CF9A62F1 /* libSocketRocket.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		40AA56348AF2B166211218BAADC3D0B0 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				E8B7D695443924748B1EC5EE3E9EAF19 /* Base.lproj */,
+				B532893BE78C91101DD5D541DFC1E435 /* de.lproj */,
+				892C4AC11A1B4262DFBB32EC6628C424 /* el.lproj */,
+				A2717B1B9F770D6DAA67B2EA8092AE9A /* en.lproj */,
+				1FED57C22930918679A1496272D64BB0 /* es.lproj */,
+				C9C072D400F32B196C04CA6547C1074E /* fr.lproj */,
+				CC1ACF938D805C9A4EAB9AF29B88D059 /* it.lproj */,
+				6280EBD6D666DE1C74C8F5B03E255EF0 /* ja.lproj */,
+				F73897414A276452B10825F379EECF15 /* nl.lproj */,
+				877ED46C1FF359B6F57D0305B6636EDB /* pt.lproj */,
+				56E686E3C5743852C85DC82208596BA7 /* pt-PT.lproj */,
+				E231EB9F6AA821403FB7363CFAA5C761 /* ru.lproj */,
+				5C80385C58933A048279BC846A9113F4 /* sv.lproj */,
+				13F2F09F27865E42779284AB1C78F731 /* th.lproj */,
+				1DB95D66FE04DA52D68FDD086975FC53 /* tr.lproj */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		45BCEA0E618F403A14ADAC88236250A3 /* Audiobus */ = {
+			isa = PBXGroup;
+			children = (
+				DCA8BB5CD8C1E6453651BBA05FB2C2DB /* ABAudiobusController.h */,
+				47263915563836B989949F2C7EC51D69 /* ABAudioUnitFader.h */,
+				D86D4D1802DEC5F2FA81EF0FB4EAEF97 /* ABButtonTrigger.h */,
+				10837DA6440928DFDAF926A1EEF9CF9A /* ABCommon.h */,
+				1C38CFD165F55BD820612911AC114DB9 /* ABFilterPort.h */,
+				CCA63781E45FE2D1CE7B8BD974958CFA /* ABLocalPort.h */,
+				B0E5CEA356B886A8B693030C1AE85734 /* ABMultiStreamBuffer.h */,
+				E625572B5C9688ABB503E71F2AC070A0 /* ABPeer.h */,
+				A80674B1C183172C650D34F0BF7B35C5 /* ABPort.h */,
+				D8C192B75B78B2DE44168F7C246418BF /* ABReceiverPort.h */,
+				9AC83806FE5905BFF1A32083113D83F1 /* ABSenderPort.h */,
+				29B7208AEA5CE0158FC1C253C381C64C /* ABTrigger.h */,
+				F9966FD5E70C2F3285F92DE38763DACF /* Audiobus.h */,
+				8896BFAC4EF4DED5EE355FEA16F968B2 /* Frameworks */,
+			);
+			path = Audiobus;
 			sourceTree = "<group>";
 		};
 		7DB346D0F39D3F0E887471402A8071AB = {
 			isa = PBXGroup;
 			children = (
 				BA6428E9F66FD5A23C0A2E06ED26CD2F /* Podfile */,
-				122DA2E5084A4393C29BE363C764795C /* Frameworks */,
-				85C397DB235076B05E361880A96481B0 /* Pods */,
-				203182CB4E0154149AD0651716BD202F /* Products */,
+				20B56609144CE204DFA8221F742B2D76 /* Frameworks */,
+				1DC2ECF11007D1BB232D7B28E2902CA4 /* Pods */,
+				365AA24991124CB472594362F176162F /* Products */,
 				037C0CA694176A3C0915F62C9D20B3E6 /* Targets Support Files */,
 			);
 			sourceTree = "<group>";
 		};
-		82C77BDEBD0BE803300691F9A9AC0EBC /* Frameworks */ = {
+		8896BFAC4EF4DED5EE355FEA16F968B2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				945FA74662DED956BBA896F5E8F1D4C0 /* libAudiobus.a */,
+				3DA68E70E891F27970B2808C5C570758 /* libAudiobus.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		85C397DB235076B05E361880A96481B0 /* Pods */ = {
+		9F57F9CC36EF3E3A7C9DD8666379D20C /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				F05437ABBBED499D22C87F61AF1D4CEC /* Audiobus */,
-				8CE8ECD8A03A70334F358478A369BCC9 /* SocketRocket */,
+				E29431C56C1071022E76C8AB474212EA /* InAppSettingsKit.xcconfig */,
+				1F342CE7FD45E8B8955841964CBC4932 /* InAppSettingsKit-dummy.m */,
+				A9AB2C81495B59D464715B029626A210 /* InAppSettingsKit-prefix.pch */,
 			);
-			name = Pods;
-			sourceTree = "<group>";
-		};
-		8CE8ECD8A03A70334F358478A369BCC9 /* SocketRocket */ = {
-			isa = PBXGroup;
-			children = (
-				34C8110E6873B8A19378BD48D476AB7B /* base64.c */,
-				1DFC36B173AE2FDAA400C192A23F378C /* base64.h */,
-				D0216B4C49C7BA5E87706D02C88D36C8 /* NSData+SRB64Additions.h */,
-				06EBC5997F6EE7C1A07378FFDAC4C049 /* NSData+SRB64Additions.m */,
-				1A9C3FEF3733B4730E660E4D22161D95 /* SRWebSocket.h */,
-				37C7AE68729A95325C6EBAB840A9C5C3 /* SRWebSocket.m */,
-				D01171948375B2EB08AB02ACE2B22252 /* Support Files */,
-			);
-			path = SocketRocket;
+			name = "Support Files";
+			path = "../Target Support Files/InAppSettingsKit";
 			sourceTree = "<group>";
 		};
 		B3D1D13E0C6553800746CB8FD61CF946 /* Pods */ = {
@@ -174,71 +385,88 @@
 			path = "Target Support Files/Pods";
 			sourceTree = "<group>";
 		};
-		B728418FA3338AB680410C5B26CF547F /* iOS */ = {
+		C2E7129B0F03CB39DB52B6173E9F8795 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				ED316EE84B1D3AAE415457D92E62A3A0 /* CFNetwork.framework */,
-				CBC51718377FC85475D865A171A8B5CC /* Foundation.framework */,
-				E967D042C48D5885583D70105EF16526 /* Security.framework */,
-			);
-			name = iOS;
-			sourceTree = "<group>";
-		};
-		D01171948375B2EB08AB02ACE2B22252 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				B20789E25FDA13298E61603B615BFA61 /* SocketRocket.xcconfig */,
-				B7CBBF51D2A59D5D61DD8446E09F406F /* SocketRocket-dummy.m */,
-				492C1B262C98A693E749BABBBF18FD05 /* SocketRocket-prefix.pch */,
+				F0BE00D19F909F499F7EABDC8C9E7CE6 /* SocketRocket.xcconfig */,
+				E3F1F9C2C8D432E426C32FB80C956F69 /* SocketRocket-dummy.m */,
+				19C0680340E2F5E1037743A07F21D11E /* SocketRocket-prefix.pch */,
 			);
 			name = "Support Files";
 			path = "../Target Support Files/SocketRocket";
 			sourceTree = "<group>";
 		};
-		F05437ABBBED499D22C87F61AF1D4CEC /* Audiobus */ = {
+		DA9D4CE6384433CFAC6849F2E8D63F47 /* SocketRocket */ = {
 			isa = PBXGroup;
 			children = (
-				8D6A0F593085970D3C37A0574BAFCF06 /* ABAudiobusController.h */,
-				A2A43840E83C24AE3B3F4CC153893A6D /* ABAudioUnitFader.h */,
-				3BBEBD1CED1FFD417B924006E4C94EA1 /* ABButtonTrigger.h */,
-				0B09E5B37BBC9744C24CECD69152C5CF /* ABCommon.h */,
-				7804D78E94B59380AD7EA65A40BBC1F4 /* ABFilterPort.h */,
-				EB5E645FC4430F02EEB8CAB5E50785AF /* ABLocalPort.h */,
-				E9087C55AD3DC6B7CB660FF29287541A /* ABMultiStreamBuffer.h */,
-				3AABC6977C967406F157A9E91E9C5F19 /* ABPeer.h */,
-				E03A0BB283FF804D2FEE9791E66488F0 /* ABPort.h */,
-				A6ECCDDAF4B304F7BF2905B3CEAC17FD /* ABReceiverPort.h */,
-				B2ADA5E2BFA6133CF5CBB09DE8A72968 /* ABSenderPort.h */,
-				7EDA3137BB0BC35E459A3230C7B1AA07 /* ABTrigger.h */,
-				D8DC677A6EDD20C8D4640F3A2AF3DC8C /* Audiobus.h */,
-				82C77BDEBD0BE803300691F9A9AC0EBC /* Frameworks */,
+				860A2BC838DEDDD7BA470BBC956E1983 /* base64.c */,
+				6BCD09ECA73F1489FBC8148BD2DC7DA0 /* base64.h */,
+				6D1791D66D4D589F8951192CA56442AE /* NSData+SRB64Additions.h */,
+				FCD73F014ADC285F3D299D1AA45F0DDC /* NSData+SRB64Additions.m */,
+				7EF6393D039638DC267AC0F76778C073 /* SRWebSocket.h */,
+				48C11FDFD60440EA1A633AAE478ABE64 /* SRWebSocket.m */,
+				C2E7129B0F03CB39DB52B6173E9F8795 /* Support Files */,
 			);
-			path = Audiobus;
+			path = SocketRocket;
+			sourceTree = "<group>";
+		};
+		E8BCB1E7A48FED669F39B4D6CBA9AFD1 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				CA6C0430172B049E09A05A7193346A73 /* CFNetwork.framework */,
+				DE5AC0DE1699C7255EFE7B345BD3C9FB /* Foundation.framework */,
+				08371D28A8F24DA680B4756E76970ECB /* MessageUI.framework */,
+				10E8288DB53B7588DDF6DA55D4401170 /* Security.framework */,
+				37525ECA322B33CED5D676CA2A539D37 /* UIKit.framework */,
+			);
+			name = iOS;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		3C427BC6B974FAD1408B33DCB21D3B71 /* Headers */ = {
+		0EFE1A31EF08AEF692982EA632789715 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E5F00B2A58C8E2F5FFB4EC33B57048C8 /* base64.h in Headers */,
-				325569A4977C06D0351441D00A4F5684 /* NSData+SRB64Additions.h in Headers */,
-				64ABEDE4F147323C8B2CC2764EC9F15F /* SRWebSocket.h in Headers */,
+				3C873DC87FEB5ED40338942A1A49A4B3 /* IASKAppSettingsViewController.h in Headers */,
+				A19EC9FCD4135D8E5DF3EBC2162E0AE5 /* IASKAppSettingsWebViewController.h in Headers */,
+				324723D42EA89AB163AEF2034EA15448 /* IASKMultipleValueSelection.h in Headers */,
+				4FCBA19093E3E3E342B2FC9FA384FAF3 /* IASKPSSliderSpecifierViewCell.h in Headers */,
+				760687CA512309BB3A7F410EE8778FFE /* IASKPSTextFieldSpecifierViewCell.h in Headers */,
+				C89EDCB3AB5EF2E5DC67FCA208E5C565 /* IASKSettingsReader.h in Headers */,
+				53A51FB38931B2FF7D6A2ACEEC2FF8D1 /* IASKSettingsStore.h in Headers */,
+				6AF223759901D32F87F7BC171E135D4F /* IASKSettingsStoreFile.h in Headers */,
+				0D75C06903B9B1C7B58157211AA8D650 /* IASKSettingsStoreUserDefaults.h in Headers */,
+				E455C9FE38DFC683930CB020CEBC064D /* IASKSlider.h in Headers */,
+				3F4F89F98D898F2ED8DF3FFBC73DBA6C /* IASKSpecifier.h in Headers */,
+				A55B9907A8AD3A91DBAE9447945E6458 /* IASKSpecifierValuesViewController.h in Headers */,
+				5B0C46741864F7208D65F06340E2ACBA /* IASKSwitch.h in Headers */,
+				FB85406A99F62FDFEB33660ECE01D24A /* IASKTextField.h in Headers */,
+				334C1E3226E1BD20324C18573E4077DD /* IASKViewController.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		84FA02CB250675FFBDBD44DD52406BF0 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A586BEB7703E81E8806E67410E0549C1 /* base64.h in Headers */,
+				2D8A4C33F21757F4773818763C930139 /* NSData+SRB64Additions.h in Headers */,
+				46ACEEC58899E48D98C9B336BA1F7C64 /* SRWebSocket.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		304661B4287D748BCA79A955B6B88876 /* SocketRocket */ = {
+		43C6B2448799EC3ADC13D88E84922FC7 /* SocketRocket */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D471A71964144E7A463B0BE3A2CC04E8 /* Build configuration list for PBXNativeTarget "SocketRocket" */;
+			buildConfigurationList = E0664D727B019BDB3CE3BB117A91FC97 /* Build configuration list for PBXNativeTarget "SocketRocket" */;
 			buildPhases = (
-				E2B60E45BC44167542E902A18E7459AD /* Sources */,
-				4B5BAFA0BF7ACD4DF01C9F290604C12E /* Frameworks */,
-				3C427BC6B974FAD1408B33DCB21D3B71 /* Headers */,
+				80E33BBCCD16C31034BCFD8E68A1CA4E /* Sources */,
+				04CCDA4F8281FF08930655905A716566 /* Frameworks */,
+				84FA02CB250675FFBDBD44DD52406BF0 /* Headers */,
 			);
 			buildRules = (
 			);
@@ -246,25 +474,61 @@
 			);
 			name = SocketRocket;
 			productName = SocketRocket;
-			productReference = 52DC8ACB1842AE17871EE069A8C34DEA /* libSocketRocket.a */;
+			productReference = B37C6124CA6CD9A44D19BC89CF9A62F1 /* libSocketRocket.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		94ED2E92EC9882237E1332480D19FA18 /* Pods */ = {
+		6FA38DEBB462720D4EBB9B5EB99499B9 /* InAppSettingsKit */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0ED57AF4CDC8FE2F0CE5008CD47EF5E5 /* Build configuration list for PBXNativeTarget "Pods" */;
+			buildConfigurationList = 274457759DFA9365D08D9087083F0F8B /* Build configuration list for PBXNativeTarget "InAppSettingsKit" */;
 			buildPhases = (
-				1B35410A08D79663B0E856ED7E2BE9A0 /* Sources */,
-				6921011E786EF6D972E6E6EB0134DEEA /* Frameworks */,
+				83F1FE8F1FC5A3FF03FA7120AD88AF86 /* Sources */,
+				F7B06C5D7772E652E0561CB65407BB1E /* Frameworks */,
+				0EFE1A31EF08AEF692982EA632789715 /* Headers */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				36511CC1A41305367B46E4D91BD735D1 /* PBXTargetDependency */,
+				1526FF338E3066EBE66AA10A9FAF5209 /* PBXTargetDependency */,
+			);
+			name = InAppSettingsKit;
+			productName = InAppSettingsKit;
+			productReference = 9FCC67CA10858A73D56741D437F9A226 /* libInAppSettingsKit.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		ABEC29F32FE4AE3E69F98E0BCEE832B7 /* Pods */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5A49D07E5F46C0DB6575780624A900A5 /* Build configuration list for PBXNativeTarget "Pods" */;
+			buildPhases = (
+				978805DF5BCB675628AC76581B3876EB /* Sources */,
+				8A170B564E0A99FF9AF5B2E241D511C4 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6484E8E3FDA66FEE2F9B1AC516DD7D34 /* PBXTargetDependency */,
+				EF647270D3084A787321030AD23A1379 /* PBXTargetDependency */,
 			);
 			name = Pods;
 			productName = Pods;
-			productReference = DA0D184496DC72240FA25DC633C04FE0 /* libPods.a */;
+			productReference = 28C96B25B507BCD18022C752A8A44BB9 /* libPods.a */;
 			productType = "com.apple.product-type.library.static";
+		};
+		DBBA3758AC217FDFD7CF81D53A693D66 /* InAppSettingsKit-InAppSettingsKit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6E17F97EEEBB117217A180F1AF211440 /* Build configuration list for PBXNativeTarget "InAppSettingsKit-InAppSettingsKit" */;
+			buildPhases = (
+				72FC6D4F9CA2D9FD3CFF47C71BB48D3D /* Sources */,
+				40C3447499EC6CF02262D4E3C5FBED5D /* Frameworks */,
+				41C76751B52B0C484215EAF08B78B1AC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "InAppSettingsKit-InAppSettingsKit";
+			productName = "InAppSettingsKit-InAppSettingsKit";
+			productReference = DA00A3DDBE50461C1182E6180DDE2458 /* InAppSettingsKit.bundle */;
+			productType = "com.apple.product-type.bundle";
 		};
 /* End PBXNativeTarget section */
 
@@ -283,51 +547,131 @@
 				en,
 			);
 			mainGroup = 7DB346D0F39D3F0E887471402A8071AB;
-			productRefGroup = 203182CB4E0154149AD0651716BD202F /* Products */;
+			productRefGroup = 365AA24991124CB472594362F176162F /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				94ED2E92EC9882237E1332480D19FA18 /* Pods */,
-				304661B4287D748BCA79A955B6B88876 /* SocketRocket */,
+				6FA38DEBB462720D4EBB9B5EB99499B9 /* InAppSettingsKit */,
+				DBBA3758AC217FDFD7CF81D53A693D66 /* InAppSettingsKit-InAppSettingsKit */,
+				ABEC29F32FE4AE3E69F98E0BCEE832B7 /* Pods */,
+				43C6B2448799EC3ADC13D88E84922FC7 /* SocketRocket */,
 			);
 		};
 /* End PBXProject section */
 
-/* Begin PBXSourcesBuildPhase section */
-		1B35410A08D79663B0E856ED7E2BE9A0 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
+/* Begin PBXResourcesBuildPhase section */
+		41C76751B52B0C484215EAF08B78B1AC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D1F0D1D28A4548EAD630F76DA56929C9 /* Pods-dummy.m in Sources */,
+				2D86028B483AFA4718BDBA1C6517319E /* Base.lproj in Resources */,
+				619EF66827BB7A07CE0CE661C6C90AE8 /* de.lproj in Resources */,
+				705A657E4C5867D6C8A7DEC608D5097C /* el.lproj in Resources */,
+				ADE8DB8FBA1B3732C4FCC58CA1EBE118 /* en.lproj in Resources */,
+				C00452458576796B6906FA617FE31C53 /* es.lproj in Resources */,
+				18814E690A68B090FC59D3011B1B3FBF /* fr.lproj in Resources */,
+				6F6092C4A3F226CF25BF4BB35EA41B1C /* it.lproj in Resources */,
+				C2E9FC5DB80CDBE97CBE740BD00AFA22 /* ja.lproj in Resources */,
+				7A7DEFC32FD72445F2E3B06E6645B6CF /* nl.lproj in Resources */,
+				34E9409F7192967FFC572E88262C8968 /* pt-PT.lproj in Resources */,
+				EFD504A80C146460C64389BDDF927CE4 /* pt.lproj in Resources */,
+				57F27FBB20068C8E77AB20619C8AEF82 /* ru.lproj in Resources */,
+				6D594B164DBEFC15450AF94A6DEEA9E9 /* sv.lproj in Resources */,
+				E18B76068747A9183120CDCE54FBE899 /* th.lproj in Resources */,
+				8971CA3D1EC4901FBEC33AA874267A73 /* tr.lproj in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E2B60E45BC44167542E902A18E7459AD /* Sources */ = {
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		72FC6D4F9CA2D9FD3CFF47C71BB48D3D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				93982DD9BBB09B8A5E4C8667A0B3C96F /* base64.c in Sources */,
-				2C3DAC2583E4424C0035DEA426176376 /* NSData+SRB64Additions.m in Sources */,
-				57497A228F775EE74866FFE0DAFE5F0B /* SocketRocket-dummy.m in Sources */,
-				72F5BCF3528384902F557DF41DE911BD /* SRWebSocket.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		80E33BBCCD16C31034BCFD8E68A1CA4E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0533AE6E511847329C9917F5E0F693C9 /* base64.c in Sources */,
+				94AD35615B062FDDCE9FCEB09405A850 /* NSData+SRB64Additions.m in Sources */,
+				58C5385F128ECE454ACD1B5FBAA23DFF /* SocketRocket-dummy.m in Sources */,
+				9506EDC16378774C9FAF5E35142CE566 /* SRWebSocket.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		83F1FE8F1FC5A3FF03FA7120AD88AF86 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3E200BEF589490886F34708FF24000A0 /* IASKAppSettingsViewController.m in Sources */,
+				7480844EF7BC2567FA29A254DED1B042 /* IASKAppSettingsWebViewController.m in Sources */,
+				FCC7D94DF844CB2309AA473E874F08E5 /* IASKMultipleValueSelection.m in Sources */,
+				376C8A6FA0DD7038ACADD41306C12130 /* IASKPSSliderSpecifierViewCell.m in Sources */,
+				47DF461475984D6352D3ED37E9532AF6 /* IASKPSTextFieldSpecifierViewCell.m in Sources */,
+				48778268B460790C317FBA3EAA28E534 /* IASKSettingsReader.m in Sources */,
+				808B9B4F583DFD52B3AA0559DE7C2787 /* IASKSettingsStore.m in Sources */,
+				769938DB04DD8E42C5BEB575F9BAB05A /* IASKSettingsStoreFile.m in Sources */,
+				4F7DE189C080125895D917D4840932EB /* IASKSettingsStoreUserDefaults.m in Sources */,
+				EAAC98344292E511E882517957C4FDC0 /* IASKSlider.m in Sources */,
+				708A539A2236D93E0E1A73CEFD76FBC2 /* IASKSpecifier.m in Sources */,
+				0B58D2D935D1263E9FB3E19E61E28CE4 /* IASKSpecifierValuesViewController.m in Sources */,
+				AF17EADB4191BE7D5FCC120BB88E8515 /* IASKSwitch.m in Sources */,
+				F9C20BAF3BFEF76851F22E43B03319ED /* IASKTextField.m in Sources */,
+				7A743392B4FAC0118A51D8F91A59B8B6 /* InAppSettingsKit-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		978805DF5BCB675628AC76581B3876EB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2D1776AE245F0C3CB66357EA4CE551BE /* Pods-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		36511CC1A41305367B46E4D91BD735D1 /* PBXTargetDependency */ = {
+		1526FF338E3066EBE66AA10A9FAF5209 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "InAppSettingsKit-InAppSettingsKit";
+			target = DBBA3758AC217FDFD7CF81D53A693D66 /* InAppSettingsKit-InAppSettingsKit */;
+			targetProxy = C9C00D8F0F3048D29C24FDF26116686E /* PBXContainerItemProxy */;
+		};
+		6484E8E3FDA66FEE2F9B1AC516DD7D34 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = InAppSettingsKit;
+			target = 6FA38DEBB462720D4EBB9B5EB99499B9 /* InAppSettingsKit */;
+			targetProxy = FC7812B75E89A05DF4F7DF93BE80F424 /* PBXContainerItemProxy */;
+		};
+		EF647270D3084A787321030AD23A1379 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = SocketRocket;
-			target = 304661B4287D748BCA79A955B6B88876 /* SocketRocket */;
-			targetProxy = 9002153A723B7CB4D02F648F129B1EA6 /* PBXContainerItemProxy */;
+			target = 43C6B2448799EC3ADC13D88E84922FC7 /* SocketRocket */;
+			targetProxy = F2AF4B68E06FD001AB86DF88397EA56B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		0503AD913D8A0A0C47C38814E57527A3 /* Debug */ = {
+		3848463968016B3ACA97961915E0F3E5 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B20789E25FDA13298E61603B615BFA61 /* SocketRocket.xcconfig */;
+			baseConfigurationReference = E29431C56C1071022E76C8AB474212EA /* InAppSettingsKit.xcconfig */;
+			buildSettings = {
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				PRODUCT_NAME = InAppSettingsKit;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
+		457BE7E43D3673ED77CF228EF3556729 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F0BE00D19F909F499F7EABDC8C9E7CE6 /* SocketRocket.xcconfig */;
 			buildSettings = {
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_PREFIX_HEADER = "Target Support Files/SocketRocket/SocketRocket-prefix.pch";
@@ -343,26 +687,45 @@
 			};
 			name = Debug;
 		};
-		07CE725B4460BE695B0F5E778E0B420A /* Debug */ = {
+		736906384D9C77746DB50456ED1C3674 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4E762F23EC34ED4A6FF3312D84E33A40 /* Pods.debug.xcconfig */;
+			baseConfigurationReference = E29431C56C1071022E76C8AB474212EA /* InAppSettingsKit.xcconfig */;
 			buildSettings = {
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/InAppSettingsKit/InAppSettingsKit-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				MACH_O_TYPE = staticlib;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
-				PODS_ROOT = "$(SRCROOT)";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
 		};
-		98299E8CB43D934F9252A6E00E5DEC01 /* Release */ = {
+		8A874BA9D5A37C912978A3AB56BCB811 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B20789E25FDA13298E61603B615BFA61 /* SocketRocket.xcconfig */;
+			baseConfigurationReference = E29431C56C1071022E76C8AB474212EA /* InAppSettingsKit.xcconfig */;
+			buildSettings = {
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/InAppSettingsKit/InAppSettingsKit-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		99A8207FB53F88C968606E9C6B7DE883 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F0BE00D19F909F499F7EABDC8C9E7CE6 /* SocketRocket.xcconfig */;
 			buildSettings = {
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_PREFIX_HEADER = "Target Support Files/SocketRocket/SocketRocket-prefix.pch";
@@ -417,7 +780,36 @@
 			};
 			name = Debug;
 		};
-		E1ABA3A300B936CD66DDE420EF7B9F55 /* Release */ = {
+		AC309884850CF00321B7D966A5240C9A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E29431C56C1071022E76C8AB474212EA /* InAppSettingsKit.xcconfig */;
+			buildSettings = {
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				PRODUCT_NAME = InAppSettingsKit;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		CC26A0AF70AE3C15DBE4E886CB612DF0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4E762F23EC34ED4A6FF3312D84E33A40 /* Pods.debug.xcconfig */;
+			buildSettings = {
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MACH_O_TYPE = staticlib;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		F7C0BD933E91ED51908E66E16FA6025A /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 98C98CDFB3F20F2925F6CD1F141BB14F /* Pods.release.xcconfig */;
 			buildSettings = {
@@ -471,11 +863,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0ED57AF4CDC8FE2F0CE5008CD47EF5E5 /* Build configuration list for PBXNativeTarget "Pods" */ = {
+		274457759DFA9365D08D9087083F0F8B /* Build configuration list for PBXNativeTarget "InAppSettingsKit" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				07CE725B4460BE695B0F5E778E0B420A /* Debug */,
-				E1ABA3A300B936CD66DDE420EF7B9F55 /* Release */,
+				736906384D9C77746DB50456ED1C3674 /* Debug */,
+				8A874BA9D5A37C912978A3AB56BCB811 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -489,11 +881,29 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D471A71964144E7A463B0BE3A2CC04E8 /* Build configuration list for PBXNativeTarget "SocketRocket" */ = {
+		5A49D07E5F46C0DB6575780624A900A5 /* Build configuration list for PBXNativeTarget "Pods" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0503AD913D8A0A0C47C38814E57527A3 /* Debug */,
-				98299E8CB43D934F9252A6E00E5DEC01 /* Release */,
+				CC26A0AF70AE3C15DBE4E886CB612DF0 /* Debug */,
+				F7C0BD933E91ED51908E66E16FA6025A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6E17F97EEEBB117217A180F1AF211440 /* Build configuration list for PBXNativeTarget "InAppSettingsKit-InAppSettingsKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AC309884850CF00321B7D966A5240C9A /* Debug */,
+				3848463968016B3ACA97961915E0F3E5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E0664D727B019BDB3CE3BB117A91FC97 /* Build configuration list for PBXNativeTarget "SocketRocket" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				457BE7E43D3673ED77CF228EF3556729 /* Debug */,
+				99A8207FB53F88C968606E9C6B7DE883 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

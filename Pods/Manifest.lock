@@ -1,13 +1,16 @@
 PODS:
   - Audiobus (2.3.1)
+  - InAppSettingsKit (2.6)
   - SocketRocket (0.3.1-beta2)
 
 DEPENDENCIES:
   - Audiobus (~> 2.1)
+  - InAppSettingsKit (~> 2.6)
   - SocketRocket (= 0.3.1-beta2)
 
 SPEC CHECKSUMS:
   Audiobus: d75ef3f0d625abf3007a147548423e76ca61043d
+  InAppSettingsKit: cc56d3ec45f11352a16d5b210da8a3fa1b9d05ed
   SocketRocket: 7284ab9370a06c99aba92b2fe3a32aedd0f9a6fa
 
 COCOAPODS: 0.39.0
