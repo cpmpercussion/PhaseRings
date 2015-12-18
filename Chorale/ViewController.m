@@ -801,9 +801,6 @@
     [self.experimentNewSetupButton setHidden:YES];
 }
 
-
-
-
 #pragma mark In App Settings Kit Methods
 - (IASKAppSettingsViewController*)appSettingsViewController {
     if (!_appSettingsViewController) {
@@ -826,18 +823,18 @@
     }
 }
 
+// This is the popover for iPad - should work now.
 - (void)showSettingsPopover:(UIButton *)sender {
     if(self.currentPopoverController) {
         [self dismissCurrentPopover];
         return;
     }
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.appSettingsViewController];
     [self.appSettingsViewController setShowCreditsFooter:NO];
     [self.appSettingsViewController setShowDoneButton:NO];
-
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.appSettingsViewController];
     UIPopoverController *popover = [[UIPopoverController alloc] initWithContentViewController:navController];
     popover.delegate = self;
-    [popover presentPopoverFromRect:sender.frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+    [popover presentPopoverFromRect:sender.bounds inView:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     self.currentPopoverController = popover;
 }
 
@@ -863,7 +860,6 @@
     [self openComposition];
     [self openPdPatch];
 }
-
 
 - (void) popoverController:(UIPopoverController *)popoverController willRepositionPopoverToRect:(inout CGRect *)rect inView:(inout UIView *__autoreleasing *)view {
     NSLog(@"repositioning popover");
