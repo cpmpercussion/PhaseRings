@@ -1,6 +1,6 @@
 GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
-HEADER_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/Audiobus" "${PODS_ROOT}/Headers/Public/InAppSettingsKit" "${PODS_ROOT}/Headers/Public/SocketRocket"
+HEADER_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/Audiobus" "${PODS_ROOT}/Headers/Public/SocketRocket"
 LIBRARY_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Audiobus"
-OTHER_CFLAGS = $(inherited) -isystem "${PODS_ROOT}/Headers/Public" -isystem "${PODS_ROOT}/Headers/Public/Audiobus" -isystem "${PODS_ROOT}/Headers/Public/InAppSettingsKit" -isystem "${PODS_ROOT}/Headers/Public/SocketRocket"
-OTHER_LDFLAGS = $(inherited) -ObjC -l"Audiobus" -l"InAppSettingsKit" -l"SocketRocket" -l"icucore" -framework "AVFoundation" -framework "Accelerate" -framework "AudioToolbox" -framework "CFNetwork" -framework "CoreGraphics" -framework "MessageUI" -framework "QuartzCore" -framework "Security" -framework "UIKit"
+OTHER_CFLAGS = $(inherited) -isystem "${PODS_ROOT}/Headers/Public" -isystem "${PODS_ROOT}/Headers/Public/Audiobus" -isystem "${PODS_ROOT}/Headers/Public/SocketRocket"
+OTHER_LDFLAGS = $(inherited) -ObjC -l"Audiobus" -l"SocketRocket" -l"icucore" -framework "AVFoundation" -framework "Accelerate" -framework "AudioToolbox" -framework "CFNetwork" -framework "CoreGraphics" -framework "QuartzCore" -framework "Security"
 PODS_ROOT = ${SRCROOT}/Pods
