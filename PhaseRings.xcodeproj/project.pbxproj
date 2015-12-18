@@ -46,7 +46,6 @@
 		5623DE7C188CDCEF00AA6C14 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5623DE7B188CDCEF00AA6C14 /* CoreAudio.framework */; };
 		5623DE80188CDD1900AA6C14 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5623DE7F188CDD1900AA6C14 /* AudioToolbox.framework */; };
 		5623DE82188CDD2B00AA6C14 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5623DE81188CDD2B00AA6C14 /* QuartzCore.framework */; };
-		5623DE88188CE4F800AA6C14 /* libpd-ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5623DE76188CDCDF00AA6C14 /* libpd-ios.a */; };
 		5630CFAC19FE06DE00B3DC89 /* CircleStringsSynthEnvironment.pd in Resources */ = {isa = PBXBuildFile; fileRef = 5630CFAB19FE06DE00B3DC89 /* CircleStringsSynthEnvironment.pd */; };
 		5630CFAF19FE06E700B3DC89 /* pluck~.pd in Resources */ = {isa = PBXBuildFile; fileRef = 5630CFAD19FE06E700B3DC89 /* pluck~.pd */; };
 		5630CFB019FE06E700B3DC89 /* stringsynth.pd in Resources */ = {isa = PBXBuildFile; fileRef = 5630CFAE19FE06E700B3DC89 /* stringsynth.pd */; };
@@ -117,27 +116,6 @@
 			remoteGlobalIDString = 5623DB5F188CDB3800AA6C14;
 			remoteInfo = Chorale;
 		};
-		5623DE75188CDCDF00AA6C14 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5623DE70188CDCDF00AA6C14 /* libpd.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D2AAC07E0554694100DB518D;
-			remoteInfo = "libpd-ios";
-		};
-		5623DE77188CDCDF00AA6C14 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5623DE70188CDCDF00AA6C14 /* libpd.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 119013AB1486450C00086F19;
-			remoteInfo = "libpd-osx";
-		};
-		5623DE86188CE4EA00AA6C14 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5623DE70188CDCDF00AA6C14 /* libpd.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D2AAC07D0554694100DB518D;
-			remoteInfo = "libpd-ios";
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -206,7 +184,6 @@
 		5623DB8A188CDB3800AA6C14 /* PhaseRingsTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PhaseRingsTests-Info.plist"; sourceTree = "<group>"; };
 		5623DB8C188CDB3800AA6C14 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		5623DB8E188CDB3800AA6C14 /* ChoraleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ChoraleTests.m; sourceTree = "<group>"; };
-		5623DE70188CDCDF00AA6C14 /* libpd.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libpd.xcodeproj; path = "../pd-for-ios/libpd/libpd.xcodeproj"; sourceTree = "<group>"; };
 		5623DE79188CDCEA00AA6C14 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		5623DE7B188CDCEF00AA6C14 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		5623DE7F188CDD1900AA6C14 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -318,7 +295,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5623DE88188CE4F800AA6C14 /* libpd-ios.a in Frameworks */,
 				5623DE82188CDD2B00AA6C14 /* QuartzCore.framework in Frameworks */,
 				5623DB66188CDB3800AA6C14 /* CoreGraphics.framework in Frameworks */,
 				5623DE80188CDD1900AA6C14 /* AudioToolbox.framework in Frameworks */,
@@ -413,7 +389,6 @@
 				5623DB88188CDB3800AA6C14 /* ChoraleTests */,
 				5623DB62188CDB3800AA6C14 /* Frameworks */,
 				5623DB61188CDB3800AA6C14 /* Products */,
-				5623DE70188CDCDF00AA6C14 /* libpd.xcodeproj */,
 				C48DF6A4E0DB7E5DC2FE8DA1 /* Pods */,
 			);
 			sourceTree = "<group>";
@@ -487,15 +462,6 @@
 				5623DB8B188CDB3800AA6C14 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		5623DE71188CDCDF00AA6C14 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				5623DE76188CDCDF00AA6C14 /* libpd-ios.a */,
-				5623DE78188CDCDF00AA6C14 /* libpd-osx.a */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		5630CFB119FE06ED00B3DC89 /* metaPdLibs */ = {
@@ -717,7 +683,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				5623DE87188CE4EA00AA6C14 /* PBXTargetDependency */,
 			);
 			name = PhaseRings;
 			productName = Chorale;
@@ -791,12 +756,6 @@
 			mainGroup = 5623DB57188CDB3800AA6C14;
 			productRefGroup = 5623DB61188CDB3800AA6C14 /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 5623DE71188CDCDF00AA6C14 /* Products */;
-					ProjectRef = 5623DE70188CDCDF00AA6C14 /* libpd.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				5623DB5F188CDB3800AA6C14 /* PhaseRings */,
@@ -804,23 +763,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		5623DE76188CDCDF00AA6C14 /* libpd-ios.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libpd-ios.a";
-			remoteRef = 5623DE75188CDCDF00AA6C14 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		5623DE78188CDCDF00AA6C14 /* libpd-osx.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libpd-osx.a";
-			remoteRef = 5623DE77188CDCDF00AA6C14 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		5623DB5E188CDB3800AA6C14 /* Resources */ = {
@@ -997,11 +939,6 @@
 			isa = PBXTargetDependency;
 			target = 5623DB5F188CDB3800AA6C14 /* PhaseRings */;
 			targetProxy = 5623DB86188CDB3800AA6C14 /* PBXContainerItemProxy */;
-		};
-		5623DE87188CE4EA00AA6C14 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "libpd-ios";
-			targetProxy = 5623DE86188CE4EA00AA6C14 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
