@@ -6,16 +6,21 @@ PODS:
 
 DEPENDENCIES:
   - Audiobus (~> 2.1)
-  - InAppSettingsKit (~> 2.6)
+  - InAppSettingsKit (from `https://github.com/futuretap/InAppSettingsKit`)
   - libpd (from `https://github.com/libpd/libpd`)
   - SocketRocket (= 0.3.1-beta2)
 
 EXTERNAL SOURCES:
+  InAppSettingsKit:
+    :git: https://github.com/futuretap/InAppSettingsKit
   libpd:
     :git: https://github.com/libpd/libpd
     :submodules: true
 
 CHECKOUT OPTIONS:
+  InAppSettingsKit:
+    :commit: 76ce3bff13b5a450670f33f6bd645598633acf09
+    :git: https://github.com/futuretap/InAppSettingsKit
   libpd:
     :commit: 167dea4e97921a3a2877de7a7b698457ea0b1304
     :git: https://github.com/libpd/libpd
