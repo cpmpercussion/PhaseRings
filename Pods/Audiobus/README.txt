@@ -1,24 +1,93 @@
-Audiobus SDK -- Version 2.1.5 -- Nov 10 2014
+Audiobus SDK -- Version 2.3.1 -- Nov 28 2015
 ============================================
 
 Thanks for downloading the Audiobus distribution!
 
-See http://developer.audiob.us/doc/ for the developer documentation,
+See https://developer.audiob.us/doc/ for the developer documentation,
 and see the Samples folder for a number of sample projects.
 
 If you have any questions, please don't hesitate to join us on 
-the developer community forum at http://heroes.audiob.us.
+the developer community forum at https://heroes.audiob.us.
 
 Cheers!
 
 Audiobus Team
-http://audiob.us
+https://audiob.us
 
 Changes
 =======
 
-2.1.5
+2.3.1
+-----
+
+ - Improvements to synchronization and latency management
+
+2.3
+---
+
+ - Added Ableton Link support
+ - Support for displaying the Connection Panel in apps that use split screen mode
+ - Sample rate indepedence and fixes for iPhone 6s
+ - Bitcode support enabled
+
+2.2.2
+-----
+
+ - Important: Please visit http://developer.audiob.us and register a new version
+   of your app, making sure to set the SDK version to 2.2.2 or above.
+   You will then get a new, valid API key.
+ - Additionally make sure there that the ports defined in your info.plist
+   AudioComponents matching the ports registered at http://developer.audiob.us.
+   If that is not the case you are required to match both and generate a
+   new API Key. This is required to alow a proper identification of installed
+   apps on iOS9.
+ - Addressed issues with icon resources and AB Remote.
+ - Fixed crash associated with expired API key.
+
+
+2.2.1
+-----
+
+ - Important changes to app switching: A new iOS 9 security measure prompts for confirmation with 
+   every new app switch. We now switch via Audiobus, to limit the number of prompts.
+ - Improved updating of changed app icons within AB Remote
+
+2.2
+---
+
+ - Added addRemoteTrigger: method to ABAudiobusController. This method
+   allows you to define triggers that are only shown in the new Audiobus Remote app.
+ - Added addRemoteTriggerMatrix:rows:cols: to ABAudiobusController. This method makes
+   it possible to define a matrix of trigger buttons which are shown in
+   Audiobus Remote.
+ - Added addBlock:forRemoteControlEvents: method to ABButtonTrigger. This
+   method allows you to let your app react to touch down and touch up events
+   originating within Audiobus Remote.
+ - Addressed iOS 9 problems with Connection Panel
+ - Added new ABConnectionPanelPositionTop Connection Panel position.
+ - Fixed problems with using kAudioUnitType_RemoteMusicEffect audio component type.
+ - Added registerAdditionalAudioComponentDescription: utility to ABFilterPort.
+
+2.1.6.1
 -------
+
+ - Fixed a crash in certain circumstances while using multi-channel audio interfaces
+
+2.1.6
+-----
+
+ - Added public init methods for triggers, to allow subclassing
+ - Added registerAdditionalAudioComponentDescription: method to ABSenderPort,
+   allowing use of secondary AudioComponentDescriptions with the same port.
+ - Tweaked connection panel hide/show; don't re-show after user has hidden
+ - Fixed some issues with ABAudioUnitFader
+ - Removed ABAnimatedTrigger from SDK (contact us if you're using this)
+ - Addressed issue with view rotation while connection panel hidden
+ - Don't mute filter port when there's no input
+ - Various other fixes
+
+2.1.5
+-----
 
  - Added ABAudioUnitFader class, for smooth fade-in/fade-out transitions instead of hard
    clicks when starting or stopping your audio system.
@@ -79,4 +148,4 @@ Changes
 Major new update, with Inter-App Audio integration, state saving, a new connection panel
 design and an easier, cleaner, simpler API.
 
-Check out our [migration guide](http://developer.audiob.us/migrate) for details.
+Check out our [migration guide](https://developer.audiob.us/migrate) for details.

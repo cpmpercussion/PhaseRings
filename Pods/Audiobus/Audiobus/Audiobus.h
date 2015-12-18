@@ -15,11 +15,12 @@
 #import "ABPort.h"
 #import "ABTrigger.h"
 #import "ABButtonTrigger.h"
-#import "ABAnimatedTrigger.h"
 #import "ABMultiStreamBuffer.h"
 #import "ABAudioUnitFader.h"
+#import <AVFoundation/AVFoundation.h>
+#import <Accelerate/Accelerate.h>
 
-#define ABSDKVersionString @"2.1.5"
+#define ABSDKVersionString @"2.3.1"
 
 /*!
 @mainpage
@@ -31,7 +32,7 @@
  then check out the [Migration Guide](@ref Migration-Guide) to find out what's changed.
  </blockquote>
  
- Audiobus is an SDK and accompanying [controller app](http://audiob.us/download) that allows iOS 
+ Audiobus is an SDK and accompanying [controller app](https://audiob.us/download) that allows iOS 
  apps to stream audio to one another. Just like audio cables, Audiobus lets you connect apps 
  together as modules, to  build sophisticated audio production and processing configurations.
 
@@ -72,7 +73,7 @@
  [state saving](@ref State-Saving) then this document will explain how that's done, too.
 
  Finally, if you need a little extra help, or just wanna meet and talk with us or other
- Audiobus-compatible app developers, come say hello on the [developer community forum](http://heroes.audiob.us).
+ Audiobus-compatible app developers, come say hello on the [developer community forum](https://heroes.audiob.us).
 
 @section Capabilities Capabilities: Inputs, Effects and Outputs
 
@@ -112,7 +113,7 @@
 @section More-Help More Help
  
  If you need any additional help integrating Audiobus into your application, or if you have
- any suggestions, then please join us on the [developer community forum](http://heroes.audiob.us).
+ any suggestions, then please join us on the [developer community forum](https://heroes.audiob.us).
  
 @page Integration-Guide Integration Guide
 
@@ -214,7 +215,7 @@
  </blockquote>
  
  <blockquote class="alert" id="retronyms-audioio-bug">
- There is a sample project, [audioIO](http://blog.retronyms.com/2013/09/ios7-remoteio-inter-app-audiobus-and-you.html),
+ There is a sample project, [audioIO](http://blog.retronyms.com/2013/09/ios7-remoteio-inter-app-audiobus-and-you.html ),
  which can be used as starting point for audio apps. There's a problem in this code's
  `AudioUnitPropertyChangeDispatcher` function, where it calls `[audio addAudioUnitPropertyListener]`.
  This modifies the audio unit property change notification dispatch table mid-dispatch, which causes a
@@ -235,7 +236,7 @@
 
  Audiobus is distributed as a static library, plus the associated header files.
  
- The easiest way to add Audiobus to your project is using [CocoaPods](http://cocoapods.org):
+ The easiest way to add Audiobus to your project is using [CocoaPods](https://cocoapods.org):
  
  1. Add "pod 'Audiobus'" to your Podfile, or, if you don't have one: at the top level of your project
     folder, create a file called "Podfile" with the following content:
@@ -246,7 +247,6 @@
     @code
     pod install
     @endcode
-    You will be asked for a login: use your Audiobus Developer Center email and password.
     
     In the future when you're updating your app, use `pod outdated` to check for available updates,
     and `pod update` to apply those updates.
@@ -428,7 +428,7 @@
  in the background. The registry also allows users to discover and purchase apps that support Audiobus.
  
  Register your app, and receive an Audiobus API key, at the 
- [Audiobus app registration page](http://developer.audiob.us/apps/register).
+ [Audiobus app registration page](https://developer.audiob.us/apps/register).
 
  You'll need to provide various details about your app, and you'll need to provide a copy of your
  **compiled** Info.plist from your compiled app bundle, which Audiobus will use to populate the required fields.
@@ -444,7 +444,7 @@
  After you register, we will briefly review your application. Upon approval, you will be notified via
  email, which will include your Audiobus API key, and the app will be added to the Audiobus registry.
  
- You can always look up your API key by visiting http://developer.audiob.us/apps and clicking on your
+ You can always look up your API key by visiting https://developer.audiob.us/apps and clicking on your
  app. The API key is at the top of the app details page.
  
  The API key is a string that you provide when you use the Audiobus SDK. It is unique to each version
@@ -590,6 +590,17 @@
  Note that you should create all your ports when your app starts, regardless of whether you intend to use them 
  straight away, or you'll get some weird behaviour. If you're not using them, just keep them silent (or inactive, 
  by not calling the receive/send functions).
+ 
+ <blockquote class="alert">
+ Due to some changes in iOS 9, we now **strongly discourage** you from creating apps that have only a receiver
+ port (ABReceiverPort). Such apps will not be able to be identified as installed by Audiobus on iOS 9.
+ 
+ To repeat: you should create a sender port or a filter port, in addition to any receiver ports you require.
+ If this is simply not an option, **please contact us before proceeding**.
+ 
+ This is a limitation enforced by security changes on iOS 9 that prohibit Audiobus from detecting installed apps
+ unless they provide sender or filter ports.
+ </blockquote>
 
  @subsection Create-Sender-Port Sender Port
  
@@ -618,7 +629,7 @@
       or "auri" for a "Remote Instrument" unit.
     - "subtype" (of type String): set this to any four-letter code that identifies the port.
     - "name" (of type String): Apple recommend that you set this to "Manufacturer: App name" (see [WWDC 2013 session 602,
-      page 37](http://devstreaming.apple.com/videos/wwdc/2013/602xcx2xk6ipx0cusjryu1sx5eu/602/602.pdf?dl=1)). If you
+      page 37](https://devstreaming.apple.com/videos/wwdc/2013/602xcx2xk6ipx0cusjryu1sx5eu/602/602.pdf?dl=1)). If you
       publish multiple ports, you will need to identify the particular port, too. We propose "Manufacturer: App name (Port name)".
       Note that this field does not need to match the name or title you pass to ABSenderPort.
     - "version" (of type Number): set this to any integer (whole number) you like. "1" is a good place to start.
@@ -640,6 +651,11 @@
  The distinction between these two is specific to Inter-App Audio. Remote Generator nodes are simple audio sources, while
  Remote Instrument nodes have the additional capability of accepting MIDI input over the Inter-App Audio channel and rendering
  audio based on this input. Audiobus itself does not make use of this functionality at this time.
+ 
+ If you wish to use more than one AudioComponentDescription to publish the port, to provide both Remote Generator and
+ Remote Instrument types for example, you may provide the additional AudioComponentDescription to the sender port via
+ @link ABSenderPort::registerAdditionalAudioComponentDescription: ABSenderPort's registerAdditionalAudioComponentDescription: @endlink
+ method (you will need to call AudioOutputUnitPublish for the additional types yourself).
  
  Now it's time to create an ABSenderPort instance. You provide a port name, for internal use, and a port
  title which is displayed to the user. You can localise the port title.
@@ -665,7 +681,10 @@
  > @link ABSenderPort::ABSenderPortIsMuted ABSenderPortIsMuted @endlink function. This is very important and
  > both avoids doubling up the audio signal, and lets your app go silent when removed from Audiobus. See the 
  > [Sender Port recipe](@ref Sender-Port-Recipe) and the AB Receiver sample app for details.
-
+ 
+ > If you work with floating-point audio in your app we strongly recommend you restrict values to the range
+ >  -1.0 to 1.0, as a courtesy to developers of downstream apps.
+ 
  Finally, you need to pass in an AudioComponentDescription structure that contains the same details as the
  AudioComponents entry you added earlier.
 
@@ -911,7 +930,7 @@
 
  @subsection Update-Registry Update the Audiobus Registry
  
- Once you've set up your ports, open your [app page](http://developer.audiob.us/apps) on the Audiobus
+ Once you've set up your ports, open your [app page](https://developer.audiob.us/apps) on the Audiobus
  Developer Center and fill in any missing port details.
  
  We **strongly recommend** that you drop your compiled Info.plist into the indicated area in order to automatically
@@ -930,7 +949,7 @@
  
 @section Test 9. Test
  
- To test your app with Audiobus, you'll need the Audiobus app (http://audiob.us/download).
+ To test your app with Audiobus, you'll need the Audiobus app (https://audiob.us/download).
  
  You'll find a number of fully-functional sample apps in the "Samples" folder of the Audiobus SDK
  distribution. Use these to test your app with, along with other Audiobus-compatible apps you may own.
@@ -941,16 +960,16 @@
 @section Go-Live 10. Go Live
  
  <blockquote class="alert">Before you submit your app to the App Store, please ensure the details of your registration at
- the [apps page](http://developer.audiob.us/apps) are correct. If not, users may experience unexpected behaviour. The 
+ the [apps page](https://developer.audiob.us/apps) are correct. If not, users may experience unexpected behaviour. The 
  Audiobus app caches the local copy of the registration for 30 minutes, so if you make any fixes to your app registration 
  after going live, some users may not see the fix for up to 30 minutes.</blockquote>
  
  Once the Audiobus-compatible version of your app has been approved by Apple and hits the App
- Store, you should visit the [apps page](http://developer.audiob.us/apps) and click "Go Live".
+ Store, you should visit the [apps page](https://developer.audiob.us/apps) and click "Go Live".
  
  This will result in your app being added to the Compatible Applications listing
  within Audiobus, and shown on Audiobus's website in various locations. We will also include your app
- in our daily app mailing list, and if anyone has subscribed at our [compatible apps listing](http://audiob.us/apps) 
+ in our daily app mailing list, and if anyone has subscribed at our [compatible apps listing](https://audiob.us/apps) 
  to be notified specifically when your app gains Audiobus support, they will be notified by email.
  
  > If you forget this step, potential new users will never find your app through our app directories,
@@ -966,7 +985,7 @@
  
  > When it's time to update your app with new Audiobus functionality (such as a new Audiobus SDK version,
  > or a new Audiobus-specific feature, like State Saving or the addition of more ports, be sure to
- > register your new version from your app registration on [developer.audiob.us](http://developer.audiob.us/apps).
+ > register your new version from your app registration on [developer.audiob.us](https://developer.audiob.us/apps).
  > Once you go live with the new version, this will move your app to the top of the Audiobus Compatible Apps
  > directory, resulting in increased exposure.
  >
@@ -985,7 +1004,7 @@
  connect your app's output back to its input. If your app supports this kind of functionality, you can set the 
  @link ABAudiobusController::allowsConnectionsToSelf allowsConnectionsToSelf @endlink
  property to YES, and select the "Allows Connections To Self" checkbox on the app details
- page at [developer.audiob.us](http://developer.audiob.us/apps), once you've ensured that your app doesn't
+ page at [developer.audiob.us](https://developer.audiob.us/apps), once you've ensured that your app doesn't
  exhibit feedback issues in this configuration. See the documentation for
  @link ABSenderPort::ABSenderPortIsConnectedToSelf ABSenderPortIsConnectedToSelf @endlink
  /@link ABReceiverPort::ABReceiverPortIsConnectedToSelf ABReceiverPortIsConnectedToSelf @endlink for discussion,
@@ -994,10 +1013,15 @@
  If you'd like to make your app more interactive, you can implement [triggers](@ref Triggers) that
  allow users to trigger actions in your app (like toggling recording, playback, etc) from other
  apps and devices.
+ 
+ If your app has a clock, we'd recommend looking into [Ableton Link](http://ableton.com/link) for
+ synchronization with other apps. The Audiobus SDK automatically supports Link, and will enable it within
+ your app when it's connected to Audiobus. There's nothing you need to do but include the Link SDK within
+ your app.
 
  Finally, tell your users that you support Audiobus! We provide a set of graphical resources
  you can use on your site and in other promotional material. Take a look at
- the [resources page](http://developer.audiob.us/resources) for the details.
+ the [resources page](https://developer.audiob.us/resources) for the details.
 
  Read on if you want to know about more advanced uses of Audiobus, such as multi-track
  [receiving](@ref Receiver-Port), [triggers](@ref Triggers), or [state saving](@ref State-Saving).
@@ -1012,7 +1036,7 @@
  @section Migration-Guide-Version Create New Version On Our Registry
  
  Before you begin your migration, you should create a new version of your app on our 
- [developer site](http://developer.audiob.us/apps). Make sure you select the correct Audiobus SDK version on the
+ [developer site](https://developer.audiob.us/apps). Make sure you select the correct Audiobus SDK version on the
  form: this will allow Audiobus on iOS 8 to recognize your app as compatible. Also make sure you're using a new,
  unique launch URL: this is how Audiobus will recognize the iOS 8-compatible version of your app.
  
@@ -1175,8 +1199,7 @@
  Triggers have not changed substantially, although the triggerWithTitle:icon:block: method of ABTrigger has
  been deprecated, in favour of the 
  @link ABButtonTrigger::buttonTriggerWithTitle:icon:block: buttonTriggerWithTitle:icon:block: @endlink
- factory method on the new ABButtonTrigger class. A similar method on the new
- ABAnimatedTrigger class lets you create animated triggers, to reflect rapidly-changing state.
+ factory method on the new ABButtonTrigger class.
  Take a look at the [triggers section](@ref Triggers) for details.
  
  @section Migration-Guide-Sample-Apps Sample Apps
@@ -1417,7 +1440,7 @@
  This example demonstrates the recommended way to manage your application's life-cycle.
  
  The example assumes the app in question has been registered at 
- [developer.audiob.us/register](http://developer.audiob.us/register), and is therefore able
+ [developer.audiob.us/register](https://developer.audiob.us/account/register), and is therefore able
  to be connected and launched from the Audiobus app.
  
  As soon as your app is connected via Audiobus, it must have a running and active audio system.
@@ -1764,6 +1787,9 @@
  to determine the playback position of the loops, then this same time base can be used with the
  timestamps from the incoming audio in order to determine when the newly-recorded track should be
  played back. 
+ 
+ Note that for system audio inputs, Audiobus already compensates for the reported hardware input
+ latency, so you should not further modify the timestamp returned from ABReceiverPortReceive.
 
 @section Receiving-Separate-Streams Receiving Separate Streams
 
@@ -1813,12 +1839,11 @@
 @page Triggers Triggers
 
  Audiobus provides a system where apps can define actions that can be triggered by users from other
- apps, via the Audiobus Connection Panel.
+ apps, via the Audiobus Connection Panel or from within [Audiobus Remote](@ref Remote-Triggers).
 
  You can use a set of built-in system triggers (see
  @link ABTrigger::triggerWithSystemType:block: triggerWithSystemType:block: @endlink and
- @link ABTriggerSystemType @endlink), or [create your own](@ref ABButtonTrigger). You can also
- create [animated triggers](@ref ABAnimatedTrigger), which lets you represent rapidly-changing dynamic app state.
+ @link ABTriggerSystemType @endlink), or [create your own](@ref ABButtonTrigger).
 
  @section Use-of-Triggers Use of Triggers
  
@@ -1826,10 +1851,16 @@
  app has functions that may be usefully activated from a connected app, then you should expose them
  using the Audiobus triggers mechanism.
  
- Note, however, that apps should only provide a small number of these triggers - no more than four -
- to avoid cluttering up the Audiobus Connection Panel interface.
+ Triggers can appear within the Audiobus Connection Panel, or within [Audiobus Remote](@ref Remote-Triggers)
+ running on another device, depending on how they are added. Use ABAudiobusController's 
+ @link ABAudiobusController::addTrigger: addTrigger: @endlink method to add Connection Panel triggers,
+ and @link ABAudiobusController::addRemoteTrigger: addRemoteTrigger: @endlink to add Audiobus Remote triggers.
  
- Additionally, your app should only provide triggers that are *relevant to the current state*. Take, for
+ Apps should only provide a small number of Connection Panel triggers - no more than four - to avoid cluttering
+ up the Audiobus Connection Panel interface. Remote Triggers may be more numerous, due to the extra available
+ screen space within Audiobus Remote.
+ 
+ Your app should only provide triggers that are *relevant to the current state*. Take, for
  example, an app that has the capability of behaving as an Audiobus input and an output. If the app
  presents a "Record" trigger, but is currently acting as an input to another Audiobus app, this
  may lead to confusion: the app is serving in an audio generation role, not an audio consumption role,
@@ -1845,10 +1876,6 @@
  
  If you *must* create a custom trigger, then you can create a button trigger with 
  @link ABButtonTrigger::buttonTriggerWithTitle:icon:block: ABButtonTrigger's buttonTriggerWithTitle:icon:block: @endlink.
- Alternatively, you can create an animated trigger with
- @link ABAnimatedTrigger::animatedTriggerWithTitle:initialIcon:block: ABAnimatedTrigger's animatedTriggerWithTitle:initialIcon:block: @endlink,
- register animation frames with @link ABAnimatedTrigger::registerNewFrame:withIdentifier: registerNewFrame:withIdentifier: @endlink,
- then display animation frames with @link ABAnimatedTrigger::currentFrameIdentifier currentFrameIdentifier @endlink.
  
  Note that icons should be an image of no greater than 80x80 pixels, and will be
  used as a mask to draw a styled button.  If you do not provide 'selected' or 'alternate' state icons or colours 
@@ -1869,15 +1896,42 @@
  [trigger state](@ref ABTrigger::state) as appropriate, when the state to which it refers changes.
 
  Note that you can also update the icon of custom triggers at any time. The user interface across
- all connected devices and apps will be updated accordingly. If you intend to perform rapid icon updates,
- use ABAnimatedTrigger.
+ all connected devices and apps will be updated accordingly.
  
  Have a look at the [Trigger recipe](@ref Trigger-Recipe) and the "AB Receiver" and "AB Filter" sample apps 
  for examples.
  
- System triggers are automatically ordered in the connection panel as follows: 
+ System triggers are automatically ordered as follows: 
  ABTriggerTypeRewind, ABTriggerTypePlayToggle, ABTriggerTypeRecordToggle.
 
+ @section Remote-Triggers Remote Triggers
+ 
+ [Audiobus Remote](http://audiob.us/remote) supports a new class of trigger which allows you to define
+ extended functionality, without cluttering up the Audiobus Connection Panel.
+ 
+ When you add a trigger via ABAudiobusController's @link ABAudiobusController::addRemoteTrigger: addRemoteTrigger: @endlink
+ method, the trigger will appear only within Audiobus Remote.
+ 
+ You may listen for particular control events (UIControlEventTouchDown and UIControlEventTouchUpInside) by registering
+ a block using each trigger's @link ABButtonTrigger::addBlock:forRemoteControlEvents: addBlock:forRemoteControlEvents: @endlink
+ method.
+ 
+ Use these facilities for providing access to extra functions in your app, such as:
+ 
+ - Individually toggling tracks or triggering samples,
+ - Switching between patches,
+ - Jumping to particular time offsets in a track,
+ - Manipulating effect parameters,
+ - Playing chords
+ 
+ You may also define a matrix of triggers using
+ @link ABAudiobusController::addRemoteTriggerMatrix:rows:cols: addRemoteTriggerMatrix:rows:cols: @endlink,
+ which suits uses such as drum sample pads. Use these sparingly, however, as Audiobus Remote is able to make
+ better use of available screen space with triggers added via @link ABAudiobusController::addRemoteTrigger: addRemoteTrigger: @endlink
+ instead.
+ 
+ See the "AB Sender" sample app for a demo implementation of Remote Triggers in a matrix.
+ 
 @page State-Saving State Saving
 
  State saving allows your app to provide workspace configuration information that can be stored,  
@@ -1925,20 +1979,24 @@
 
  State saving is a very new feature that will undergo further evolution as we see what users and developers
  are doing with it. Consequently, these guidelines may change over time. If you have feedback, let us know on 
- the [developer forums!](http://heroes.audiob.us).
+ the [developer forums!](https://heroes.audiob.us).
 
+@page Ableton-Link Synchronization with Ableton Link
+ 
+ [Ableton Link](http://ableton.com/link) is a new technology that synchronises beat, phase and tempo. It 
+ works between Ableton Live and Link-enabled iOS apps over a wireless network, or iOS apps on the same device.
+ 
+ If your app has a clock, we'd recommend looking into Ableton Link for synchronization with other apps. The 
+ Audiobus SDK automatically supports Link, and will enable it within your app when it's connected to Audiobus. 
+ There's nothing you need to do but include the Link SDK within your app.
+ 
+ Write to *link-devs at ableton.com* to enquire about gaining early access to the Ableton Link SDK.
+ 
 @page Good-Citizen Being a Good Citizen
 
  Beyond being an audio transmission protocol or platform, Audiobus is a community of applications. The
  experience that users have is strongly dependent on how well these apps work together. So, these are
  a set of rules/guidelines that your app should follow, in order to be a good Audiobus citizen.
-
-@section Senders-Timestamps Senders, Send Correct Audio Timestamps
-
- Audiobus sender apps are responsible for sending correct audio timestamps along with their
- audio. If you are using an audio unit with the sender port, then this is taken care of for you. Otherwise, 
- if you are using ABSenderPort directly, make sure you are sending audio timestamps correctly. 
- Usually, this is just a matter of providing the `AudioTimeStamp` structure given to you by Core Audio.
 
 @section Receivers-Timestamps Receivers, Use Audio Timestamps
 
@@ -1987,7 +2045,7 @@
  See the [Lifecycle](@ref Lifecycle) section of the integration guide, or the [associated recipe](@ref Lifecycle-Recipe)
  for further details.
  
- Note that during development, if your app has not yet been [registered](http://developer.audiob.us/apps/register)
+ Note that during development, if your app has not yet been [registered](https://developer.audiob.us/apps/register)
  with Audiobus, Audiobus will not be able to see the app if it is not actively running in the background.
  Consequently, we **strongly recommend** that you register your app at the beginning of development.
  

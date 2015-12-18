@@ -21,6 +21,10 @@ extern "C" {
  *
  *  Sent when the port's connections have changed, caused by connections
  *  or disconnections from within the Audiobus app.
+ *
+ *  > If you work with floating-point audio in your app we strongly recommend
+ *  > you restrict values to the range -1.0 to 1.0, as a courtesy to
+ *  > developers of downstream apps.
  */
 extern NSString * const ABSenderPortConnectionsChangedNotification;
 
@@ -48,7 +52,7 @@ extern NSString * const ABSenderPortConnectionsChangedNotification;
  * @param title Title of port, show to the user
  * @param description The AudioComponentDescription that identifiers this port.
  *          This must match the entry in the AudioComponents dictionary of your Info.plist, and must be
- *          of type kAudioUnitType_RemoteGenerator.
+ *          of type kAudioUnitType_RemoteGenerator or kAudioUnitType_RemoteInstrument.
  */
 - (id)initWithName:(NSString *)name title:(NSString*)title audioComponentDescription:(AudioComponentDescription)description;
 
@@ -66,10 +70,28 @@ extern NSString * const ABSenderPortConnectionsChangedNotification;
  * @param title Title of port, show to the user
  * @param description The AudioComponentDescription that identifiers this port.
  *          This must match the entry in the AudioComponents dictionary of your Info.plist, and must be
- *          of type kAudioUnitType_RemoteGenerator.
+ *          of type kAudioUnitType_RemoteGenerator or kAudioUnitType_RemoteInstrument.
  * @param audioUnit The output audio unit to use for sending audio. The audio unit's output will be transmitted.
  */
 - (id)initWithName:(NSString *)name title:(NSString*)title audioComponentDescription:(AudioComponentDescription)description audioUnit:(AudioUnit)audioUnit;
+
+/*!
+ * Register additional AudioComponentDescriptions that identify your audio unit
+ *
+ *  Sometimes under Inter-App Audio you may wish to publish your audio unit with an additional 
+ *  AudioComponentDescription, such as providing both kAudioUnitType_RemoteInstrument and
+ *  kAudioUnitType_RemoteGenerator types.
+ *
+ *  If you wish to do so, you can use this method to register the additional descriptions 
+ *  (additional to the one passed via the init method). Note that this method will not publish
+ *  your audio unit with the given description: you'll need to do that yourself.
+ *
+ *  This will cause the port to correctly recognize incoming connections from the other
+ *  descriptions.
+ *
+ * @param description The additional AudioComponentDescription to add
+ */
+- (void)registerAdditionalAudioComponentDescription:(AudioComponentDescription)description;
 
 /*!
  * Send audio
@@ -143,13 +165,12 @@ BOOL ABSenderPortIsMuted(ABSenderPort *senderPort);
 /*!
  * Get average latency
  *
- *  This C function returns the average transmission latency across all connected remote ports. Where appropriate, use
- *  it to offset generated audio to compensate.
+ *  Deprecated: no longer in use.
  *
  * @param senderPort        Sender port.
  * @return Latency, in seconds.
  */
-NSTimeInterval ABSenderPortGetAverageLatency(ABSenderPort *senderPort);
+NSTimeInterval ABSenderPortGetAverageLatency(ABSenderPort *senderPort) __deprecated;
 
 /*!
  * Currently-connected destinations

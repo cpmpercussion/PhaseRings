@@ -86,6 +86,24 @@ typedef void (^ABAudioFilterBlock)(AudioBufferList *audio, UInt32 frames, AudioT
 - (id)initWithName:(NSString *)name title:(NSString*)title audioComponentDescription:(AudioComponentDescription)description audioUnit:(AudioUnit)audioUnit;
 
 /*!
+ * Register additional AudioComponentDescriptions that identify your audio unit
+ *
+ *  Sometimes under Inter-App Audio you may wish to publish your audio unit with an additional 
+ *  AudioComponentDescription, such as providing both kAudioUnitType_RemoteEffect and
+ *  kAudioUnitType_RemoteMusicEffect types.
+ *
+ *  If you wish to do so, you can use this method to register the additional descriptions 
+ *  (additional to the one passed via the init method). Note that this method will not publish
+ *  your audio unit with the given description: you'll need to do that yourself.
+ *
+ *  This will cause the port to correctly recognize incoming connections from the other
+ *  descriptions.
+ *
+ * @param description The additional AudioComponentDescription to add
+ */
+- (void)registerAdditionalAudioComponentDescription:(AudioComponentDescription)description;
+
+/*!
  * Determine if the filter port is currently connected
  *
  *  If you are using the @link initWithName:title:audioComponentDescription:processBlock:processBlockSize: processBlock @endlink

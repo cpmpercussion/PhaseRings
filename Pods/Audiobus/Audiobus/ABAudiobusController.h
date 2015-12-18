@@ -53,8 +53,10 @@ extern NSString * const ABConnectionsChangedNotification;
  *
  *  Note that due to the asynchronous nature of Inter-App Audio connections
  *  within Audiobus when connected to peers using the 2.1 Audiobus SDK or above, 
- *  you may see this notification before the @link interAppAudioConnected @endlink or
- *  @link audiobusConnected @endlink properties change to YES.
+ *  you may see this notification before the 
+ *  @link ABAudiobusController::interAppAudioConnected interAppAudioConnected @endlink or
+ *  @link ABAudiobusController::audiobusConnected audiobusConnected @endlink 
+ *  properties change to YES.
  */
 extern NSString * const ABConnectedNotification;
 
@@ -199,7 +201,7 @@ extern NSString * const ABPeerKey;
 /*!
  * Initializer
  *
- * @param apiKey Your app's API key (find this at the bottom of your app's details screen accessible from http://developer.audiob.us/apps)
+ * @param apiKey Your app's API key (find this at the bottom of your app's details screen accessible from https://developer.audiob.us/apps)
  */
 - (id)initWithApiKey:(NSString*)apiKey;
 
@@ -219,6 +221,38 @@ extern NSString * const ABPeerKey;
  */
 - (void)addTrigger:(ABTrigger*)trigger;
 
+
+/*!
+ * Add a trigger which is only shown in Audiobus Remote.
+ *
+ *  Triggers added by this method are only shown within Audiobus Remote. Use this method
+ *  and @link addRemoteTriggerMatrix:rows:cols: @endlink to provide extended functionality
+ *  for your app which can be used from within Audiobus Remote.
+ *
+ * @param trigger       The trigger
+ */
+-(void)addRemoteTrigger:(ABTrigger*)trigger;
+
+/*!
+ * Add a grid matrix of triggers for Audiobus Remote
+ *
+ *  Triggers added by this method appear within Audiobus Remote as a grid of buttons.
+ *  We recommend using this facility when a matrix layout is important to the user 
+ *  experience, such as with drum sample pads.
+ *
+ *  Please use this facility only if your button layout needs an explicit
+ *  grid order. Otherwise, use @link addRemoteTrigger: @endlink, which allows
+ *  Audiobus Remote to make better use of screen space.
+ *
+ * @param triggers An array of triggers. Size of the array must be rows * cols.
+ * @param rows Number of rows; limited to 6 rows maximum.
+ * @param cols Number of columns; limited to 6 cols maximum.
+ */
+- (void)addRemoteTriggerMatrix:(NSArray*) triggers
+                          rows:(NSUInteger) rows
+                          cols:(NSUInteger) cols;
+
+
 /*!
  * Remove a trigger
  *
@@ -227,6 +261,8 @@ extern NSString * const ABPeerKey;
  * @param trigger       Trigger to remove
  */
 - (void)removeTrigger:(ABTrigger*)trigger;
+
+
 
 ///@}
 #pragma mark - Audio ports
@@ -367,6 +403,7 @@ extern NSString * const ABPeerKey;
  */
 - (void)sortFilterPortsUsingComparitor:(NSComparator)cmptr;
 
+
 /*!
  * Currently defined sender ports
  *
@@ -499,6 +536,8 @@ extern NSString * const ABPeerKey;
  *  and restore the state of your app as part of their workspace.
  */
 @property (nonatomic, assign) id<ABAudiobusControllerStateIODelegate> stateIODelegate;
+
+
 
 @end
 

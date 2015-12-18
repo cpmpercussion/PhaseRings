@@ -21,7 +21,8 @@ extern "C" {
 typedef enum {
     ABConnectionPanelPositionRight,
     ABConnectionPanelPositionLeft,
-    ABConnectionPanelPositionBottom
+    ABConnectionPanelPositionBottom,
+    ABConnectionPanelPositionTop
 } ABConnectionPanelPosition;
 
 /*!
