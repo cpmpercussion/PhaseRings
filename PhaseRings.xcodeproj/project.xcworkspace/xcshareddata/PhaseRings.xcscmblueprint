@@ -1,0 +1,58 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "92714FB683A6AC2A1ACFEC6654CCEE2DDCA24404",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "92714FB683A6AC2A1ACFEC6654CCEE2DDCA24404" : 0,
+    "1712FC0BC3C9AABD8B7B5376E310E93FBDB3BCFA" : 0,
+    "8290155778CD077C9D8A85EC03BEA069395BD6EA" : 0,
+    "1A0B07D1631AC7F0F17FCE76695E42D64F01958F" : 0,
+    "5C788FB45371F7A39B6FFB445D10D0EF209EBAE3" : 0,
+    "778D08CA7C55C6E283FAC4140D174E64889DF148" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "215895DC-3F68-48BC-A13F-FFE23FCF6D25",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "92714FB683A6AC2A1ACFEC6654CCEE2DDCA24404" : "PhaseRings",
+    "1712FC0BC3C9AABD8B7B5376E310E93FBDB3BCFA" : "cloned-projects\/InAppSettingsKit",
+    "8290155778CD077C9D8A85EC03BEA069395BD6EA" : "PhaseRings\/MetatoneOSC",
+    "1A0B07D1631AC7F0F17FCE76695E42D64F01958F" : "pd-for-ios\/libpd",
+    "5C788FB45371F7A39B6FFB445D10D0EF209EBAE3" : "PhaseRings\/MetatoneMIDI",
+    "778D08CA7C55C6E283FAC4140D174E64889DF148" : "pd-for-ios"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "PhaseRings",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "PhaseRings.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/futuretap\/InAppSettingsKit.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "1712FC0BC3C9AABD8B7B5376E310E93FBDB3BCFA"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "git:\/\/github.com\/libpd\/libpd.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "1A0B07D1631AC7F0F17FCE76695E42D64F01958F"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/cpmpercussion\/MetatoneMIDI",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "5C788FB45371F7A39B6FFB445D10D0EF209EBAE3"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "git:\/\/github.com\/libpd\/pd-for-ios.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "778D08CA7C55C6E283FAC4140D174E64889DF148"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/cpmpercussion\/MetatoneOSC",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "8290155778CD077C9D8A85EC03BEA069395BD6EA"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/cpmpercussion\/SingingBowls.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "92714FB683A6AC2A1ACFEC6654CCEE2DDCA24404"
+    }
+  ]
+}
