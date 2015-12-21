@@ -15,11 +15,11 @@
                         <viewControllerLayoutGuide type="bottom" id="Mg1-8A-slj"/>
                     </layoutGuides>
                     <view key="view" autoresizesSubviews="NO" multipleTouchEnabled="YES" contentMode="scaleToFill" id="yNT-f6-f79" userLabel="Root View">
-                        <rect key="frame" x="0.0" y="0.0" width="568" height="320"/>
+                        <rect key="frame" x="0.0" y="0.0" width="736" height="414"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <view multipleTouchEnabled="YES" contentMode="center" translatesAutoresizingMaskIntoConstraints="NO" id="8bC-Xf-vdC" customClass="SingingBowlView">
-                                <rect key="frame" x="0.0" y="0.0" width="568" height="320"/>
+                                <rect key="frame" x="0.0" y="0.0" width="736" height="414"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="U7q-YO-31Y" customClass="MetatoneEnsembleView">
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -35,13 +35,13 @@
                                 </connections>
                             </view>
                             <stepper opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" maximumValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="kC3-j3-ajz" userLabel="Setup Stepper (debug)">
-                                <rect key="frame" x="237" y="283" width="94" height="29"/>
+                                <rect key="frame" x="321" y="377" width="94" height="29"/>
                                 <connections>
                                     <action selector="steppedMoved:" destination="BYZ-38-t0r" eventType="valueChanged" id="gSs-4Y-ajv"/>
                                 </connections>
                             </stepper>
                             <button contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nUd-ij-qeo" userLabel="New Setup Button (Experiment)" colorLabel="IBBuiltInLabel-Red">
-                                <rect key="frame" x="224" y="242" width="120" height="70"/>
+                                <rect key="frame" x="308" y="336" width="120" height="70"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="120" id="TLm-2r-XDr"/>
@@ -55,7 +55,10 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BfF-Lc-5IP">
-                                <rect key="frame" x="339" y="269" width="30" height="59"/>
+                                <rect key="frame" x="423" y="374" width="30" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="NC8-cL-eqi"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" name="Menlo-Regular" family="Menlo" pointSize="40"/>
                                 <state key="normal" title="⚙">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -65,7 +68,7 @@
                                 </connections>
                             </button>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="OSC connection feedback" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Owk-aY-7Io">
-                                <rect key="frame" x="124" y="20" width="320" height="25"/>
+                                <rect key="frame" x="208" y="20" width="320" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="320" id="2Fn-HQ-Vte"/>
                                     <constraint firstAttribute="height" constant="25" id="Ro7-NX-NCE"/>
@@ -75,7 +78,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="A♯ Mixolydian" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cHI-gy-7VR" userLabel="Setup Description">
-                                <rect key="frame" x="119" y="283" width="110" height="29"/>
+                                <rect key="frame" x="203" y="377" width="110" height="29"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="110" id="2k7-az-hh8"/>
                                     <constraint firstAttribute="height" constant="29" id="Xbd-Qt-BSs"/>
@@ -101,7 +104,7 @@
                             <constraint firstItem="nUd-ij-qeo" firstAttribute="bottom" secondItem="kC3-j3-ajz" secondAttribute="bottom" id="60M-qh-Ya8"/>
                             <constraint firstItem="kC3-j3-ajz" firstAttribute="top" secondItem="nUd-ij-qeo" secondAttribute="bottom" constant="8" symbolic="YES" id="A68-bL-VHr"/>
                             <constraint firstItem="8bC-Xf-vdC" firstAttribute="top" secondItem="yNT-f6-f79" secondAttribute="top" id="AHF-S1-bLV"/>
-                            <constraint firstAttribute="bottomMargin" secondItem="BfF-Lc-5IP" secondAttribute="bottom" constant="-8" id="GqI-b9-kkm"/>
+                            <constraint firstAttribute="bottomMargin" secondItem="BfF-Lc-5IP" secondAttribute="bottom" constant="10" id="GqI-b9-kkm"/>
                             <constraint firstAttribute="centerX" secondItem="kC3-j3-ajz" secondAttribute="centerX" id="KcM-XM-goG"/>
                             <constraint firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailing" id="MCR-Fp-NX3"/>
                             <constraint firstItem="Mg1-8A-slj" firstAttribute="top" secondItem="cHI-gy-7VR" secondAttribute="bottom" constant="8" symbolic="YES" id="Psq-4L-F2Y"/>
@@ -110,6 +113,7 @@
                             <constraint firstItem="8bC-Xf-vdC" firstAttribute="top" secondItem="yNT-f6-f79" secondAttribute="top" id="gBI-bH-cd2"/>
                             <constraint firstAttribute="centerX" secondItem="Owk-aY-7Io" secondAttribute="centerX" id="hL1-ef-Qy5"/>
                             <constraint firstItem="Owk-aY-7Io" firstAttribute="top" secondItem="yNT-f6-f79" secondAttribute="top" constant="20" symbolic="YES" id="pbB-Eq-Uqf"/>
+                            <constraint firstItem="BfF-Lc-5IP" firstAttribute="centerY" secondItem="kC3-j3-ajz" secondAttribute="centerY" priority="250" id="qa6-Rq-cnX"/>
                             <constraint firstItem="8bC-Xf-vdC" firstAttribute="leading" secondItem="yNT-f6-f79" secondAttribute="leading" id="sD1-Xa-R37"/>
                             <constraint firstItem="kC3-j3-ajz" firstAttribute="leading" secondItem="cHI-gy-7VR" secondAttribute="trailing" constant="8" symbolic="YES" id="vXy-eF-jMK"/>
                             <constraint firstAttribute="centerX" secondItem="nUd-ij-qeo" secondAttribute="centerX" id="vcj-cG-u6U"/>
@@ -124,7 +128,7 @@
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
-                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina55"/>
                     <connections>
                         <outlet property="bowlView" destination="8bC-Xf-vdC" id="nlM-eX-Hll"/>
                         <outlet property="compositionStepper" destination="kC3-j3-ajz" id="hRX-Me-Sdf"/>
