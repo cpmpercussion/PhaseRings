@@ -14,7 +14,7 @@
 			<key>type</key>
 			<string>aurg</string>
 			<key>version</key>
-			<integer>1</integer>
+			<integer>2</integer>
 		</dict>
 	</array>
 	<key>CFBundleDevelopmentRegion</key>
@@ -44,12 +44,12 @@
 			<string>au.com.charlesmartin.PhaseRings</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>PhaseRings-1.1.audiobus</string>
+				<string>PhaseRings-1.2.audiobus</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>142</string>
+	<string>145</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIBackgroundModes</key>
