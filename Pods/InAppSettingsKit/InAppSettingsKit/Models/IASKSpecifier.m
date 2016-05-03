@@ -69,7 +69,7 @@
 		[multipleValuesDict setObject:titles forKey:kIASKTitles];
 	}
     
-    if (shortTitles) {
+    if (shortTitles.count) {
 		[multipleValuesDict setObject:shortTitles forKey:kIASKShortTitles];
 	}
     
@@ -95,7 +95,7 @@
         static NSString *const valueKey = @"value";
         IASKSettingsReader *strongSettingsReader = self.settingsReader;
         [titles enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            NSString *localizedTitle = [strongSettingsReader titleForStringId:obj];
+            NSString *localizedTitle = [strongSettingsReader titleForId:obj];
             [temporaryMappingsForSort addObject:@{titleKey : obj,
                                                   valueKey : values[idx],
                                                   localizedTitleKey : localizedTitle,
@@ -138,7 +138,7 @@
             [multipleValuesDict setObject:titles forKey:kIASKTitles];
         }
         
-        if (shortTitles) {
+        if (shortTitles.count) {
             [multipleValuesDict setObject:shortTitles forKey:kIASKShortTitles];
         }
         
@@ -152,7 +152,7 @@
 
 - (NSString*)localizedObjectForKey:(NSString*)key {
 	IASKSettingsReader *settingsReader = self.settingsReader;
-	return [settingsReader titleForStringId:[_specifierDict objectForKey:key]];
+	return [settingsReader titleForId:[_specifierDict objectForKey:key]];
 }
 
 - (NSString*)title {
@@ -214,9 +214,9 @@
 - (NSString*)titleForCurrentValue:(id)currentValue {
 	NSArray *values = [self multipleValues];
 	NSArray *titles = [self multipleShortTitles];
-    if (!titles)
+	if (!titles) {
         titles = [self multipleTitles];
-
+	}
 	if (values.count != titles.count) {
 		return nil;
 	}
@@ -226,7 +226,7 @@
 	}
 	@try {
 		IASKSettingsReader *strongSettingsReader = self.settingsReader;
-		return [strongSettingsReader titleForStringId:[titles objectAtIndex:keyIndex]];
+		return [strongSettingsReader titleForId:[titles objectAtIndex:keyIndex]];
 	}
 	@catch (NSException * e) {}
 	return nil;
@@ -393,7 +393,7 @@
     }
     if ([self.type isEqualToString:kIASKButtonSpecifier] && !self.cellImage) {
 		return NSTextAlignmentCenter;
-	} else if ([self.type isEqualToString:kIASKPSMultiValueSpecifier] || [self.type isEqualToString:kIASKPSTitleValueSpecifier]) {
+	} else if ([self.type isEqualToString:kIASKPSMultiValueSpecifier] || [self.type isEqualToString:kIASKPSTitleValueSpecifier] || [self.type isEqualToString:kIASKTextViewSpecifier]) {
 		return NSTextAlignmentRight;
 	}
 	return NSTextAlignmentLeft;

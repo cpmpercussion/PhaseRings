@@ -25,10 +25,10 @@
 #define snprintf sprintf_s
 #endif
 
-       
+
 #define stringify(s) str(s)
 #define str(s) #s
- 
+
 char *pd_version = "Pd-" stringify(PD_MAJOR_VERSION) "." stringify(PD_MINOR_VERSION) "." stringify(PD_BUGFIX_VERSION) " (" stringify(PD_TEST_VERSION) ")";
 char pd_compiletime[] = __TIME__;
 char pd_compiledate[] = __DATE__;
@@ -36,6 +36,7 @@ char pd_compiledate[] = __DATE__;
 void pd_init(void);
 int sys_argparse(int argc, char **argv);
 void sys_findprogdir(char *progname);
+void sys_setsignalhandlers( void);
 int sys_startgui(const char *guipath);
 int sys_rcfile(void);
 int m_mainloop(void);
@@ -193,7 +194,7 @@ static void openit(const char *dirname, const char *filename)
 }
 
 /* this is called from the gui process.  The first argument is the cwd, and
-succeeding args give the widths and heights of known fonts.  We wait until 
+succeeding args give the widths and heights of known fonts.  We wait until
 these are known to open files and send messages specified on the command line.
 We ask the GUI to specify the "cwd" in case we don't have a local OS to get it
 from; for instance we could be some kind of RT embedded system.  However, to
@@ -298,8 +299,9 @@ int sys_main(int argc, char **argv)
         pd_version, pd_compiletime, pd_compiledate);
     if (sys_version)    /* if we were just asked our version, exit here. */
         return (0);
+    sys_setsignalhandlers();
     if (sys_startgui(sys_libdir->s_name))       /* start the gui */
-        return(1);
+        return (1);
     if (sys_externalschedlib)
         return (sys_run_scheduler(sys_externalschedlibname,
             sys_extraflagsstring));
@@ -471,7 +473,7 @@ static int sys_getmultidevchannels(int n, int *devlist)
 void sys_findprogdir(char *progname)
 {
     char sbuf[MAXPDSTRING], sbuf2[MAXPDSTRING], *sp;
-    char *lastslash; 
+    char *lastslash;
 #ifndef _WIN32
     struct stat statbuf;
 #endif /* NOT _WIN32 */
@@ -490,7 +492,7 @@ void sys_findprogdir(char *progname)
     {
             /* bash last slash to zero so that sbuf is directory pd was in,
                 e.g., ~/pd/bin */
-        *lastslash = 0; 
+        *lastslash = 0;
             /* go back to the parent from there, e.g., ~/pd */
         lastslash = strrchr(sbuf, '/');
         if (lastslash)
@@ -597,7 +599,7 @@ int sys_argparse(int argc, char **argv)
 
             argc -= 2; argv += 2;
         }
-        else if (!strcmp(*argv, "-soundbuf") || !strcmp(*argv, "-audiobuf") && (argc > 1))
+        else if (!strcmp(*argv, "-soundbuf") || (!strcmp(*argv, "-audiobuf") && (argc > 1)))
         {
             sys_main_advance = atoi(argv[1]);
             argc -= 2; argv += 2;
@@ -1105,7 +1107,7 @@ int sys_argparse(int argc, char **argv)
 #endif
     if (!sys_defaultfont)
         sys_defaultfont = DEFAULTFONT;
-    for (; argc > 0; argc--, argv++) 
+    for (; argc > 0; argc--, argv++)
         sys_openlist = namelist_append_files(sys_openlist, *argv);
 
 
@@ -1156,7 +1158,7 @@ static void sys_afterargparse(void)
         sys_midioutdevlist[i]--;
     if (sys_listplease)
         sys_listdevs();
-        
+
             /* get the current audio parameters.  These are set
             by the preferences mechanism (sys_loadpreferences()) or
             else are the default.  Overwrite them with any results
@@ -1177,7 +1179,7 @@ static void sys_afterargparse(void)
         for (i = 0; i < naudioindev; i++)
             audioindev[i] = sys_soundindevlist[i];
     }
-    
+
     if (sys_nchout >= 0)
     {
         nchoutdev = sys_nchout;
@@ -1213,7 +1215,7 @@ static void sys_afterargparse(void)
     if (sys_main_blocksize)
         blocksize = sys_main_blocksize;
     sys_set_audio_settings(naudioindev, audioindev, nchindev, chindev,
-        naudiooutdev, audiooutdev, nchoutdev, choutdev, rate, advance, 
+        naudiooutdev, audiooutdev, nchoutdev, choutdev, rate, advance,
         callback, blocksize);
     sys_open_midi(nmidiindev, midiindev, nmidioutdev, midioutdev, 0);
 }

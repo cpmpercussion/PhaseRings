@@ -94,7 +94,13 @@
 									inputEnabled:(BOOL)inputEnabled
 								   mixingEnabled:(BOOL)mixingEnabled {
 	PdAudioStatus status = PdAudioOK;
-	if (inputEnabled && ![AVAudioSession sharedInstance].inputAvailable) {
+	BOOL isInputAvailable; // fix crash on iOS < 6 where AVAudioSession is not available
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 60000
+	isInputAvailable = [AVAudioSession sharedInstance].inputAvailable;
+#else
+	isInputAvailable = [AVAudioSession sharedInstance].inputIsAvailable;
+#endif
+	if (inputEnabled && !isInputAvailable) {
 		inputEnabled = NO;
 		status |= PdAudioPropertyChanged;
 	}

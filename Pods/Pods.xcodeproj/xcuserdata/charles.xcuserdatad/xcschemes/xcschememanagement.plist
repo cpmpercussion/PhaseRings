@@ -14,7 +14,7 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods.xcscheme</key>
+		<key>Pods-PhaseRings.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -32,27 +32,27 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>10C64ABCD82E5B6A656DD608BB8A9522</key>
+		<key>09250E28CF3171598A3AC330D7667CB5</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>6FA38DEBB462720D4EBB9B5EB99499B9</key>
+		<key>1481D1BABFC1F2DC4CDB334029A49112</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>8B954AD49579E73035BE71FCA28BD21D</key>
+		<key>3571FD811A7981F6A5B233DECA96688A</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>D5CB46FF78498F2AA461A78B3A0C9A60</key>
+		<key>F36C8A6C3BEB7DB64D64AD18A2CAC465</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>DBBA3758AC217FDFD7CF81D53A693D66</key>
+		<key>FCBA21D87C1B82AA75A37B425EA94104</key>
 		<dict>
 			<key>primary</key>
 			<true/>
