@@ -1,4 +1,6 @@
-# PhaseRings 
+# PhaseRings
+
+[![DOI](https://zenodo.org/badge/20166/cpmpercussion/PhaseRings.svg)](https://zenodo.org/badge/latestdoi/20166/cpmpercussion/PhaseRings)
 
 ![PhaseRings Screenshot](https://raw.githubusercontent.com/cpmpercussion/PhaseRings/master/PhaseRings-Screenshot-iPad.png)
 
