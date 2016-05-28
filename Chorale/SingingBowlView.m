@@ -60,12 +60,31 @@
     self.textColour = [UIColor whiteColor];
 }
 
+-(void) setSolarizedScheme {
+    self.currentThemeDark = YES;
+    self.backgroundColor = [UIColor colorWithRed:0.00 green:0.17 blue:0.21 alpha:1.0];
+    self.rimColour = [UIColor colorWithRed:0.51 green:0.58 blue:0.59 alpha:1.0];
+    self.textColour = [UIColor colorWithRed:0.40 green:0.48 blue:0.51 alpha:1.0];
+}
+
 -(void) setOppositeScheme {
     if (self.currentThemeDark) {
         [self setLightScheme];
     } else {
         [self setDarkScheme];
     }
+}
+
+-(void) setSelectedColourScheme {
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"dark_mode"]) {
+        [self setSolarizedScheme];
+    } else {
+        [self setLightScheme];
+    }
+}
+
+-(void) setServerColourScheme {
+    [self setDarkScheme];
 }
 
 -(void) drawSetup:(SingingBowlSetup *) setup

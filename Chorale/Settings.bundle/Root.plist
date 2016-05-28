@@ -95,6 +95,17 @@
             <key>DefaultValue</key>
             <true/>
         </dict>
+        
+        <dict>
+            <key>Type</key>
+            <string>PSToggleSwitchSpecifier</string>
+            <key>Title</key>
+            <string>Dark Mode</string>
+            <key>Key</key>
+            <string>dark_mode</string>
+            <key>DefaultValue</key>
+            <false/>
+        </dict>
 <!--    Audio and MIDI child panes    -->
 		<dict>
 			<key>Type</key>

@@ -541,14 +541,14 @@
     NSLog(@"VC: Searching for logging server.");
     [self.oscStatusLabel setText:@"searching for classifier 😒"];
     [self.oscStatusLabel setHidden:!self.displayClassifierInfo];
-    [self.bowlView setLightScheme];
+    [self.bowlView setSelectedColourScheme];
 }
 
 -(void)stoppedSearchingForLoggingServer {
     NSLog(@"VC: Stopped searching for logging server.");
     [self.oscStatusLabel setText:@"classifier not connected. 😰"];
     [self.oscStatusLabel setHidden:!self.displayClassifierInfo];
-    [self.bowlView setLightScheme];
+    [self.bowlView setSelectedColourScheme];
 }
 
 -(void)metatoneClientFoundWithAddress:(NSString *)address andPort:(int)port andHostname:(NSString *)hostname {
@@ -568,7 +568,7 @@
     NSLog(@"VC: Connected to logging server.");
     [self.oscStatusLabel setText:[NSString stringWithFormat:@"connected to %@ 👍", hostname]];
     [self.oscStatusLabel setHidden:!self.displayClassifierInfo];
-    [self.bowlView setDarkScheme];
+    [self.bowlView setServerColourScheme];
     [self.bowlView drawSetup:self.bowlSetup];
     // For iPad Ensemble Performances!
     //    [self.compositionStepper setHidden:YES];
