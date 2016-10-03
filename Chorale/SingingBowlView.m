@@ -190,15 +190,20 @@
     int note = [self.currentSetup pitchAtRadius:fracRadius];
     CAShapeLayer *layer = [self.tapEdgeLayers objectForKey:
                            [NSNumber numberWithInt:note]];
-    [CATransaction setAnimationDuration:2.0];
-    layer.hidden = NO;
+    [CATransaction flush];
+    [CATransaction begin];
+    //NSLog(@"Current duration: %f", [CATransaction animationDuration]);
+    //NSLog(@"Animating bowl from tap %f", radius);
+    [CATransaction setAnimationDuration:0.1];
     [CATransaction setCompletionBlock:^{
+        //NSLog(@"Bowl visible at radius: %f", radius);
         [CATransaction setAnimationDuration:1.0];
-        layer.hidden = YES;
-        [CATransaction setCompletionBlock:^{
-            [CATransaction setAnimationDuration:3.0];
-        }];
+        layer.opacity = 0.0;
+        //layer.hidden = YES;
     }];
+    layer.hidden = NO;
+    layer.opacity = 1.0;
+    [CATransaction commit];
 }
 
 -(void) continuouslyAnimateBowlAtRadius:(CGFloat) radius{
@@ -222,7 +227,13 @@
 
 -(void) stopAnimatingBowl {
     for (CALayer *n in [self.continuousEdgeLayers objectEnumerator]) {
-        n.hidden = YES;
+        if (n.hidden == NO) {
+            [CATransaction begin];
+            [CATransaction setAnimationDuration:0.3];
+            [CATransaction setCompletionBlock:^{n.hidden = YES;}];
+            n.opacity = 0.0;
+            [CATransaction commit];
+        }
     }
 }
 

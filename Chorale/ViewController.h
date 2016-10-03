@@ -13,15 +13,15 @@
 #import "MetatoneNetworkManager.h"
 #import "MetatoneMidiManager.h"
 #import "Audiobus.h"
-
-
+#import "ABAudiobusController.h"
+#import "StateSaver.h"
 // Settings:
 #import "IASKAppSettingsViewController.h"
 #import "IASKSettingsReader.h"
 
 
 
-@interface ViewController : UIViewController <PdReceiverDelegate,MetatoneNetworkManagerDelegate,IASKSettingsDelegate,UIPopoverControllerDelegate>
+@interface ViewController : UIViewController <PdReceiverDelegate,MetatoneNetworkManagerDelegate,IASKSettingsDelegate,UIPopoverControllerDelegate,ABAudiobusControllerStateIODelegate>
 @property (strong, nonatomic) MetatoneMidiManager* midiManager;
 @property (strong, nonatomic) IASKAppSettingsViewController *appSettingsViewController;
 @property (weak, nonatomic) UIPopoverController* currentPopoverController;

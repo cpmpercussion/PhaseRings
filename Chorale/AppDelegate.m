@@ -7,12 +7,27 @@
 //
 
 #import "AppDelegate.h"
-#import "AudioBus.h"
 
 #define CUSTOM_COMPOSITION_PROPERTIES @[@"note_1",@"note_2",@"note_3",@"scale_1",@"scale_2",@"scale_3"]
 #define CUSTOM_COMPOSITION_NUMBER 0
+#define AUDIOBUS_SOURCE_URL @"us.audiob.Audiobus"
 
 @implementation AppDelegate
+
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+{
+    // Handle preset incoming from loading url.
+    
+    NSLog(@"URL_LOADER: App opened from URL");
+//    NSLog(@"URL_LOADER: URL was %@", [url description]);
+//    NSLog(@"URL_LOADER: Options were %@", [options description]);
+    
+    if ([((NSString *) [options valueForKey:@"UIApplicationOpenURLOptionsSourceApplicationKey"]) isEqualToString:AUDIOBUS_SOURCE_URL]) {
+        NSLog(@"URL_LOADER: Opened by Audiobus, ready to load settings");
+        return YES;
+    }
+    return NO;
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
