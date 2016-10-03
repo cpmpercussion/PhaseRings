@@ -162,6 +162,7 @@
                                                audioUnit:self.audioController.audioUnit.audioUnit];
     [self.audiobusController addSenderPort:self.senderport];
     // Set the AudioBus StateIO Delegate Here.
+    [self.audiobusController setStateIODelegate:self];
 }
 
 - (void) startAudioEngine {
@@ -873,6 +874,18 @@
     [self openComposition];
     [self openPdPatch];
     return YES;
+}
+
+// AudioBus State Saving Methods
+- (NSDictionary *) audiobusStateDictionaryForCurrentState
+{
+    return [StateSaver currentState];
+}
+
+- (void) loadStateFromAudiobusStateDictionary: (NSDictionary *)dictionary responseMessage:(NSString **) outResponseMessage
+{
+    [StateSaver loadState:dictionary];
+    *outResponseMessage = @"PhaseRings State Loaded";
 }
 
 @end
