@@ -14,7 +14,9 @@
 {
     NSLog(@"STATE_SAVER: Packing up state to save.");
     // Register defaults
-    NSDictionary *currentState = @{@"sound":[[NSUserDefaults standardUserDefaults] objectForKey:@"sound"],
+    
+    NSDictionary *currentState = @{
+                           @"sound":[[NSUserDefaults standardUserDefaults] objectForKey:@"sound"],
                            @"note_labels":[[NSUserDefaults standardUserDefaults] objectForKey:@"note_labels"],
                            @"setup_label":[[NSUserDefaults standardUserDefaults] objectForKey:@"setup_label"],
                            @"composition":[[NSUserDefaults standardUserDefaults] objectForKey:@"composition"],
@@ -31,7 +33,8 @@
                            @"master_volume":[[NSUserDefaults standardUserDefaults] objectForKey:@"master_volume"],
                            @"web_classifier":[[NSUserDefaults standardUserDefaults] objectForKey:@"web_classifier"],
                            @"local_classifier":[[NSUserDefaults standardUserDefaults] objectForKey:@"local_classifier"],
-                           @"display_classifier_information":[[NSUserDefaults standardUserDefaults] objectForKey:@"display_classifier_information"]};
+                           @"display_classifier_information":[[NSUserDefaults standardUserDefaults] objectForKey:@"display_classifier_information"],
+                           @"dark_mode":[[NSUserDefaults standardUserDefaults] objectForKey:@"dark_mode"]};
     return currentState;
 }
 
