@@ -174,4 +174,16 @@
     [self.viewController stopOSCLogging];
 }
 
+
+// AudioBus State Saving Methods
+- (NSDictionary *) audiobusStateDictionaryForCurrentState
+{
+    return [StateSaver currentState];
+}
+
+- (void) loadStateFromAudiobusStateDictionary: (NSDictionary *)dictionary responseMessage:(NSString **) outResponseMessage
+{
+    [StateSaver loadState:dictionary];
+    *outResponseMessage = @"State Loaded!";
+} 
 @end

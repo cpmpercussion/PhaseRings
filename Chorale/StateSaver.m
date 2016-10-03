@@ -14,7 +14,6 @@
 {
     NSLog(@"STATE_SAVER: Packing up state to save.");
     // Register defaults
-    
     NSDictionary *currentState = @{
                            @"sound":[[NSUserDefaults standardUserDefaults] objectForKey:@"sound"],
                            @"note_labels":[[NSUserDefaults standardUserDefaults] objectForKey:@"note_labels"],
