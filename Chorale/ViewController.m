@@ -879,11 +879,13 @@
 // AudioBus State Saving Methods
 - (NSDictionary *) audiobusStateDictionaryForCurrentState
 {
+    NSLog(@"VC: Request to save state.");
     return [StateSaver currentState];
 }
 
 - (void) loadStateFromAudiobusStateDictionary: (NSDictionary *)dictionary responseMessage:(NSString **) outResponseMessage
 {
+    NSLog(@"VC: Request to load state.");
     [StateSaver loadState:dictionary];
     *outResponseMessage = @"PhaseRings State Loaded";
 }
