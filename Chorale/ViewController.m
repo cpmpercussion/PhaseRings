@@ -161,6 +161,7 @@
                                }
                                                audioUnit:self.audioController.audioUnit.audioUnit];
     [self.audiobusController addSenderPort:self.senderport];
+    // Set the AudioBus StateIO Delegate Here.
 }
 
 - (void) startAudioEngine {
