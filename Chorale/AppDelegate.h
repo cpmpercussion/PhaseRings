@@ -8,8 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import "ViewController.h"
+#import "AudioBus.h"
+#import <ABAudiobusController.h>
+#import "StateSaver.h"
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate, ABAudiobusControllerStateIODelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 @property (weak, nonatomic) ViewController *viewController;
