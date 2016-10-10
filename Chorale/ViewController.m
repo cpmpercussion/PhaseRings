@@ -111,6 +111,7 @@
     self.timeOfLastNewIdea = [NSDate date];
     
     // Ensemble Heads Up Display
+#pragma mark TODO What is Ensemble Status Mode and is it necessary anymore? Consider removing.
     if (ENSEMBLE_STATUS_MODE) {
         NSLog(@"Displaying Ensemble Status UI");
         [self.ensembleView setHidden:NO];
