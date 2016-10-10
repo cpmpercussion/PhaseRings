@@ -10,7 +10,4 @@
 #import "SingingBowlComposition.h"
 
 @interface TestChoraleComposition : SingingBowlComposition
-
-@property (strong,nonatomic) NSArray *contents;
-
 @end

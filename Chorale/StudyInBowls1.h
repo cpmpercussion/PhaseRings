@@ -9,8 +9,4 @@
 #import "SingingBowlComposition.h"
 
 @interface StudyInBowls1 : SingingBowlComposition
-
-@property (strong,nonatomic) NSArray *contents;
-
-
 @end
