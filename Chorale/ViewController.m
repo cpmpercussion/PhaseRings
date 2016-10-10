@@ -422,7 +422,6 @@
 }
 
 // New Setup Button just for Experiment Mode!
-#pragma mark TODO make sure the button fades out sufficiently.
 - (IBAction)experimentNewSetupButtonPressed:(UIButton *)sender {
     NSLog(@"New Setup Button Pressed!");
     int state = (int) (self.compositionStepper.value + 1) % (int) (self.compositionStepper.maximumValue + 1);
@@ -431,19 +430,13 @@
     NSArray *newSetup = [self.composition setupForState:state];
     [self applyNewSetup:newSetup];
     [self updateSetupDescription:state];
-    
     // Now randomise sound!
     [self randomiseSound];
-    
     // Send to everyone in the network.
-    // sending via network.
     [self.networkManager sendMetatoneMessageViaServer:@"CompositionStep" withState:[NSString stringWithFormat:@"%d",state]];
-    
     if (self.buttonFadingMode) {
         // Fading out the button.
         [self fadeOutNewSetupButton];
-        // Should this send a message to other clients to fade out their buttons too?
-        // No maybe just use the compositionstep message to do that.
     }
 }
 
@@ -497,7 +490,6 @@
 #pragma mark - Metatone Classifier and Network Methods
 -(void)stopOSCLogging
 {
-//    [self.networkManager stopSearches];
     [self.networkManager closeClassifierWebSocket];
 }
 
