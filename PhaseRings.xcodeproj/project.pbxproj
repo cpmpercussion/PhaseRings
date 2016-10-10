@@ -948,6 +948,7 @@
 				CODE_SIGN_ENTITLEMENTS = PhaseRings.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = EDH387FRHA;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Chorale/PhaseRings-Prefix.pch";
 				INFOPLIST_FILE = "Chorale/PhaseRings-Info.plist";
@@ -971,6 +972,7 @@
 				CODE_SIGN_ENTITLEMENTS = PhaseRings.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = EDH387FRHA;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Chorale/PhaseRings-Prefix.pch";
 				INFOPLIST_FILE = "Chorale/PhaseRings-Info.plist";
