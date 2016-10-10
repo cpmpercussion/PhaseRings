@@ -19,8 +19,6 @@
 #import "IASKAppSettingsViewController.h"
 #import "IASKSettingsReader.h"
 
-
-
 @interface ViewController : UIViewController <PdReceiverDelegate,MetatoneNetworkManagerDelegate,IASKSettingsDelegate,UIPopoverControllerDelegate,ABAudiobusControllerStateIODelegate>
 @property (strong, nonatomic) MetatoneMidiManager* midiManager;
 @property (strong, nonatomic) IASKAppSettingsViewController *appSettingsViewController;
@@ -36,18 +34,18 @@
 @property (nonatomic) bool experimentMode;
 @property (nonatomic) bool buttonFadingMode;
 @property (nonatomic) bool listenToMetatoneClassifierMessages;
+@property (nonatomic) bool serverConnected;
 
 
 @property (weak, nonatomic) IBOutlet UIButton *experimentNewSetupButton;
 - (IBAction)experimentNewSetupButtonPressed:(UIButton *)sender;
-
 - (void) openPdPatch;
 - (void) openComposition;
 - (void) updateClassifierSettings;
 - (IBAction)showSettingsModal:(id)sender;
 - (void) shutdownSoundProcessing;
 - (void) restartSoundProcessing;
-
--(void) setupOSCLogging;
--(void) stopOSCLogging;
+- (void) updateBowlViewColourScheme;
+- (void) setupOSCLogging;
+- (void) stopOSCLogging;
 @end

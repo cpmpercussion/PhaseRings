@@ -82,7 +82,6 @@
 
 @implementation ViewController
 #pragma mark - Setup
-
 - (PdAudioController *) audioController
 {
     if (!_audioController) _audioController = [[PdAudioController alloc] init];
@@ -529,15 +528,16 @@
     NSLog(@"VC: Searching for logging server.");
     [self.oscStatusLabel setText:@"searching for classifier 😒"];
     [self.oscStatusLabel setHidden:!self.displayClassifierInfo];
-    [self.bowlView setSelectedColourScheme];
+    self.serverConnected = NO;
+    [self updateBowlViewColourScheme];
 }
 
 -(void)stoppedSearchingForLoggingServer {
     NSLog(@"VC: Stopped searching for logging server.");
     [self.oscStatusLabel setText:@"classifier not connected. 😰"];
     [self.oscStatusLabel setHidden:!self.displayClassifierInfo];
-    [self.bowlView setSelectedColourScheme];
-}
+    self.serverConnected = NO;
+    [self updateBowlViewColourScheme];}
 
 -(void)metatoneClientFoundWithAddress:(NSString *)address andPort:(int)port andHostname:(NSString *)hostname {
     [self.metatoneClients setObject:address forKey:hostname];
@@ -554,13 +554,22 @@
 
 -(void)loggingServerFoundWithAddress:(NSString *)address andPort:(int)port andHostname:(NSString *)hostname {
     NSLog(@"VC: Connected to logging server.");
+    self.serverConnected = YES;
     [self.oscStatusLabel setText:[NSString stringWithFormat:@"connected to %@ 👍", hostname]];
     [self.oscStatusLabel setHidden:!self.displayClassifierInfo];
-    [self.bowlView setServerColourScheme];
+    [self updateBowlViewColourScheme];
     [self.bowlView drawSetup:self.bowlSetup];
     // For iPad Ensemble Performances!
     //    [self.compositionStepper setHidden:YES];
     //    [self.settingsButton setHidden:YES];
+}
+
+- (void) updateBowlViewColourScheme {
+    if (self.serverConnected) {
+        [self.bowlView setServerColourScheme];
+    } else {
+        [self.bowlView setSelectedColourScheme];
+    }
 }
 
 -(void)didReceiveMetatoneMessageFrom:(NSString *)device withName:(NSString *)name andState:(NSString *)state {
