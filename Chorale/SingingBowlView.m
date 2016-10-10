@@ -94,6 +94,7 @@
 
 -(void) drawSetup:(SingingBowlSetup *) setup
 {
+    //NSLog(@"SingingBowlView: drawSetup was called!");
     // delete previous setup
     [self.rimSubLayer setSublayers:nil];
     self.continuousEdgeLayers = [NSMutableDictionary dictionary];
@@ -101,6 +102,7 @@
     self.currentSetup = setup;
 
     // draw new one
+    self.displayNoteNames = [[NSUserDefaults standardUserDefaults] boolForKey:@"note_labels"];
     CGFloat totalRadius = [self viewRadius];
     self.currentRimWidth = totalRadius / (CGFloat) [setup numberOfPitches];
     //CGFloat tapEdgeWidth = 0.0;
