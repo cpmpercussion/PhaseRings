@@ -229,19 +229,21 @@
     [self.compositionStepper setMaximumValue:[self.composition numberOfSetups] - 1];
     [self.compositionStepper setWraps:YES];
     [self updateSetupDescription:0];
+
+    // Update bowl view.
+    self.bowlSetup = [[SingingBowlSetup alloc] initWithPitches:[NSMutableArray arrayWithArray:[self.composition firstSetup]]];
+    self.viewRadius = [self calculateMaximumRadius];
+    [self.bowlView drawSetup:self.bowlSetup];
+}
+
+-(void) updateUITextLabels {
+    // Setup Description Label
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"setup_label"]) {
         [self.setupDescription setHidden:NO];
     } else {
         [self.setupDescription setHidden:YES];
     }
-
-    // Update bowl view.
-    self.bowlSetup = [[SingingBowlSetup alloc] initWithPitches:[NSMutableArray arrayWithArray:[self.composition firstSetup]]];
-    self.viewRadius = [self calculateMaximumRadius];
-    self.bowlView.displayNoteNames = [[NSUserDefaults standardUserDefaults] boolForKey:@"note_labels"];
-    [self.bowlView drawSetup:self.bowlSetup];
 }
-
 
 // Checks settings to which sound scheme is selected. If it's different from what
 // is currently open or nothing is open, the new scheme's Pd patch is opened.
@@ -296,6 +298,9 @@
 }
 
 - (void) viewDidLayoutSubviews {
+#pragma mark TODO is drawing the setup necessary each time the subviews are laid out? maybe for rotation.
+    // Laying out the subviews -- better draw the setup again?? Really?
+    // Maybe this protects agains issues with rotation.
     [self.bowlView drawSetup:self.bowlSetup];
 }
 
@@ -659,7 +664,6 @@
     NSLog(@"PERFORMANCE: Received Performance Event: %@, %@, %@, %@", event,device,type,composition);
     int newComposition = [composition intValue] % NUMBER_COMPOSITIONS_AVAILABLE;
     self.currentPerformanceType = [type intValue];
-//    [self.bowlView setDarkScheme];
     switch (self.currentPerformanceType) {
         case PERFORMANCE_TYPE_LOCAL:
             // Local
@@ -837,28 +841,28 @@
     self.currentPopoverController = popover;
 }
 
-// Popover/Settings end methods, previously had settings changes.
+// Popover/Settings end methods, previously had settings changes as well!
 - (void) dismissCurrentPopover {
-    NSLog(@"VC: dismissing the popover ourselves..");
+//    NSLog(@"VC: dismissing the popover ourselves..");
     [self.currentPopoverController dismissPopoverAnimated:YES];
     self.currentPopoverController = nil;
 }
 
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
-    NSLog(@"VC: Settings Changed, updating everything!");
+//    NSLog(@"VC: Settings Changed, updating everything!");
 }
 
 - (void) popoverControllerDidDismissPopover:(UIPopoverController *)popoverController {
-    NSLog(@"VC: Popover going away updating everything!!");
+//    NSLog(@"VC: Popover going away updating everything!!");
 }
 
 - (void) popoverController:(UIPopoverController *)popoverController willRepositionPopoverToRect:(inout CGRect *)rect inView:(inout UIView *__autoreleasing *)view {
-    NSLog(@"VC: repositioning popover");
+//    NSLog(@"VC: repositioning popover");
 }
 
 - (BOOL)popoverControllerShouldDismissPopover:(UIPopoverController *)popoverController {
-    NSLog(@"VC: Popover will be dismissed.!!");
+//    NSLog(@"VC: Popover will be dismissed.!!");
     return YES;
 }
 
