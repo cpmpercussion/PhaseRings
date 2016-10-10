@@ -39,8 +39,11 @@
 
 @property (weak, nonatomic) IBOutlet UIButton *experimentNewSetupButton;
 - (IBAction)experimentNewSetupButtonPressed:(UIButton *)sender;
+/*! @brief Opens the correct Pd patch for the currently selected sound scheme. */
 - (void) openPdPatch;
+/*! @brief Generates a composition object according the the selected settings then draws a new bowlView for the new  setups.*/
 - (void) openComposition;
+
 - (void) updateClassifierSettings;
 - (IBAction)showSettingsModal:(id)sender;
 - (void) shutdownSoundProcessing;
