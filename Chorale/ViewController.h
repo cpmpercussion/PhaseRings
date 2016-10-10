@@ -43,12 +43,19 @@
 - (void) openPdPatch;
 /*! @brief Generates a composition object according the the selected settings then draws a new bowlView for the new  setups.*/
 - (void) openComposition;
+/*! @brief Updates the setup description label and note name labels in the UI according to the selected settings. */
+-(void) updateUITextLabels;
+/*! @brief Updates the colour scheme according to the selected settings. */
+- (void) updateBowlViewColourScheme;
+
 
 - (void) updateClassifierSettings;
+
 - (IBAction)showSettingsModal:(id)sender;
+
 - (void) shutdownSoundProcessing;
 - (void) restartSoundProcessing;
-- (void) updateBowlViewColourScheme;
+
 - (void) setupOSCLogging;
 - (void) stopOSCLogging;
 @end
