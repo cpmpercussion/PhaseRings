@@ -43,15 +43,9 @@
 #import "SingingBowlView.h"
 #import "MetatoneEnsembleView.h"
 #import "SingingBowlComposition.h"
-//#import "TestChoraleComposition.h"
-//#import "StudyInBowls1.h"
 #import "GenerativeSetupComposition.h"
 
 #define CLOUD_SERVER_TESTING_MODE YES
-
-//#define EXPERIMENT_MODE YES
-//#define EXPERIMENT_MODE_BUTTON NO
-//#define EXPERIMENT_MODE_SERVER NO
 
 #define PERFORMANCE_TYPE_LOCAL 0
 #define PERFORMANCE_TYPE_REMOTE 1
@@ -125,14 +119,6 @@
         NSLog(@"Hiding Ensemble Status UI");
         [self.ensembleView setHidden:YES];
     }
-    
-//    if (EXPERIMENT_MODE) {
-//        NSLog(@"Starting Experiment Mode.");
-//        [self startExperimentMode];
-//    } else {
-//        NSLog(@"Starting Normal Mode.");
-//        [self stopExperimentMode];
-//    }
     [self.experimentNewSetupButton setHidden:YES];
     self.experimentMode = NO;
     self.listenToMetatoneClassifierMessages = YES;
