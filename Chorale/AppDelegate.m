@@ -103,8 +103,10 @@
 - (void)defaultsDidChange:(NSNotification *)aNotification
 {
     NSLog(@"SETTINGS NOTIFICATION: Settings changed.");
+    NSLog(@"AD: Notification was: %@", [aNotification description]);
     [self.viewController openPdPatch];
     [self.viewController updateClassifierSettings];
+    [self.viewController updateBowlViewColourScheme];
 }
 
 -(void)observeValueForKeyPath:(NSString *)aKeyPath ofObject:(id)anObject
