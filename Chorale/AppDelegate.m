@@ -102,8 +102,7 @@
 
 - (void)defaultsDidChange:(NSNotification *)aNotification
 {
-    NSLog(@"SETTINGS NOTIFICATION: Settings changed.");
-    NSLog(@"AD: Notification was: %@", [aNotification description]);
+    NSLog(@"AD: defaultsDidChange.");
     [self.viewController openPdPatch];
     [self.viewController updateClassifierSettings];
     [self.viewController updateBowlViewColourScheme];
@@ -112,7 +111,7 @@
 -(void)observeValueForKeyPath:(NSString *)aKeyPath ofObject:(id)anObject
                        change:(NSDictionary *)aChange context:(void *)aContext
 {
-    NSLog(@"APP DELEGATE: Value Changed for Keypath: %@",aKeyPath);
+    NSLog(@"AD: Value Changed for Keypath: %@",aKeyPath);
     bool compositionChanged = NO;
     if ([aKeyPath isEqualToString:@"composition"]) {
         compositionChanged = YES;
