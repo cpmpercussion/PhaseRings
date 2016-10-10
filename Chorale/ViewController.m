@@ -837,37 +837,28 @@
     self.currentPopoverController = popover;
 }
 
+// Popover/Settings end methods, previously had settings changes.
 - (void) dismissCurrentPopover {
-    NSLog(@"dismissing the popover ourselves..");
+    NSLog(@"VC: dismissing the popover ourselves..");
     [self.currentPopoverController dismissPopoverAnimated:YES];
     self.currentPopoverController = nil;
-    [self openComposition];
-    [self openPdPatch];
-
 }
 
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
-    NSLog(@"MainVC: Settings Changed, updating everything!");
-    [self openComposition];
-    [self openPdPatch];
-    // your code here to reconfigure the app for changed settings
+    NSLog(@"VC: Settings Changed, updating everything!");
 }
 
 - (void) popoverControllerDidDismissPopover:(UIPopoverController *)popoverController {
-    NSLog(@"MainVC: Popover going away updating everything!!");
-    [self openComposition];
-    [self openPdPatch];
+    NSLog(@"VC: Popover going away updating everything!!");
 }
 
 - (void) popoverController:(UIPopoverController *)popoverController willRepositionPopoverToRect:(inout CGRect *)rect inView:(inout UIView *__autoreleasing *)view {
-    NSLog(@"repositioning popover");
+    NSLog(@"VC: repositioning popover");
 }
 
 - (BOOL)popoverControllerShouldDismissPopover:(UIPopoverController *)popoverController {
-    NSLog(@"MainVC: Popover will be dismissed.!!");
-    [self openComposition];
-    [self openPdPatch];
+    NSLog(@"VC: Popover will be dismissed.!!");
     return YES;
 }
 
