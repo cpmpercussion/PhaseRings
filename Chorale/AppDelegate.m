@@ -100,22 +100,24 @@
     return YES;
 }
 
+/*! Method to update non-disruptive features which runs after any settings update. */
 - (void)defaultsDidChange:(NSNotification *)aNotification
 {
-    NSLog(@"AD: defaultsDidChange.");
+    NSLog(@"AD: defaultsDidChange, updating all non-disruptive features.");
     [self.viewController openPdPatch];
     [self.viewController updateClassifierSettings];
     [self.viewController updateBowlViewColourScheme];
+    [self.viewController updateUITextLabels];
 }
 
--(void)observeValueForKeyPath:(NSString *)aKeyPath ofObject:(id)anObject
+/*! Method to update the disruptive features only when needed, i.e., composition setup and classifier connection */
+- (void)observeValueForKeyPath:(NSString *)aKeyPath ofObject:(id)anObject
                        change:(NSDictionary *)aChange context:(void *)aContext
 {
     NSLog(@"AD: Value Changed for Keypath: %@",aKeyPath);
     bool compositionChanged = NO;
     if ([aKeyPath isEqualToString:@"composition"]) {
         compositionChanged = YES;
-        NSLog(@"APP DELEGATE: Changed Composition");
     } else if ([aKeyPath isEqualToString:@"web_classifier"]) {
         // trigger change to webclassifier connection
 # pragma mark TODO - make sure that webclassifier gets turned on and off here!
@@ -130,9 +132,8 @@
     }
     
     if (compositionChanged) {
+        NSLog(@"AD: Composition settings were changed, updating composition.");
         [self.viewController openComposition];
-    } else {
-        NSLog(@"APP DELEGATE: settings change not for composition.");
     }
 }
 							
