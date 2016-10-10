@@ -36,12 +36,20 @@
 @property (nonatomic) bool listenToMetatoneClassifierMessages;
 @property (nonatomic) bool serverConnected;
 
-
+/*! The "New Setup" button as used in PhaseRings HCI experiments. */
 @property (weak, nonatomic) IBOutlet UIButton *experimentNewSetupButton;
+/*! Method called when the "New Setup" button is called in PhaseRings HCI experiments. */
 - (IBAction)experimentNewSetupButtonPressed:(UIButton *)sender;
-/*! @brief Opens the correct Pd patch for the currently selected sound scheme. */
+
+/*! 
+ @brief Opens the correct Pd patch for the currently selected sound scheme.
+ This method does nothing if the same Pd patch is opened twice. 
+ */
 - (void) openPdPatch;
-/*! @brief Generates a composition object according the the selected settings then draws a new bowlView for the new  setups.*/
+/*! 
+ @brief Generates a composition object according the the selected settings then draws a new bowlView for the new  setups.
+ This method is destructive in that it generates all new setups so only be called when absolutely necessary.
+ */
 - (void) openComposition;
 /*! @brief Updates the setup description label and note name labels in the UI according to the selected settings. */
 -(void) updateUITextLabels;
