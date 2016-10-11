@@ -504,29 +504,29 @@
 }
 
 #pragma mark - Metatone Classifier and Network Methods
+#pragma mark TODO: clean up these methods to simplify the situation.
 -(void)stopOSCLogging
 {
+    NSLog(@"VC: stopOSCLogging was called");
     [self.networkManager closeClassifierWebSocket];
 }
 
 -(void)setupOSCLogging {
+    NSLog(@"VC: setupOSCLogging was called");
     self.metatoneClients = [[NSMutableDictionary alloc] init];
     self.webClassifierSearchEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"web_classifier"];
     self.localClassifierSearchEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"local_classifier"];
     self.networkManager = [[MetatoneNetworkManager alloc] initWithDelegate:self shouldOscLog:YES shouldConnectToWebClassifier:self.webClassifierSearchEnabled];
 }
 
--(void)updateClassifierSettings {
+-(void)updateClassifierConnections {
+    NSLog(@"VC: updateClassifierConnections was called.");
     self.webClassifierSearchEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"web_classifier"];
     self.localClassifierSearchEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"local_classifier"];
-#pragma mark TODO: do something when webclassifier and local classifier settings are changed.
-//    [self setupOSCLogging];
 #pragma TODO: this bit is a real problem. gosh darnit.
     if (self.webClassifierSearchEnabled) {
-//        [self searchingForLoggingServer];
         [self.networkManager startConnectingToWebClassifier];
     } else {
-//        [self stoppedSearchingForLoggingServer];
         [self.networkManager stopConnectingToWebClassifier];
     }
 }
@@ -542,7 +542,8 @@
     NSLog(@"VC: Stopped searching for logging server.");
     [self.oscStatusLabel setText:@"classifier not connected"];
     self.serverConnected = NO;
-    [self updateBowlViewColourScheme];}
+    [self updateBowlViewColourScheme];
+}
 
 -(void)metatoneClientFoundWithAddress:(NSString *)address andPort:(int)port andHostname:(NSString *)hostname {
     [self.metatoneClients setObject:address forKey:hostname];
