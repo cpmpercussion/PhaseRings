@@ -244,6 +244,23 @@
     } else {
         [self.setupDescription setHidden:YES];
     }
+    // Setup OSC Status Label:
+    if (self.experimentMode) {
+//        NSLog(@"EXPERIMENT MODE: Showing OSC Status!");
+        [self.oscStatusLabel setHidden:NO];
+    } else if ([[NSUserDefaults standardUserDefaults] boolForKey:@"display_classifier_information"]) {
+        [self.oscStatusLabel setHidden:NO];
+    } else {
+        [self.oscStatusLabel setHidden:YES];
+    }
+}
+
+- (void) updateBowlViewColourScheme {
+    if (self.serverConnected) {
+        [self.bowlView setServerColourScheme]; // Server Colours
+    } else {
+        [self.bowlView setSelectedColourScheme]; // Settings-Selected Colours
+    }
 }
 
 // Checks settings to which sound scheme is selected. If it's different from what
@@ -280,7 +297,7 @@
 
 #pragma mark - UI Methods
 - (void) applyNewSetup: (NSArray *) setup {
-    NSLog(@"Drawing new setup.");
+    NSLog(@"VC: Drawing new setup.");
     self.bowlSetup = [[SingingBowlSetup alloc] initWithPitches:[NSMutableArray arrayWithArray:setup]];
     [self.bowlView drawSetup:self.bowlSetup];
 }
@@ -288,9 +305,8 @@
 - (void) updateSetupDescription:(int)state {
     NSString *newDescription = [[(GenerativeSetupComposition *) self.composition setupDescriptions] objectAtIndex:state];
     [self.setupDescription setText:newDescription];
-    NSLog(@"SETUP DESCRIPTION: %@",newDescription);
+    NSLog(@"VC: SETUP DESCRIPTION: %@",newDescription);
 }
-
 
 - (void) viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
 }
@@ -513,19 +529,11 @@
 //        [self stoppedSearchingForLoggingServer];
         [self.networkManager stopConnectingToWebClassifier];
     }
-    
-    self.displayClassifierInfo = (bool) [[NSUserDefaults standardUserDefaults] boolForKey:@"display_classifier_information"];
-    if (!self.experimentMode) {[self.oscStatusLabel setHidden:!self.displayClassifierInfo];
-    } else {
-        NSLog(@"EXPERIMENT MODE: Showing OSC Status!");
-        [self.oscStatusLabel setHidden:NO];
-    }
 }
 
 -(void)searchingForLoggingServer {
     NSLog(@"VC: Searching for logging server.");
     [self.oscStatusLabel setText:@"searching for classifier 😒"];
-    [self.oscStatusLabel setHidden:!self.displayClassifierInfo];
     self.serverConnected = NO;
     [self updateBowlViewColourScheme];
 }
@@ -533,7 +541,6 @@
 -(void)stoppedSearchingForLoggingServer {
     NSLog(@"VC: Stopped searching for logging server.");
     [self.oscStatusLabel setText:@"classifier not connected. 😰"];
-    [self.oscStatusLabel setHidden:!self.displayClassifierInfo];
     self.serverConnected = NO;
     [self updateBowlViewColourScheme];}
 
@@ -554,20 +561,8 @@
     NSLog(@"VC: Connected to logging server.");
     self.serverConnected = YES;
     [self.oscStatusLabel setText:[NSString stringWithFormat:@"connected to %@ 👍", hostname]];
-    [self.oscStatusLabel setHidden:!self.displayClassifierInfo];
     [self updateBowlViewColourScheme];
     [self.bowlView drawSetup:self.bowlSetup];
-    // For iPad Ensemble Performances!
-    //    [self.compositionStepper setHidden:YES];
-    //    [self.settingsButton setHidden:YES];
-}
-
-- (void) updateBowlViewColourScheme {
-    if (self.serverConnected) {
-        [self.bowlView setServerColourScheme];
-    } else {
-        [self.bowlView setSelectedColourScheme];
-    }
 }
 
 -(void)didReceiveMetatoneMessageFrom:(NSString *)device withName:(NSString *)name andState:(NSString *)state {
@@ -662,14 +657,13 @@
             // Local
             NSLog(@"PERFORMANCE: Starting Local Mode.");
             [self.compositionStepper setHidden:YES];
-            [self.settingsButton setHidden:YES];
+            [self.settingsButton setHidden:NO];
             [self.setupDescription setHidden:NO];
             [self.experimentNewSetupButton setHidden:YES];
             self.listenToMetatoneClassifierMessages = YES;
             self.buttonFadingMode = NO;
             self.experimentMode = NO;
             [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
-
             break;
         case PERFORMANCE_TYPE_REMOTE:
             // Remote
