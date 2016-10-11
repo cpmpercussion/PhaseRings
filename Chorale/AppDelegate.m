@@ -105,7 +105,6 @@
 {
     NSLog(@"AD: defaultsDidChange, updating all non-disruptive features.");
     [self.viewController openPdPatch];
-    [self.viewController updateClassifierSettings];
     [self.viewController updateBowlViewColourScheme];
     [self.viewController updateUITextLabels];
 }
@@ -120,9 +119,12 @@
         compositionChanged = YES;
     } else if ([aKeyPath isEqualToString:@"web_classifier"]) {
         // trigger change to webclassifier connection
-# pragma mark TODO - make sure that webclassifier gets turned on and off here!
+        NSLog(@"AD: Updating classifier connection due to change in Web Classifier");
+        [self.viewController updateClassifierConnections];
     } else if ([aKeyPath isEqualToString:@"local_classifier"]) {
         // trigger change to localclassifier connection.
+        NSLog(@"AD: Updating classifier connection due to change in Local Classifier");
+        [self.viewController updateClassifierConnections];
     }
     
     if ([CUSTOM_COMPOSITION_PROPERTIES containsObject:aKeyPath] &&
