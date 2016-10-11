@@ -533,14 +533,14 @@
 
 -(void)searchingForLoggingServer {
     NSLog(@"VC: Searching for logging server.");
-    [self.oscStatusLabel setText:@"searching for classifier 😒"];
+    [self.oscStatusLabel setText:@"classifier not connected"];
     self.serverConnected = NO;
     [self updateBowlViewColourScheme];
 }
 
 -(void)stoppedSearchingForLoggingServer {
     NSLog(@"VC: Stopped searching for logging server.");
-    [self.oscStatusLabel setText:@"classifier not connected. 😰"];
+    [self.oscStatusLabel setText:@"classifier not connected"];
     self.serverConnected = NO;
     [self updateBowlViewColourScheme];}
 
@@ -560,7 +560,7 @@
 -(void)loggingServerFoundWithAddress:(NSString *)address andPort:(int)port andHostname:(NSString *)hostname {
     NSLog(@"VC: Connected to logging server.");
     self.serverConnected = YES;
-    [self.oscStatusLabel setText:[NSString stringWithFormat:@"connected to %@ 👍", hostname]];
+    [self.oscStatusLabel setText:[NSString stringWithFormat:@"connected to %@", hostname]];
     [self updateBowlViewColourScheme];
     [self.bowlView drawSetup:self.bowlSetup];
 }
@@ -773,22 +773,23 @@
     [self searchingForLoggingServer];
     [self.compositionStepper setHidden:NO];
     [self.settingsButton setHidden:NO];
-    [self.setupDescription setHidden:NO];
     [self.experimentNewSetupButton setHidden:YES];
     self.listenToMetatoneClassifierMessages = YES;
+    [self updateUITextLabels];
+    [self updateBowlViewColourScheme];
 }
 
 -(void)startExperimentMode {
-    NSLog(@"Entering Experiment Mode: Configuring UI Elements...");
-
+    NSLog(@"Entering Experiment Mode:");
 }
 
 -(void)stopExperimentMode {
     NSLog(@"Entering Normal Mode: Configuring UI Elements...");
     [self.compositionStepper setHidden:NO];
     [self.settingsButton setHidden:NO];
-    [self.setupDescription setHidden:NO];
     [self.experimentNewSetupButton setHidden:YES];
+    [self updateUITextLabels];
+    [self updateBowlViewColourScheme];
 }
 
 #pragma mark In App Settings Kit Methods
