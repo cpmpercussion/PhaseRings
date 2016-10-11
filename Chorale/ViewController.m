@@ -256,7 +256,7 @@
 }
 
 - (void) updateBowlViewColourScheme {
-    if (self.serverConnected) {
+    if ([self.networkManager isClassifierConnected]) {
         [self.bowlView setServerColourScheme]; // Server Colours
     } else {
         [self.bowlView setSelectedColourScheme]; // Settings-Selected Colours
@@ -534,14 +534,12 @@
 -(void)searchingForLoggingServer {
     NSLog(@"VC: Searching for logging server.");
     [self.oscStatusLabel setText:@"classifier not connected"];
-    self.serverConnected = NO;
     [self updateBowlViewColourScheme];
 }
 
 -(void)stoppedSearchingForLoggingServer {
     NSLog(@"VC: Stopped searching for logging server.");
     [self.oscStatusLabel setText:@"classifier not connected"];
-    self.serverConnected = NO;
     [self updateBowlViewColourScheme];
 }
 
@@ -560,7 +558,6 @@
 
 -(void)loggingServerFoundWithAddress:(NSString *)address andPort:(int)port andHostname:(NSString *)hostname {
     NSLog(@"VC: Connected to logging server.");
-    self.serverConnected = YES;
     [self.oscStatusLabel setText:[NSString stringWithFormat:@"connected to %@", hostname]];
     [self updateBowlViewColourScheme];
     [self.bowlView drawSetup:self.bowlSetup];

@@ -28,13 +28,11 @@
 
 @property (nonatomic) bool webClassifierSearchEnabled;
 @property (nonatomic) bool localClassifierSearchEnabled;
-@property (nonatomic) bool displayClassifierInfo;
 
 @property (nonatomic) int currentPerformanceType;
 @property (nonatomic) bool experimentMode;
 @property (nonatomic) bool buttonFadingMode;
 @property (nonatomic) bool listenToMetatoneClassifierMessages;
-@property (nonatomic) bool serverConnected;
 
 /*! The "New Setup" button as used in PhaseRings HCI experiments. */
 @property (weak, nonatomic) IBOutlet UIButton *experimentNewSetupButton;
