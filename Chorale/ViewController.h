@@ -55,9 +55,9 @@
 -(void) updateUITextLabels;
 /*! @brief Updates the colour scheme according to the selected settings. */
 - (void) updateBowlViewColourScheme;
-
-
-- (void) updateClassifierSettings;
+/*! @brief Updates the connections to OSC and Web Classifiers according to the selected settings. This is a disruptive method as it can
+ trash the current setup. */
+- (void) updateClassifierConnections;
 
 - (IBAction)showSettingsModal:(id)sender;
 
