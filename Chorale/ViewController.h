@@ -26,9 +26,6 @@
 @property (strong, nonatomic) ABAudiobusController *audiobusController;
 @property (strong, nonatomic) ABSenderPort *senderport;
 
-@property (nonatomic) bool webClassifierSearchEnabled;
-@property (nonatomic) bool localClassifierSearchEnabled;
-
 @property (nonatomic) int currentPerformanceType;
 @property (nonatomic) bool experimentMode;
 @property (nonatomic) bool buttonFadingMode;

@@ -514,17 +514,12 @@
 -(void)setupOSCLogging {
     NSLog(@"VC: setupOSCLogging was called");
     self.metatoneClients = [[NSMutableDictionary alloc] init];
-    self.webClassifierSearchEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"web_classifier"];
-    self.localClassifierSearchEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"local_classifier"];
-    self.networkManager = [[MetatoneNetworkManager alloc] initWithDelegate:self shouldOscLog:YES shouldConnectToWebClassifier:self.webClassifierSearchEnabled];
+    self.networkManager = [[MetatoneNetworkManager alloc] initWithDelegate:self shouldOscLog:YES shouldConnectToWebClassifier:[[NSUserDefaults standardUserDefaults] boolForKey:@"web_classifier"]];
 }
 
 -(void)updateClassifierConnections {
     NSLog(@"VC: updateClassifierConnections was called.");
-    self.webClassifierSearchEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"web_classifier"];
-    self.localClassifierSearchEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"local_classifier"];
-#pragma TODO: this bit is a real problem. gosh darnit.
-    if (self.webClassifierSearchEnabled) {
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"web_classifier"]) {
         [self.networkManager startConnectingToWebClassifier];
     } else {
         [self.networkManager stopConnectingToWebClassifier];
