@@ -127,7 +127,7 @@
 -(void) setupAudioBus {
     //Set Audio Session Properties
     NSString *category = AVAudioSessionCategoryPlayAndRecord;
-    AVAudioSessionCategoryOptions options = AVAudioSessionCategoryOptionMixWithOthers;
+    AVAudioSessionCategoryOptions options = AVAudioSessionCategoryOptionAllowBluetooth|AVAudioSessionCategoryOptionMixWithOthers|AVAudioSessionCategoryOptionDefaultToSpeaker;
     NSError *error = nil;
     if ( ![[AVAudioSession sharedInstance] setCategory:category withOptions:options error:&error] ) {
         NSLog(@"Couldn't set audio session category: %@", error);
