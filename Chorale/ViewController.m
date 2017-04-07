@@ -770,6 +770,15 @@
     [self updateBowlViewColourScheme];
 }
 
+-(void) didReceiveGesturePlayMessageFor:(NSString*)device withClass:(NSString*)cla {
+    // Do something with the message.
+}
+-(void) didReceiveTouchPlayMessageFor:(NSString*)device X:(NSNumber*)x Y:(NSNumber*)y vel:(NSNumber*)vel {
+    // Do something with the message.
+}
+
+#pragma mark Experiment Mode Methods
+
 -(void)startExperimentMode {
     NSLog(@"Entering Experiment Mode:");
 }
