@@ -351,15 +351,12 @@
 }
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-//    for (int i = 0; i < [touches count]; i++ ){
-//        [self.networkManager sendMessageTouchEnded];
-//    }
     for (UITouch *touch in [touches objectEnumerator]) {
         [self.networkManager sendMessageTouchEnded];
         CGPoint touchFirstPoint = [touch locationInView:self.view];
         // Maybe handle noteOff here for ending touches.
         // TODO delay noteOff message by a short amount - say 20ms.
-#pragma mark TODO: make sure note off is working properly.
+        #pragma mark TODO: make sure note off is working properly.
         const UInt8 noteOff[]  = { 0x80, [self noteFromPosition:touchFirstPoint], 0 };
         [self.midiManager.midi sendBytes:noteOff size:sizeof(noteOff)];
     }
