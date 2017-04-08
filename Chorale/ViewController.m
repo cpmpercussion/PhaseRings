@@ -425,7 +425,7 @@
     }
 }
 
-#pragma mark methods to send note methods directory to Pd.
+#pragma mark OSC Playback Methods
 /*! Playback a single tapped note */
 -(void)playbackTappedNote:(CGPoint) point {
     int velocity = 110;
@@ -455,8 +455,9 @@
         [PdBase sendFloat:(float) [self noteFromPosition:point] toReceiver:@"singpitch"];
         self.currentlyPanningPitch = (UInt8) [self noteFromPosition:point];
         [self.bowlView continuouslyAnimateBowlAtRadius:[self calculateDistanceFromCenter:point]];
-
-        
+        self.playbackPanGestureState = PAN_STATE_MOVING;
+        // start timer
+        self.playbackPanGestureTimeout = [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(playbackStopContinuousNotes) userInfo:nil repeats:NO];
     } else {
         // Continuing a Pan Gesture
         [PdBase sendFloat:velocity toReceiver:@"singlevel" ]; // Send Velocity
@@ -464,6 +465,9 @@
         [self.bowlView changeContinuousColour:angle forRadius:[self calculateDistanceFromCenter:point]];
         [self.bowlView changeContinuousAnimationSpeed:(3*trans) + 0.1];
         [PdBase sendFloat:trans toReceiver:@"panTranslation"];
+        [self.playbackPanGestureTimeout invalidate];
+        self.playbackPanGestureTimeout = [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(playbackStopContinuousNotes) userInfo:nil repeats:NO];
+        // extend timer
     }
 }
 
@@ -474,13 +478,14 @@
     [PdBase sendFloat:0 toReceiver:@"sing"];
     [self.bowlView stopAnimatingBowl];
     self.playbackPanGestureState = PAN_STATE_NOTHING;
+    [self.playbackPanGestureTimeout invalidate];
 }
 
 /*! Process playback touches to tapped and moving notes. */
 -(void)processPlaybackTouchWithX:(NSNumber *)x Y:(NSNumber *)y Vel:(NSNumber *)vel {
     CGPoint point = CGPointMake(x.floatValue, y.floatValue);
     CGFloat velocity = vel.floatValue;
-    if (velocity > 0) {
+    if (vel.floatValue > 0.0) {
         [self playbackMovingNote:point Vel:velocity];
     } else {
         [self playbackTappedNote:point];

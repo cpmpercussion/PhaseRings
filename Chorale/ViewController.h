@@ -30,6 +30,7 @@
 @property (nonatomic) bool experimentMode;
 @property (nonatomic) bool buttonFadingMode;
 @property (nonatomic) bool listenToMetatoneClassifierMessages;
+@property (strong, nonatomic) NSTimer *playbackPanGestureTimeout;
 
 /*! The "New Setup" button as used in PhaseRings HCI experiments. */
 @property (weak, nonatomic) IBOutlet UIButton *experimentNewSetupButton;
