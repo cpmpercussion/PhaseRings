@@ -61,6 +61,10 @@
 @property (strong,nonatomic) PdFile *openFile;
 @property (strong, nonatomic) SingingBowlSetup *bowlSetup;
 @property (nonatomic) UInt8 currentlyPanningPitch;
+@property (nonatomic) int playbackPanGestureState;
+@property (nonatomic) CGPoint lastPlaybackTouchPoint;
+@property (nonatomic) CGFloat lastPlaybackTouchVelocity;
+
 // Network
 @property (strong,nonatomic) MetatoneNetworkManager *networkManager;
 @property (strong,nonatomic) NSMutableDictionary *metatoneClients;
@@ -341,6 +345,8 @@
 }
 
 
+
+
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
     for (UITouch *touch in [touches objectEnumerator]) {
         CGFloat xVelocity = [touch locationInView:self.view].x - [touch previousLocationInView:self.view].x;
@@ -349,6 +355,7 @@
         [self.networkManager sendMessageWithTouch:[touch locationInView:self.view] Velocity:velocity];
     }
 }
+
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     for (UITouch *touch in [touches objectEnumerator]) {
@@ -399,7 +406,7 @@
         [PdBase sendFloat:trans toReceiver:@"panTranslation"];
         [self.bowlView changeContinuousAnimationSpeed:(3*trans) + 0.1];
         // Send Translation as MIDI CC
-//        UInt8 translation[] = {0x00,(UInt8) (trans * 127)};
+        // UInt8 translation[] = {0x00,(UInt8) (trans * 127)};
         // Send Angle as MIDI CC
         // Send Velocity as note aftertouch.
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"midi_out"]) {
@@ -417,6 +424,67 @@
         }
     }
 }
+
+#pragma mark methods to send note methods directory to Pd.
+-(void)playbackTappedNote:(CGPoint) point {
+    int velocity = 110;
+    [PdBase sendNoteOn:1 pitch:[self noteFromPosition:point] velocity:velocity];
+    [self.bowlView animateBowlAtRadius:[self calculateDistanceFromCenter:point]];
+}
+
+#define PAN_STATE_NOTHING 0
+#define PAN_STATE_MOVING 1
+
+-(void)playbackMovingNote:(CGPoint) point Vel:(CGFloat)vel {
+    CGFloat angle = 0.5; //[sender velocityInView:self.view].y/velHyp;
+    CGFloat velHyp = vel;
+    CGFloat velocity = log(velHyp)/10;
+    if (velocity < 0) velocity = 0;
+    if (velocity > 1) velocity = 1;
+    CGFloat trans = velocity / IPAD_SCREEN_DIAGONAL_LENGTH;
+    // Always do these:
+    [PdBase sendFloat:velocity toReceiver:@"singlevel" ];
+    [self.bowlView changeBowlVolumeTo:velocity];
+    
+    if (self.playbackPanGestureState == PAN_STATE_NOTHING) {
+        // Starting a Pan Gesture
+        // TODO some kind of check to start the pan.
+        [PdBase sendFloat:1 toReceiver:@"sing"];
+        [PdBase sendFloat:(float) [self noteFromPosition:point] toReceiver:@"singpitch"];
+        self.currentlyPanningPitch = (UInt8) [self noteFromPosition:point];
+        [self.bowlView continuouslyAnimateBowlAtRadius:[self calculateDistanceFromCenter:point]];
+
+        
+    } else {
+        // Continuing a Pan Gesture
+        [PdBase sendFloat:velocity toReceiver:@"singlevel" ]; // Send Velocity
+        [PdBase sendFloat:angle toReceiver:@"sinPanAngle"];
+        [self.bowlView changeContinuousColour:angle forRadius:[self calculateDistanceFromCenter:point]];
+        [self.bowlView changeContinuousAnimationSpeed:(3*trans) + 0.1];
+        [PdBase sendFloat:trans toReceiver:@"panTranslation"];
+    }
+}
+
+-(void)playbackStopContinuousNotes {
+    // Stopping a pan gesture
+    [PdBase sendFloat:0 toReceiver:@"singlevel"];
+    [PdBase sendFloat:0 toReceiver:@"sing"];
+    [self.bowlView stopAnimatingBowl];
+    self.playbackPanGestureState = PAN_STATE_NOTHING;
+}
+
+-(void)processPlaybackTouchWithX:(NSNumber *)x Y:(NSNumber *)y Vel:(NSNumber *)vel {
+    CGPoint point = CGPointMake(x.floatValue, y.floatValue);
+    CGFloat velocity = vel.floatValue;
+    if (velocity > 0) {
+        [self playbackMovingNote:point Vel:velocity];
+    } else {
+        [self playbackTappedNote:point];
+        [self playbackStopContinuousNotes]; // any tap stops a swipe.
+    }
+}
+
+#pragma mark UI Element Methods
 
 - (IBAction)steppedMoved:(UIStepper *)sender {
     int state = (int) sender.value;

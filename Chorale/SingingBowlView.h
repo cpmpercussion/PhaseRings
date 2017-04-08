@@ -18,6 +18,8 @@
 -(void) drawSetup:(SingingBowlSetup *) setup;
 
 
+/*! Starts the tap animation for a single ring. */
+-(void) animateBowlAtRadius:(CGFloat)radius;
 /*! Starts the swirl animation for a single ring. */
 -(void) continuouslyAnimateBowlAtRadius:(CGFloat) radius;
 /*! Adjusts the "volume" (opacity) of the currently animated ring.*/
@@ -33,6 +35,10 @@
 -(void) setSelectedColourScheme;
 /*! Sets the colour scheme to the "server connected mode"*/
 -(void) setServerColourScheme;
+
+/*! Calculates the distance of a CGPoint from the centre of the SingingBowlView */
+-(CGFloat)calculateDistanceFromCenter:(CGPoint)touchPoint;
+
 
 /*! Records whether to display the note values on each ring. */
 @property (nonatomic) bool displayNoteNames;
