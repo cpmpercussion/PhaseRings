@@ -426,6 +426,7 @@
 }
 
 #pragma mark methods to send note methods directory to Pd.
+/*! Playback a single tapped note */
 -(void)playbackTappedNote:(CGPoint) point {
     int velocity = 110;
     [PdBase sendNoteOn:1 pitch:[self noteFromPosition:point] velocity:velocity];
@@ -435,6 +436,7 @@
 #define PAN_STATE_NOTHING 0
 #define PAN_STATE_MOVING 1
 
+/*! Playback a moving note */
 -(void)playbackMovingNote:(CGPoint) point Vel:(CGFloat)vel {
     CGFloat angle = 0.5; //[sender velocityInView:self.view].y/velHyp;
     CGFloat velHyp = vel;
@@ -465,6 +467,7 @@
     }
 }
 
+/*! Stop continuous notes in playback mode */
 -(void)playbackStopContinuousNotes {
     // Stopping a pan gesture
     [PdBase sendFloat:0 toReceiver:@"singlevel"];
@@ -473,6 +476,7 @@
     self.playbackPanGestureState = PAN_STATE_NOTHING;
 }
 
+/*! Process playback touches to tapped and moving notes. */
 -(void)processPlaybackTouchWithX:(NSNumber *)x Y:(NSNumber *)y Vel:(NSNumber *)vel {
     CGPoint point = CGPointMake(x.floatValue, y.floatValue);
     CGFloat velocity = vel.floatValue;
@@ -839,7 +843,7 @@
     // Do something with the message.
 }
 -(void) didReceiveTouchPlayMessageFor:(NSString*)device X:(NSNumber*)x Y:(NSNumber*)y vel:(NSNumber*)vel {
-    // Do something with the message.
+    [self processPlaybackTouchWithX:x Y:y Vel:vel];
 }
 
 #pragma mark Experiment Mode Methods
