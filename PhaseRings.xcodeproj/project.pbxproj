@@ -41,8 +41,6 @@
 		5623DB83188CDB3800AA6C14 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5623DB82188CDB3800AA6C14 /* XCTest.framework */; };
 		5623DB84188CDB3800AA6C14 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5623DB63188CDB3800AA6C14 /* Foundation.framework */; };
 		5623DB85188CDB3800AA6C14 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5623DB67188CDB3800AA6C14 /* UIKit.framework */; };
-		5623DB8D188CDB3800AA6C14 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5623DB8B188CDB3800AA6C14 /* InfoPlist.strings */; };
-		5623DB8F188CDB3800AA6C14 /* ChoraleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5623DB8E188CDB3800AA6C14 /* ChoraleTests.m */; };
 		5623DE7A188CDCEA00AA6C14 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5623DE79188CDCEA00AA6C14 /* AVFoundation.framework */; };
 		5623DE7C188CDCEF00AA6C14 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5623DE7B188CDCEF00AA6C14 /* CoreAudio.framework */; };
 		5623DE80188CDD1900AA6C14 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5623DE7F188CDD1900AA6C14 /* AudioToolbox.framework */; };
@@ -176,9 +174,6 @@
 		5623DB7B188CDB3800AA6C14 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		5623DB81188CDB3800AA6C14 /* PhaseRingsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PhaseRingsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5623DB82188CDB3800AA6C14 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		5623DB8A188CDB3800AA6C14 /* PhaseRingsTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PhaseRingsTests-Info.plist"; sourceTree = "<group>"; };
-		5623DB8C188CDB3800AA6C14 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		5623DB8E188CDB3800AA6C14 /* ChoraleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ChoraleTests.m; sourceTree = "<group>"; };
 		5623DE79188CDCEA00AA6C14 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		5623DE7B188CDCEF00AA6C14 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		5623DE7F188CDD1900AA6C14 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -349,7 +344,6 @@
 				5623758C19F7610F004F1281 /* MetatoneMIDI */,
 				56E170F51991EAF400A36C74 /* Synth */,
 				5623DB69188CDB3800AA6C14 /* Chorale */,
-				5623DB88188CDB3800AA6C14 /* ChoraleTests */,
 				564807E51F2EF8B100E01FB2 /* PhaseRingsUITests */,
 				5623DB62188CDB3800AA6C14 /* Frameworks */,
 				5623DB61188CDB3800AA6C14 /* Products */,
@@ -402,24 +396,6 @@
 				5623DB6C188CDB3800AA6C14 /* InfoPlist.strings */,
 				5623DB6F188CDB3800AA6C14 /* main.m */,
 				5623DB71188CDB3800AA6C14 /* PhaseRings-Prefix.pch */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		5623DB88188CDB3800AA6C14 /* ChoraleTests */ = {
-			isa = PBXGroup;
-			children = (
-				5623DB8E188CDB3800AA6C14 /* ChoraleTests.m */,
-				5623DB89188CDB3800AA6C14 /* Supporting Files */,
-			);
-			path = ChoraleTests;
-			sourceTree = "<group>";
-		};
-		5623DB89188CDB3800AA6C14 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				5623DB8A188CDB3800AA6C14 /* PhaseRingsTests-Info.plist */,
-				5623DB8B188CDB3800AA6C14 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -507,8 +483,6 @@
 			children = (
 				562375D419F76CF7004F1281 /* Launch Screen.xib */,
 				5623DB75188CDB3800AA6C14 /* Main.storyboard */,
-				56C28DB4194A968400E015BB /* NoteColours.h */,
-				56C28DB5194A968400E015BB /* NoteColours.m */,
 				565A2322188F94AE00093B32 /* SingingBowlView.h */,
 				565A2323188F94AE00093B32 /* SingingBowlView.m */,
 				5674AF22195011370052121E /* MetatoneEnsembleView.h */,
@@ -521,6 +495,8 @@
 		56B7898C1897324900B6AE22 /* models */ = {
 			isa = PBXGroup;
 			children = (
+				56C28DB4194A968400E015BB /* NoteColours.h */,
+				56C28DB5194A968400E015BB /* NoteColours.m */,
 				565A2326188F94CA00093B32 /* SingingBowlSetup.h */,
 				565A2327188F94CA00093B32 /* SingingBowlSetup.m */,
 				56B7898D1897327D00B6AE22 /* SingingBowlComposition.h */,
@@ -756,7 +732,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5623DB8D188CDB3800AA6C14 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -861,7 +836,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5623DB8F188CDB3800AA6C14 /* ChoraleTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -903,14 +877,6 @@
 				5623DB76188CDB3800AA6C14 /* Base */,
 			);
 			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		5623DB8B188CDB3800AA6C14 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				5623DB8C188CDB3800AA6C14 /* en */,
-			);
-			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

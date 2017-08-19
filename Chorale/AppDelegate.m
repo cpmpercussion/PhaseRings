@@ -17,9 +17,6 @@
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
     // Handle preset incoming from loading url.
-    NSLog(@"URL_LOADER: App opened from URL");
-//    NSLog(@"URL_LOADER: URL was %@", [url description]);
-//    NSLog(@"URL_LOADER: Options were %@", [options description]);
     if ([((NSString *) [options valueForKey:@"UIApplicationOpenURLOptionsSourceApplicationKey"]) isEqualToString:AUDIOBUS_SOURCE_URL]) {
         NSLog(@"URL_LOADER: Opened by Audiobus, ready to load settings");
         return YES;
