@@ -159,7 +159,7 @@
 		562375BF19F764FC004F1281 /* NSNumber+F53OSCNumber.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSNumber+F53OSCNumber.m"; sourceTree = "<group>"; };
 		562375C019F764FC004F1281 /* NSString+F53OSCString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+F53OSCString.h"; sourceTree = "<group>"; };
 		562375C119F764FC004F1281 /* NSString+F53OSCString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+F53OSCString.m"; sourceTree = "<group>"; };
-		562375D419F76CF7004F1281 /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Launch Screen.xib"; sourceTree = "<group>"; };
+		562375D419F76CF7004F1281 /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = "Launch Screen.xib"; path = "../Launch Screen.xib"; sourceTree = "<group>"; };
 		5623DB60188CDB3800AA6C14 /* PhaseRings.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhaseRings.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5623DB63188CDB3800AA6C14 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		5623DB65188CDB3800AA6C14 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -171,8 +171,8 @@
 		5623DB72188CDB3800AA6C14 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		5623DB73188CDB3800AA6C14 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		5623DB76188CDB3800AA6C14 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		5623DB78188CDB3800AA6C14 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		5623DB79188CDB3800AA6C14 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		5623DB78188CDB3800AA6C14 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ViewController.h; path = Chorale/ViewController.h; sourceTree = "<group>"; };
+		5623DB79188CDB3800AA6C14 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ViewController.m; path = Chorale/ViewController.m; sourceTree = "<group>"; };
 		5623DB7B188CDB3800AA6C14 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		5623DB81188CDB3800AA6C14 /* PhaseRingsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PhaseRingsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5623DB82188CDB3800AA6C14 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
@@ -342,7 +342,9 @@
 			isa = PBXGroup;
 			children = (
 				56FF15F71A8B03AE0061BCD7 /* PhaseRings.entitlements */,
-				562375D419F76CF7004F1281 /* Launch Screen.xib */,
+				56B7898C1897324900B6AE22 /* models */,
+				56C59EA71F48614D002D5C8B /* controllers */,
+				56B7898A1897323F00B6AE22 /* views */,
 				5623759F19F764FC004F1281 /* MetatoneOSC */,
 				5623758C19F7610F004F1281 /* MetatoneMIDI */,
 				56E170F51991EAF400A36C74 /* Synth */,
@@ -386,11 +388,6 @@
 			children = (
 				5623DB72188CDB3800AA6C14 /* AppDelegate.h */,
 				5623DB73188CDB3800AA6C14 /* AppDelegate.m */,
-				5623DB75188CDB3800AA6C14 /* Main.storyboard */,
-				5623DB78188CDB3800AA6C14 /* ViewController.h */,
-				5623DB79188CDB3800AA6C14 /* ViewController.m */,
-				56B7898A1897323F00B6AE22 /* views */,
-				56B7898C1897324900B6AE22 /* models */,
 				5623DB7B188CDB3800AA6C14 /* Images.xcassets */,
 				5623DB6A188CDB3800AA6C14 /* Supporting Files */,
 				5658053518C82C44003F3394 /* Settings.bundle */,
@@ -508,6 +505,8 @@
 		56B7898A1897323F00B6AE22 /* views */ = {
 			isa = PBXGroup;
 			children = (
+				562375D419F76CF7004F1281 /* Launch Screen.xib */,
+				5623DB75188CDB3800AA6C14 /* Main.storyboard */,
 				56C28DB4194A968400E015BB /* NoteColours.h */,
 				56C28DB5194A968400E015BB /* NoteColours.m */,
 				565A2322188F94AE00093B32 /* SingingBowlView.h */,
@@ -516,6 +515,7 @@
 				5674AF23195011370052121E /* MetatoneEnsembleView.m */,
 			);
 			name = views;
+			path = Chorale;
 			sourceTree = "<group>";
 		};
 		56B7898C1897324900B6AE22 /* models */ = {
@@ -537,6 +537,16 @@
 				56B02B081DA2961F00274E5C /* StateSaver.m */,
 			);
 			name = models;
+			path = Chorale;
+			sourceTree = "<group>";
+		};
+		56C59EA71F48614D002D5C8B /* controllers */ = {
+			isa = PBXGroup;
+			children = (
+				5623DB78188CDB3800AA6C14 /* ViewController.h */,
+				5623DB79188CDB3800AA6C14 /* ViewController.m */,
+			);
+			name = controllers;
 			sourceTree = "<group>";
 		};
 		56E170F51991EAF400A36C74 /* Synth */ = {
