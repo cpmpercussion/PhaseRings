@@ -38,6 +38,16 @@
                ReferencedContainer = "container:PhaseRings.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "564807E31F2EF8B100E01FB2"
+               BuildableName = "PhaseRingsUITests.xctest"
+               BlueprintName = "PhaseRingsUITests"
+               ReferencedContainer = "container:PhaseRings.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference

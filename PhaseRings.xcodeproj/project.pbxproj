@@ -66,6 +66,7 @@
 		5630CFD319FE06ED00B3DC89 /* m_lydiansharp5.pd in Resources */ = {isa = PBXBuildFile; fileRef = 5630CFC319FE06ED00B3DC89 /* m_lydiansharp5.pd */; };
 		5630CFD419FE06ED00B3DC89 /* m_mixolydian.pd in Resources */ = {isa = PBXBuildFile; fileRef = 5630CFC419FE06ED00B3DC89 /* m_mixolydian.pd */; };
 		5630CFD519FE06ED00B3DC89 /* m_phrygian.pd in Resources */ = {isa = PBXBuildFile; fileRef = 5630CFC519FE06ED00B3DC89 /* m_phrygian.pd */; };
+		564807E71F2EF8B100E01FB2 /* PhaseRingsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 564807E61F2EF8B100E01FB2 /* PhaseRingsUITests.swift */; };
 		564C44B31952B05500FD0E8B /* GenerativeSetupComposition.m in Sources */ = {isa = PBXBuildFile; fileRef = 564C44B21952B05500FD0E8B /* GenerativeSetupComposition.m */; };
 		564C44B71952BE7500FD0E8B /* ScaleMaker.m in Sources */ = {isa = PBXBuildFile; fileRef = 564C44B61952BE7500FD0E8B /* ScaleMaker.m */; };
 		5658053618C82C44003F3394 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 5658053518C82C44003F3394 /* Settings.bundle */; };
@@ -101,6 +102,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 5623DB5F188CDB3800AA6C14;
 			remoteInfo = Chorale;
+		};
+		564807E91F2EF8B100E01FB2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5623DB58188CDB3800AA6C14 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5623DB5F188CDB3800AA6C14;
+			remoteInfo = PhaseRings;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -194,6 +202,9 @@
 		5630CFC319FE06ED00B3DC89 /* m_lydiansharp5.pd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = m_lydiansharp5.pd; sourceTree = "<group>"; };
 		5630CFC419FE06ED00B3DC89 /* m_mixolydian.pd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = m_mixolydian.pd; sourceTree = "<group>"; };
 		5630CFC519FE06ED00B3DC89 /* m_phrygian.pd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = m_phrygian.pd; sourceTree = "<group>"; };
+		564807E41F2EF8B100E01FB2 /* PhaseRingsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PhaseRingsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		564807E61F2EF8B100E01FB2 /* PhaseRingsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhaseRingsUITests.swift; sourceTree = "<group>"; };
+		564807E81F2EF8B100E01FB2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		564C44B11952B05500FD0E8B /* GenerativeSetupComposition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenerativeSetupComposition.h; sourceTree = "<group>"; };
 		564C44B21952B05500FD0E8B /* GenerativeSetupComposition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenerativeSetupComposition.m; sourceTree = "<group>"; };
 		564C44B51952BE7500FD0E8B /* ScaleMaker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScaleMaker.h; sourceTree = "<group>"; };
@@ -257,6 +268,13 @@
 				5623DB83188CDB3800AA6C14 /* XCTest.framework in Frameworks */,
 				5623DB85188CDB3800AA6C14 /* UIKit.framework in Frameworks */,
 				5623DB84188CDB3800AA6C14 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		564807E11F2EF8B100E01FB2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -330,6 +348,7 @@
 				56E170F51991EAF400A36C74 /* Synth */,
 				5623DB69188CDB3800AA6C14 /* Chorale */,
 				5623DB88188CDB3800AA6C14 /* ChoraleTests */,
+				564807E51F2EF8B100E01FB2 /* PhaseRingsUITests */,
 				5623DB62188CDB3800AA6C14 /* Frameworks */,
 				5623DB61188CDB3800AA6C14 /* Products */,
 				A7860A3DAE3EC731FB516FD3 /* Pods */,
@@ -341,6 +360,7 @@
 			children = (
 				5623DB60188CDB3800AA6C14 /* PhaseRings.app */,
 				5623DB81188CDB3800AA6C14 /* PhaseRingsTests.xctest */,
+				564807E41F2EF8B100E01FB2 /* PhaseRingsUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -463,6 +483,15 @@
 			path = scales;
 			sourceTree = "<group>";
 		};
+		564807E51F2EF8B100E01FB2 /* PhaseRingsUITests */ = {
+			isa = PBXGroup;
+			children = (
+				564807E61F2EF8B100E01FB2 /* PhaseRingsUITests.swift */,
+				564807E81F2EF8B100E01FB2 /* Info.plist */,
+			);
+			path = PhaseRingsUITests;
+			sourceTree = "<group>";
+		};
 		568BDC191A0349300056CF22 /* samples */ = {
 			isa = PBXGroup;
 			children = (
@@ -582,12 +611,31 @@
 			productReference = 5623DB81188CDB3800AA6C14 /* PhaseRingsTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		564807E31F2EF8B100E01FB2 /* PhaseRingsUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 564807ED1F2EF8B100E01FB2 /* Build configuration list for PBXNativeTarget "PhaseRingsUITests" */;
+			buildPhases = (
+				564807E01F2EF8B100E01FB2 /* Sources */,
+				564807E11F2EF8B100E01FB2 /* Frameworks */,
+				564807E21F2EF8B100E01FB2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				564807EA1F2EF8B100E01FB2 /* PBXTargetDependency */,
+			);
+			name = PhaseRingsUITests;
+			productName = PhaseRingsUITests;
+			productReference = 564807E41F2EF8B100E01FB2 /* PhaseRingsUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		5623DB58188CDB3800AA6C14 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0830;
 				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = "Charles Martin";
 				TargetAttributes = {
@@ -603,6 +651,12 @@
 						};
 					};
 					5623DB80188CDB3800AA6C14 = {
+						TestTargetID = 5623DB5F188CDB3800AA6C14;
+					};
+					564807E31F2EF8B100E01FB2 = {
+						CreatedOnToolsVersion = 8.3.3;
+						DevelopmentTeam = EDH387FRHA;
+						ProvisioningStyle = Automatic;
 						TestTargetID = 5623DB5F188CDB3800AA6C14;
 					};
 				};
@@ -635,6 +689,7 @@
 			targets = (
 				5623DB5F188CDB3800AA6C14 /* PhaseRings */,
 				5623DB80188CDB3800AA6C14 /* PhaseRingsTests */,
+				564807E31F2EF8B100E01FB2 /* PhaseRingsUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -692,6 +747,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				5623DB8D188CDB3800AA6C14 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		564807E21F2EF8B100E01FB2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -793,6 +855,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		564807E01F2EF8B100E01FB2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				564807E71F2EF8B100E01FB2 /* PhaseRingsUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -800,6 +870,11 @@
 			isa = PBXTargetDependency;
 			target = 5623DB5F188CDB3800AA6C14 /* PhaseRings */;
 			targetProxy = 5623DB86188CDB3800AA6C14 /* PBXContainerItemProxy */;
+		};
+		564807EA1F2EF8B100E01FB2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5623DB5F188CDB3800AA6C14 /* PhaseRings */;
+			targetProxy = 564807E91F2EF8B100E01FB2 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1013,6 +1088,50 @@
 			};
 			name = Release;
 		};
+		564807EB1F2EF8B100E01FB2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = EDH387FRHA;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = PhaseRingsUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = au.com.charlesmartin.PhaseRingsUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
+				TEST_TARGET_NAME = PhaseRings;
+			};
+			name = Debug;
+		};
+		564807EC1F2EF8B100E01FB2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = EDH387FRHA;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = PhaseRingsUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = au.com.charlesmartin.PhaseRingsUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 3.0;
+				TEST_TARGET_NAME = PhaseRings;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1042,6 +1161,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		564807ED1F2EF8B100E01FB2 /* Build configuration list for PBXNativeTarget "PhaseRingsUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				564807EB1F2EF8B100E01FB2 /* Debug */,
+				564807EC1F2EF8B100E01FB2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};
