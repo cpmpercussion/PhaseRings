@@ -298,6 +298,7 @@
 
 
 #pragma mark - UI Methods
+
 - (void) applyNewSetup: (NSArray *) setup {
     NSLog(@"VC: Drawing new setup.");
     self.bowlSetup = [[SingingBowlSetup alloc] initWithPitches:[NSMutableArray arrayWithArray:setup]];
@@ -324,6 +325,7 @@
 }
 
 #pragma mark - Touch and Performance Methods
+
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
     for (UITouch * touch in [touches objectEnumerator]) {
@@ -344,9 +346,6 @@
     }
 }
 
-
-
-
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
     for (UITouch *touch in [touches objectEnumerator]) {
         CGFloat xVelocity = [touch locationInView:self.view].x - [touch previousLocationInView:self.view].x;
@@ -355,7 +354,6 @@
         [self.networkManager sendMessageWithTouch:[touch locationInView:self.view] Velocity:velocity];
     }
 }
-
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     for (UITouch *touch in [touches objectEnumerator]) {
@@ -426,6 +424,7 @@
 }
 
 #pragma mark OSC Playback Methods
+
 /*! Playback a single tapped note */
 -(void)playbackTappedNote:(CGPoint) point {
     int velocity = 110;
@@ -628,6 +627,10 @@
     [self.oscStatusLabel setText:[NSString stringWithFormat:@"connected to %@", hostname]];
     [self updateBowlViewColourScheme];
     [self.bowlView drawSetup:self.bowlSetup];
+    // Check whether to send remote control message to server.
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"remote_control_enabled"]) {
+        [self.networkManager sendMessageRemoteControl];
+    }
 }
 
 -(void)didReceiveMetatoneMessageFrom:(NSString *)device withName:(NSString *)name andState:(NSString *)state {
