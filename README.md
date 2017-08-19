@@ -23,6 +23,7 @@ Three "compositions" of pitches are included in the app, but you can also create
 * Custom generative composition
 * 11 scales and modes
 * Audiobus and IAA support to stream audio to compatible apps!
+* Audiobus state saving
 * Core MIDI support for iOS MIDI Accessories!
 * Connects to [Metatone Classifier network performance system][2] for subtle ensemble interaction
 

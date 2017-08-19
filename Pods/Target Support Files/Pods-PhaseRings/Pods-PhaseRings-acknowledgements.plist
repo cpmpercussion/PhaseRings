@@ -61,6 +61,8 @@ We may modify or update the Audiobus SDK and the Licence from time to
 time. We will try to do this as seldom as	possible to cause as little 
 effort as possible to developers implementing it.
 </string>
+			<key>License</key>
+			<string>Audiobus SDK License</string>
 			<key>Title</key>
 			<string>Audiobus</string>
 			<key>Type</key>
@@ -83,6 +85,8 @@ or substantial portions of the Software.
 
 This code is licensed under the BSD license that is available at: &lt;http://www.opensource.org/licenses/bsd-license.php&gt;
 </string>
+			<key>License</key>
+			<string>BSD</string>
 			<key>Title</key>
 			<string>InAppSettingsKit</string>
 			<key>Type</key>
@@ -106,6 +110,8 @@ This code is licensed under the BSD license that is available at: &lt;http://www
    limitations under the License.
 
 </string>
+			<key>License</key>
+			<string>Apache License, Version 2.0</string>
 			<key>Title</key>
 			<string>SocketRocket</string>
 			<key>Type</key>
@@ -144,6 +150,8 @@ LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
 IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 THE POSSIBILITY OF SUCH DAMAGE.
 </string>
+			<key>License</key>
+			<string>Standard Improved BSD License</string>
 			<key>Title</key>
 			<string>libpd</string>
 			<key>Type</key>

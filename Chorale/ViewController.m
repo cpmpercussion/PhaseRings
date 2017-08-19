@@ -43,15 +43,9 @@
 #import "SingingBowlView.h"
 #import "MetatoneEnsembleView.h"
 #import "SingingBowlComposition.h"
-//#import "TestChoraleComposition.h"
-//#import "StudyInBowls1.h"
 #import "GenerativeSetupComposition.h"
 
 #define CLOUD_SERVER_TESTING_MODE YES
-
-//#define EXPERIMENT_MODE YES
-//#define EXPERIMENT_MODE_BUTTON NO
-//#define EXPERIMENT_MODE_SERVER NO
 
 #define PERFORMANCE_TYPE_LOCAL 0
 #define PERFORMANCE_TYPE_REMOTE 1
@@ -67,6 +61,10 @@
 @property (strong,nonatomic) PdFile *openFile;
 @property (strong, nonatomic) SingingBowlSetup *bowlSetup;
 @property (nonatomic) UInt8 currentlyPanningPitch;
+@property (nonatomic) int playbackPanGestureState;
+@property (nonatomic) CGPoint lastPlaybackTouchPoint;
+@property (nonatomic) CGFloat lastPlaybackTouchVelocity;
+
 // Network
 @property (strong,nonatomic) MetatoneNetworkManager *networkManager;
 @property (strong,nonatomic) NSMutableDictionary *metatoneClients;
@@ -88,7 +86,6 @@
 
 @implementation ViewController
 #pragma mark - Setup
-
 - (PdAudioController *) audioController
 {
     if (!_audioController) _audioController = [[PdAudioController alloc] init];
@@ -101,9 +98,7 @@
     [self.distortSlider setHidden:YES];
     [self.experimentNewSetupButton setHidden:YES];
     [self.compositionStepper setHidden:NO];
-    [self.oscStatusLabel setHidden:NO];
-    [self.setupDescription setHidden:NO];
-    
+    [self updateUITextLabels];
     [self startAudioEngine];
     [self setupAudioBus];
     
@@ -118,6 +113,7 @@
     self.timeOfLastNewIdea = [NSDate date];
     
     // Ensemble Heads Up Display
+    #pragma mark TODO What is Ensemble Status Mode and is it necessary anymore? Consider removing.
     if (ENSEMBLE_STATUS_MODE) {
         NSLog(@"Displaying Ensemble Status UI");
         [self.ensembleView setHidden:NO];
@@ -125,14 +121,6 @@
         NSLog(@"Hiding Ensemble Status UI");
         [self.ensembleView setHidden:YES];
     }
-    
-//    if (EXPERIMENT_MODE) {
-//        NSLog(@"Starting Experiment Mode.");
-//        [self startExperimentMode];
-//    } else {
-//        NSLog(@"Starting Normal Mode.");
-//        [self stopExperimentMode];
-//    }
     [self.experimentNewSetupButton setHidden:YES];
     self.experimentMode = NO;
     self.listenToMetatoneClassifierMessages = YES;
@@ -143,7 +131,7 @@
 -(void) setupAudioBus {
     //Set Audio Session Properties
     NSString *category = AVAudioSessionCategoryPlayAndRecord;
-    AVAudioSessionCategoryOptions options = AVAudioSessionCategoryOptionMixWithOthers;
+    AVAudioSessionCategoryOptions options = AVAudioSessionCategoryOptionAllowBluetooth|AVAudioSessionCategoryOptionMixWithOthers|AVAudioSessionCategoryOptionDefaultToSpeaker;
     NSError *error = nil;
     if ( ![[AVAudioSession sharedInstance] setCategory:category withOptions:options error:&error] ) {
         NSLog(@"Couldn't set audio session category: %@", error);
@@ -161,6 +149,8 @@
                                }
                                                audioUnit:self.audioController.audioUnit.audioUnit];
     [self.audiobusController addSenderPort:self.senderport];
+    // Set the AudioBus StateIO Delegate Here.
+    [self.audiobusController setStateIODelegate:self];
 }
 
 - (void) startAudioEngine {
@@ -242,19 +232,38 @@
     [self.compositionStepper setMaximumValue:[self.composition numberOfSetups] - 1];
     [self.compositionStepper setWraps:YES];
     [self updateSetupDescription:0];
+
+    // Update bowl view.
+    self.bowlSetup = [[SingingBowlSetup alloc] initWithPitches:[NSMutableArray arrayWithArray:[self.composition firstSetup]]];
+    self.viewRadius = [self calculateMaximumRadius];
+    [self.bowlView drawSetup:self.bowlSetup];
+}
+
+-(void) updateUITextLabels {
+    // Setup Description Label
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"setup_label"]) {
         [self.setupDescription setHidden:NO];
     } else {
         [self.setupDescription setHidden:YES];
     }
-
-    // Update bowl view.
-    self.bowlSetup = [[SingingBowlSetup alloc] initWithPitches:[NSMutableArray arrayWithArray:[self.composition firstSetup]]];
-    self.viewRadius = [self calculateMaximumRadius];
-    self.bowlView.displayNoteNames = [[NSUserDefaults standardUserDefaults] boolForKey:@"note_labels"];
-    [self.bowlView drawSetup:self.bowlSetup];
+    // Setup OSC Status Label:
+    if (self.experimentMode) {
+//        NSLog(@"EXPERIMENT MODE: Showing OSC Status!");
+        [self.oscStatusLabel setHidden:NO];
+    } else if ([[NSUserDefaults standardUserDefaults] boolForKey:@"display_classifier_information"]) {
+        [self.oscStatusLabel setHidden:NO];
+    } else {
+        [self.oscStatusLabel setHidden:YES];
+    }
 }
 
+- (void) updateBowlViewColourScheme {
+    if ([self.networkManager isClassifierConnected]) {
+        [self.bowlView setServerColourScheme]; // Server Colours
+    } else {
+        [self.bowlView setSelectedColourScheme]; // Settings-Selected Colours
+    }
+}
 
 // Checks settings to which sound scheme is selected. If it's different from what
 // is currently open or nothing is open, the new scheme's Pd patch is opened.
@@ -290,7 +299,7 @@
 
 #pragma mark - UI Methods
 - (void) applyNewSetup: (NSArray *) setup {
-    NSLog(@"Drawing new setup.");
+    NSLog(@"VC: Drawing new setup.");
     self.bowlSetup = [[SingingBowlSetup alloc] initWithPitches:[NSMutableArray arrayWithArray:setup]];
     [self.bowlView drawSetup:self.bowlSetup];
 }
@@ -298,9 +307,8 @@
 - (void) updateSetupDescription:(int)state {
     NSString *newDescription = [[(GenerativeSetupComposition *) self.composition setupDescriptions] objectAtIndex:state];
     [self.setupDescription setText:newDescription];
-    NSLog(@"SETUP DESCRIPTION: %@",newDescription);
+    NSLog(@"VC: SETUP DESCRIPTION: %@",newDescription);
 }
-
 
 - (void) viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
 }
@@ -309,6 +317,9 @@
 }
 
 - (void) viewDidLayoutSubviews {
+#pragma mark TODO is drawing the setup necessary each time the subviews are laid out? maybe for rotation.
+    // Laying out the subviews -- better draw the setup again?? Really?
+    // Maybe this protects agains issues with rotation.
     [self.bowlView drawSetup:self.bowlSetup];
 }
 
@@ -334,6 +345,8 @@
 }
 
 
+
+
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
     for (UITouch *touch in [touches objectEnumerator]) {
         CGFloat xVelocity = [touch locationInView:self.view].x - [touch previousLocationInView:self.view].x;
@@ -343,16 +356,14 @@
     }
 }
 
+
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-//    for (int i = 0; i < [touches count]; i++ ){
-//        [self.networkManager sendMessageTouchEnded];
-//    }
     for (UITouch *touch in [touches objectEnumerator]) {
         [self.networkManager sendMessageTouchEnded];
         CGPoint touchFirstPoint = [touch locationInView:self.view];
         // Maybe handle noteOff here for ending touches.
         // TODO delay noteOff message by a short amount - say 20ms.
-#pragma mark TODO: make sure note off is working properly.
+        #pragma mark TODO: make sure note off is working properly.
         const UInt8 noteOff[]  = { 0x80, [self noteFromPosition:touchFirstPoint], 0 };
         [self.midiManager.midi sendBytes:noteOff size:sizeof(noteOff)];
     }
@@ -395,7 +406,7 @@
         [PdBase sendFloat:trans toReceiver:@"panTranslation"];
         [self.bowlView changeContinuousAnimationSpeed:(3*trans) + 0.1];
         // Send Translation as MIDI CC
-//        UInt8 translation[] = {0x00,(UInt8) (trans * 127)};
+        // UInt8 translation[] = {0x00,(UInt8) (trans * 127)};
         // Send Angle as MIDI CC
         // Send Velocity as note aftertouch.
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"midi_out"]) {
@@ -414,6 +425,76 @@
     }
 }
 
+#pragma mark OSC Playback Methods
+/*! Playback a single tapped note */
+-(void)playbackTappedNote:(CGPoint) point {
+    int velocity = 110;
+    [PdBase sendNoteOn:1 pitch:[self noteFromPosition:point] velocity:velocity];
+    [self.bowlView animateBowlAtRadius:[self calculateDistanceFromCenter:point]];
+}
+
+#define PAN_STATE_NOTHING 0
+#define PAN_STATE_MOVING 1
+
+/*! Playback a moving note */
+-(void)playbackMovingNote:(CGPoint) point Vel:(CGFloat)vel {
+    CGFloat angle = 0.5; //[sender velocityInView:self.view].y/velHyp;
+    CGFloat velHyp = vel;
+    CGFloat velocity = log(velHyp)/10;
+    if (velocity < 0) velocity = 0;
+    if (velocity > 1) velocity = 1;
+    CGFloat trans = velocity / IPAD_SCREEN_DIAGONAL_LENGTH;
+    // Always do these:
+    [PdBase sendFloat:velocity toReceiver:@"singlevel" ];
+    [self.bowlView changeBowlVolumeTo:velocity];
+    
+    if (self.playbackPanGestureState == PAN_STATE_NOTHING) {
+        // Starting a Pan Gesture
+        // TODO some kind of check to start the pan.
+        [PdBase sendFloat:1 toReceiver:@"sing"];
+        [PdBase sendFloat:(float) [self noteFromPosition:point] toReceiver:@"singpitch"];
+        self.currentlyPanningPitch = (UInt8) [self noteFromPosition:point];
+        [self.bowlView continuouslyAnimateBowlAtRadius:[self calculateDistanceFromCenter:point]];
+        self.playbackPanGestureState = PAN_STATE_MOVING;
+        // start timer
+        self.playbackPanGestureTimeout = [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(playbackStopContinuousNotes) userInfo:nil repeats:NO];
+    } else {
+        // Continuing a Pan Gesture
+        [PdBase sendFloat:velocity toReceiver:@"singlevel" ]; // Send Velocity
+        [PdBase sendFloat:angle toReceiver:@"sinPanAngle"];
+        [self.bowlView changeContinuousColour:angle forRadius:[self calculateDistanceFromCenter:point]];
+        [self.bowlView changeContinuousAnimationSpeed:(3*trans) + 0.1];
+        [PdBase sendFloat:trans toReceiver:@"panTranslation"];
+        [self.playbackPanGestureTimeout invalidate];
+        self.playbackPanGestureTimeout = [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(playbackStopContinuousNotes) userInfo:nil repeats:NO];
+        // extend timer
+    }
+}
+
+/*! Stop continuous notes in playback mode */
+-(void)playbackStopContinuousNotes {
+    // Stopping a pan gesture
+    [PdBase sendFloat:0 toReceiver:@"singlevel"];
+    [PdBase sendFloat:0 toReceiver:@"sing"];
+    [self.bowlView stopAnimatingBowl];
+    self.playbackPanGestureState = PAN_STATE_NOTHING;
+    [self.playbackPanGestureTimeout invalidate];
+}
+
+/*! Process playback touches to tapped and moving notes. */
+-(void)processPlaybackTouchWithX:(NSNumber *)x Y:(NSNumber *)y Vel:(NSNumber *)vel {
+    CGPoint point = CGPointMake(x.floatValue, y.floatValue);
+    CGFloat velocity = vel.floatValue;
+    if (vel.floatValue > 0.0) {
+        [self playbackMovingNote:point Vel:velocity];
+    } else {
+        [self playbackTappedNote:point];
+        [self playbackStopContinuousNotes]; // any tap stops a swipe.
+    }
+}
+
+#pragma mark UI Element Methods
+
 - (IBAction)steppedMoved:(UIStepper *)sender {
     int state = (int) sender.value;
     NSArray *newSetup = [self.composition setupForState:state];
@@ -429,7 +510,6 @@
 }
 
 // New Setup Button just for Experiment Mode!
-#pragma mark TODO make sure the button fades out sufficiently.
 - (IBAction)experimentNewSetupButtonPressed:(UIButton *)sender {
     NSLog(@"New Setup Button Pressed!");
     int state = (int) (self.compositionStepper.value + 1) % (int) (self.compositionStepper.maximumValue + 1);
@@ -438,19 +518,13 @@
     NSArray *newSetup = [self.composition setupForState:state];
     [self applyNewSetup:newSetup];
     [self updateSetupDescription:state];
-    
     // Now randomise sound!
     [self randomiseSound];
-    
     // Send to everyone in the network.
-    // sending via network.
     [self.networkManager sendMetatoneMessageViaServer:@"CompositionStep" withState:[NSString stringWithFormat:@"%d",state]];
-    
     if (self.buttonFadingMode) {
         // Fading out the button.
         [self fadeOutNewSetupButton];
-        // Should this send a message to other clients to fade out their buttons too?
-        // No maybe just use the compositionstep message to do that.
     }
 }
 
@@ -502,53 +576,38 @@
 }
 
 #pragma mark - Metatone Classifier and Network Methods
+#pragma mark TODO: clean up these methods to simplify the situation.
 -(void)stopOSCLogging
 {
-//    [self.networkManager stopSearches];
+    NSLog(@"VC: stopOSCLogging was called");
     [self.networkManager closeClassifierWebSocket];
 }
 
 -(void)setupOSCLogging {
+    NSLog(@"VC: setupOSCLogging was called");
     self.metatoneClients = [[NSMutableDictionary alloc] init];
-    self.webClassifierSearchEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"web_classifier"];
-    self.localClassifierSearchEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"local_classifier"];
-    self.networkManager = [[MetatoneNetworkManager alloc] initWithDelegate:self shouldOscLog:YES shouldConnectToWebClassifier:self.webClassifierSearchEnabled];
+    self.networkManager = [[MetatoneNetworkManager alloc] initWithDelegate:self shouldOscLog:YES shouldConnectToWebClassifier:[[NSUserDefaults standardUserDefaults] boolForKey:@"web_classifier"]];
 }
 
--(void)updateClassifierSettings {
-    self.webClassifierSearchEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"web_classifier"];
-    self.localClassifierSearchEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"local_classifier"];
-#pragma mark TODO: do something when webclassifier and local classifier settings are changed.
-//    [self setupOSCLogging];
-#pragma TODO: this bit is a real problem. gosh darnit.
-    if (self.webClassifierSearchEnabled) {
-//        [self searchingForLoggingServer];
+-(void)updateClassifierConnections {
+    NSLog(@"VC: updateClassifierConnections was called.");
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"web_classifier"]) {
         [self.networkManager startConnectingToWebClassifier];
     } else {
-//        [self stoppedSearchingForLoggingServer];
         [self.networkManager stopConnectingToWebClassifier];
-    }
-    
-    self.displayClassifierInfo = (bool) [[NSUserDefaults standardUserDefaults] boolForKey:@"display_classifier_information"];
-    if (!self.experimentMode) {[self.oscStatusLabel setHidden:!self.displayClassifierInfo];
-    } else {
-        NSLog(@"EXPERIMENT MODE: Showing OSC Status!");
-        [self.oscStatusLabel setHidden:NO];
     }
 }
 
 -(void)searchingForLoggingServer {
     NSLog(@"VC: Searching for logging server.");
-    [self.oscStatusLabel setText:@"searching for classifier 😒"];
-    [self.oscStatusLabel setHidden:!self.displayClassifierInfo];
-    [self.bowlView setSelectedColourScheme];
+    [self.oscStatusLabel setText:@"classifier not connected"];
+    [self updateBowlViewColourScheme];
 }
 
 -(void)stoppedSearchingForLoggingServer {
     NSLog(@"VC: Stopped searching for logging server.");
-    [self.oscStatusLabel setText:@"classifier not connected. 😰"];
-    [self.oscStatusLabel setHidden:!self.displayClassifierInfo];
-    [self.bowlView setSelectedColourScheme];
+    [self.oscStatusLabel setText:@"classifier not connected"];
+    [self updateBowlViewColourScheme];
 }
 
 -(void)metatoneClientFoundWithAddress:(NSString *)address andPort:(int)port andHostname:(NSString *)hostname {
@@ -566,13 +625,9 @@
 
 -(void)loggingServerFoundWithAddress:(NSString *)address andPort:(int)port andHostname:(NSString *)hostname {
     NSLog(@"VC: Connected to logging server.");
-    [self.oscStatusLabel setText:[NSString stringWithFormat:@"connected to %@ 👍", hostname]];
-    [self.oscStatusLabel setHidden:!self.displayClassifierInfo];
-    [self.bowlView setServerColourScheme];
+    [self.oscStatusLabel setText:[NSString stringWithFormat:@"connected to %@", hostname]];
+    [self updateBowlViewColourScheme];
     [self.bowlView drawSetup:self.bowlSetup];
-    // For iPad Ensemble Performances!
-    //    [self.compositionStepper setHidden:YES];
-    //    [self.settingsButton setHidden:YES];
 }
 
 -(void)didReceiveMetatoneMessageFrom:(NSString *)device withName:(NSString *)name andState:(NSString *)state {
@@ -662,20 +717,18 @@
     NSLog(@"PERFORMANCE: Received Performance Event: %@, %@, %@, %@", event,device,type,composition);
     int newComposition = [composition intValue] % NUMBER_COMPOSITIONS_AVAILABLE;
     self.currentPerformanceType = [type intValue];
-//    [self.bowlView setDarkScheme];
     switch (self.currentPerformanceType) {
         case PERFORMANCE_TYPE_LOCAL:
             // Local
             NSLog(@"PERFORMANCE: Starting Local Mode.");
             [self.compositionStepper setHidden:YES];
-            [self.settingsButton setHidden:YES];
+            [self.settingsButton setHidden:NO];
             [self.setupDescription setHidden:NO];
             [self.experimentNewSetupButton setHidden:YES];
             self.listenToMetatoneClassifierMessages = YES;
             self.buttonFadingMode = NO;
             self.experimentMode = NO;
             [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
-
             break;
         case PERFORMANCE_TYPE_REMOTE:
             // Remote
@@ -785,22 +838,32 @@
     [self searchingForLoggingServer];
     [self.compositionStepper setHidden:NO];
     [self.settingsButton setHidden:NO];
-    [self.setupDescription setHidden:NO];
     [self.experimentNewSetupButton setHidden:YES];
     self.listenToMetatoneClassifierMessages = YES;
+    [self updateUITextLabels];
+    [self updateBowlViewColourScheme];
 }
 
--(void)startExperimentMode {
-    NSLog(@"Entering Experiment Mode: Configuring UI Elements...");
+-(void) didReceiveGesturePlayMessageFor:(NSString*)device withClass:(NSString*)cla {
+    // Do something with the message.
+}
+-(void) didReceiveTouchPlayMessageFor:(NSString*)device X:(NSNumber*)x Y:(NSNumber*)y vel:(NSNumber*)vel {
+    [self processPlaybackTouchWithX:x Y:y Vel:vel];
+}
 
+#pragma mark Experiment Mode Methods
+
+-(void)startExperimentMode {
+    NSLog(@"Entering Experiment Mode:");
 }
 
 -(void)stopExperimentMode {
     NSLog(@"Entering Normal Mode: Configuring UI Elements...");
     [self.compositionStepper setHidden:NO];
     [self.settingsButton setHidden:NO];
-    [self.setupDescription setHidden:NO];
     [self.experimentNewSetupButton setHidden:YES];
+    [self updateUITextLabels];
+    [self updateBowlViewColourScheme];
 }
 
 #pragma mark In App Settings Kit Methods
@@ -840,38 +903,43 @@
     self.currentPopoverController = popover;
 }
 
+// Popover/Settings end methods, previously had settings changes as well!
 - (void) dismissCurrentPopover {
-    NSLog(@"dismissing the popover ourselves..");
+//    NSLog(@"VC: dismissing the popover ourselves..");
     [self.currentPopoverController dismissPopoverAnimated:YES];
     self.currentPopoverController = nil;
-    [self openComposition];
-    [self openPdPatch];
-
 }
 
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
-    NSLog(@"MainVC: Settings Changed, updating everything!");
-    [self openComposition];
-    [self openPdPatch];
-    // your code here to reconfigure the app for changed settings
+//    NSLog(@"VC: Settings Changed, updating everything!");
 }
 
 - (void) popoverControllerDidDismissPopover:(UIPopoverController *)popoverController {
-    NSLog(@"MainVC: Popover going away updating everything!!");
-    [self openComposition];
-    [self openPdPatch];
+//    NSLog(@"VC: Popover going away updating everything!!");
 }
 
 - (void) popoverController:(UIPopoverController *)popoverController willRepositionPopoverToRect:(inout CGRect *)rect inView:(inout UIView *__autoreleasing *)view {
-    NSLog(@"repositioning popover");
+//    NSLog(@"VC: repositioning popover");
 }
 
 - (BOOL)popoverControllerShouldDismissPopover:(UIPopoverController *)popoverController {
-    NSLog(@"MainVC: Popover will be dismissed.!!");
-    [self openComposition];
-    [self openPdPatch];
+//    NSLog(@"VC: Popover will be dismissed.!!");
     return YES;
+}
+
+// AudioBus State Saving Methods
+- (NSDictionary *) audiobusStateDictionaryForCurrentState
+{
+    NSLog(@"VC: Request to save state.");
+    return [StateSaver currentState];
+}
+
+- (void) loadStateFromAudiobusStateDictionary: (NSDictionary *)dictionary responseMessage:(NSString **) outResponseMessage
+{
+    NSLog(@"VC: Request to load state.");
+    [StateSaver loadState:dictionary];
+    *outResponseMessage = @"PhaseRings State Loaded";
 }
 
 @end

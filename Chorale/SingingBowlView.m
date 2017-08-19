@@ -13,11 +13,29 @@
 #define DISPLAYNOTENAME true
 
 @interface SingingBowlView()
+/*! Creates the CALayer for a single ring at a given radius and creates the text label.*/
+-(void) drawBowlRimAtRadius:(CGFloat) radius withNote:(NSString *) note;
+/*! Initiates the tap animation for a single ring at the given radius.*/
+-(void) animateBowlAtRadius:(CGFloat) radius;
+
+/*! Colour for the ring rims, common to each colour scheme. Changed by the colour scheme methods. */
+@property (strong,nonatomic) UIColor *rimColour;
+/*! Colour for the text throughout the UI. Changed by the colour scheme methods. */
+@property (strong,nonatomic) UIColor *textColour;
+/*! Contains the CALayers for each rim in the UI.*/
+@property (strong, nonatomic) NSMutableArray* rimLayers;
+
+/*! CALayer to contain all the rings and text layers. */
 @property (strong,nonatomic) CALayer *rimSubLayer;
+/*! Dictionary to hold the CALayers for continuous ring animations. */
 @property (strong,nonatomic) NSMutableDictionary *continuousEdgeLayers;
+/*! Dictionary to hold the CALayers for tapped ring animations. */
 @property (strong,nonatomic) NSMutableDictionary *tapEdgeLayers;
+/*! Reference to the current SingingBowlSetup object. */
 @property (weak,nonatomic) SingingBowlSetup* currentSetup;
+/*! Storage for the width of a singing ring in the current setup. */
 @property (nonatomic) CGFloat currentRimWidth;
+/*! Records whether the dark theme is currently active.*/
 @property (nonatomic) bool currentThemeDark;
 @end
 
@@ -28,23 +46,16 @@
     self = [super initWithCoder:aDecoder];
     if (self) {
         // Initialization code
-        
-        [self setLightScheme];
-//        self.backgroundColor = [UIColor clearColor];
-//        self.rimColour = [UIColor blackColor];
-//        self.textColour = [UIColor blackColor];
-        self.tapColour = [UIColor blueColor];
-        self.swirlColour = [UIColor greenColor];
         self.rimSubLayer = [[CALayer alloc] init];
         [self.layer addSublayer:self.rimSubLayer];
         self.multipleTouchEnabled = YES;
+        [self setSelectedColourScheme];
         self.displayNoteNames = DISPLAYNOTENAME;
-//        self.totalRadius = [self viewRadius];
     }
     return self;
 }
 
-#pragma mark - Colour Scheme
+#pragma mark - Colour Scheme Internal
 
 -(void) setLightScheme {
     self.currentThemeDark = NO;
@@ -67,13 +78,7 @@
     self.textColour = [UIColor colorWithRed:0.40 green:0.48 blue:0.51 alpha:1.0];
 }
 
--(void) setOppositeScheme {
-    if (self.currentThemeDark) {
-        [self setLightScheme];
-    } else {
-        [self setDarkScheme];
-    }
-}
+# pragma mark - Colour Scheme External Methods
 
 -(void) setSelectedColourScheme {
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"dark_mode"]) {
@@ -89,6 +94,7 @@
 
 -(void) drawSetup:(SingingBowlSetup *) setup
 {
+    //NSLog(@"SingingBowlView: drawSetup was called!");
     // delete previous setup
     [self.rimSubLayer setSublayers:nil];
     self.continuousEdgeLayers = [NSMutableDictionary dictionary];
@@ -96,6 +102,7 @@
     self.currentSetup = setup;
 
     // draw new one
+    self.displayNoteNames = [[NSUserDefaults standardUserDefaults] boolForKey:@"note_labels"];
     CGFloat totalRadius = [self viewRadius];
     self.currentRimWidth = totalRadius / (CGFloat) [setup numberOfPitches];
     //CGFloat tapEdgeWidth = 0.0;
@@ -120,7 +127,7 @@
     }
 }
 
-#pragma mark - Drawing
+#pragma mark - Drawing Setup Methods
 
 -(void) drawBowlRimAtRadius:(CGFloat) radius withNote:(NSString *) note {
     CAShapeLayer *shapeLayer = [CAShapeLayer layer];
@@ -184,21 +191,26 @@
 }
 
 
-
+#pragma mark - UI Methods
 -(void) animateBowlAtRadius:(CGFloat)radius {
     CGFloat fracRadius = [self fractionOfTotalRadiusFromRadius:radius];
     int note = [self.currentSetup pitchAtRadius:fracRadius];
     CAShapeLayer *layer = [self.tapEdgeLayers objectForKey:
                            [NSNumber numberWithInt:note]];
-    [CATransaction setAnimationDuration:2.0];
-    layer.hidden = NO;
+    [CATransaction flush];
+    [CATransaction begin];
+    //NSLog(@"Current duration: %f", [CATransaction animationDuration]);
+    //NSLog(@"Animating bowl from tap %f", radius);
+    [CATransaction setAnimationDuration:0.1];
     [CATransaction setCompletionBlock:^{
+        //NSLog(@"Bowl visible at radius: %f", radius);
         [CATransaction setAnimationDuration:1.0];
-        layer.hidden = YES;
-        [CATransaction setCompletionBlock:^{
-            [CATransaction setAnimationDuration:3.0];
-        }];
+        layer.opacity = 0.0;
+        //layer.hidden = YES;
     }];
+    layer.hidden = NO;
+    layer.opacity = 1.0;
+    [CATransaction commit];
 }
 
 -(void) continuouslyAnimateBowlAtRadius:(CGFloat) radius{
@@ -218,11 +230,15 @@
     [layer addAnimation:pulse forKey:@"pulseAnimation"];
 }
 
-
-
 -(void) stopAnimatingBowl {
     for (CALayer *n in [self.continuousEdgeLayers objectEnumerator]) {
-        n.hidden = YES;
+        if (n.hidden == NO) {
+            [CATransaction begin];
+            [CATransaction setAnimationDuration:0.3];
+            [CATransaction setCompletionBlock:^{n.hidden = YES;}];
+            n.opacity = 0.0;
+            [CATransaction commit];
+        }
     }
 }
 

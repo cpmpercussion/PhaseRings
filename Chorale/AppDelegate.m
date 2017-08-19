@@ -7,12 +7,25 @@
 //
 
 #import "AppDelegate.h"
-#import "AudioBus.h"
 
 #define CUSTOM_COMPOSITION_PROPERTIES @[@"note_1",@"note_2",@"note_3",@"scale_1",@"scale_2",@"scale_3"]
 #define CUSTOM_COMPOSITION_NUMBER 0
+#define AUDIOBUS_SOURCE_URL @"us.audiob.Audiobus"
 
 @implementation AppDelegate
+
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+{
+    // Handle preset incoming from loading url.
+    NSLog(@"URL_LOADER: App opened from URL");
+//    NSLog(@"URL_LOADER: URL was %@", [url description]);
+//    NSLog(@"URL_LOADER: Options were %@", [options description]);
+    if ([((NSString *) [options valueForKey:@"UIApplicationOpenURLOptionsSourceApplicationKey"]) isEqualToString:AUDIOBUS_SOURCE_URL]) {
+        NSLog(@"URL_LOADER: Opened by Audiobus, ready to load settings");
+        return YES;
+    }
+    return NO;
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -87,26 +100,31 @@
     return YES;
 }
 
+/*! Method to update non-disruptive features which runs after any settings update. */
 - (void)defaultsDidChange:(NSNotification *)aNotification
 {
-    NSLog(@"SETTINGS NOTIFICATION: Settings changed.");
+    NSLog(@"AD: defaultsDidChange, updating all non-disruptive features.");
     [self.viewController openPdPatch];
-    [self.viewController updateClassifierSettings];
+    [self.viewController updateBowlViewColourScheme];
+    [self.viewController updateUITextLabels];
 }
 
--(void)observeValueForKeyPath:(NSString *)aKeyPath ofObject:(id)anObject
+/*! Method to update the disruptive features only when needed, i.e., composition setup and classifier connection */
+- (void)observeValueForKeyPath:(NSString *)aKeyPath ofObject:(id)anObject
                        change:(NSDictionary *)aChange context:(void *)aContext
 {
-    NSLog(@"APP DELEGATE: Value Changed for Keypath: %@",aKeyPath);
+    NSLog(@"AD: Value Changed for Keypath: %@",aKeyPath);
     bool compositionChanged = NO;
     if ([aKeyPath isEqualToString:@"composition"]) {
         compositionChanged = YES;
-        NSLog(@"APP DELEGATE: Changed Composition");
     } else if ([aKeyPath isEqualToString:@"web_classifier"]) {
         // trigger change to webclassifier connection
-# pragma mark TODO - make sure that webclassifier gets turned on and off here!
+        NSLog(@"AD: Updating classifier connection due to change in Web Classifier");
+        [self.viewController updateClassifierConnections];
     } else if ([aKeyPath isEqualToString:@"local_classifier"]) {
         // trigger change to localclassifier connection.
+        NSLog(@"AD: Updating classifier connection due to change in Local Classifier");
+        [self.viewController updateClassifierConnections];
     }
     
     if ([CUSTOM_COMPOSITION_PROPERTIES containsObject:aKeyPath] &&
@@ -116,9 +134,8 @@
     }
     
     if (compositionChanged) {
+        NSLog(@"AD: Composition settings were changed, updating composition.");
         [self.viewController openComposition];
-    } else {
-        NSLog(@"APP DELEGATE: settings change not for composition.");
     }
 }
 							
