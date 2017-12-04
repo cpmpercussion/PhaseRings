@@ -1,7 +1,7 @@
 PODS:
   - Audiobus (2.3.1)
   - InAppSettingsKit (2.7.1)
-  - libpd (0.8.3)
+  - libpd (0.10.0)
   - SocketRocket (0.5.1)
 
 DEPENDENCIES:
@@ -17,16 +17,16 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   libpd:
-    :commit: ad548cc7600e7f95a894389764bca822c0b0cdae
+    :commit: 9b87a36d50b72ab5e1182fa072dd32868e3ec6d2
     :git: https://github.com/libpd/libpd
     :submodules: true
 
 SPEC CHECKSUMS:
   Audiobus: d75ef3f0d625abf3007a147548423e76ca61043d
   InAppSettingsKit: 2b9fcdb82cdff2f99c51cae544e9f4df0df7afbf
-  libpd: d758aa585c2f1d6f0d85fcfc99da4ec509172e75
+  libpd: 77d1445db7649a0d2357f0b5fd83409799008f62
   SocketRocket: d57c7159b83c3c6655745cd15302aa24b6bae531
 
 PODFILE CHECKSUM: 98c15ae5ce50b1bf007754eae443e50a8cfad555
 
-COCOAPODS: 1.2.0
+COCOAPODS: 1.3.1
