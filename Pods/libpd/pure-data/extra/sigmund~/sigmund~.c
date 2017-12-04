@@ -65,7 +65,7 @@ typedef struct peak
 /********************** service routines **************************/
 
 /* these three are dapted from elsewhere in Pd but included here for
-cmolpeteness */
+   completeness */
 static int sigmund_ilog2(int n)
 {
     int ret = -1;
@@ -723,7 +723,7 @@ static void notefinder_doit(t_notefinder *x, t_float freq, t_float power,
         (x->n_hifreq <= 0 || freq > x->n_hifreq || freq < x->n_lofreq))
     {
         t_float testfhi = freq, testflo = freq,
-            maxpow = x->n_hist[x->n_histphase].h_freq;
+            maxpow = x->n_hist[x->n_histphase].h_power;
         for (i = 0, k = x->n_histphase; i < stableperiod-1; i++)
         {
             if (--k < 0)
@@ -924,7 +924,14 @@ static void sigmund_npts(t_sigmund *x, t_floatarg f)
 
 static void sigmund_hop(t_sigmund *x, t_floatarg f)
 {
-    x->x_hop = f;
+    int hop = f;
+    if (hop < 0)
+    {
+        error("sigmund~: ignoring negative hopsize %d", hop);
+        return;
+    }
+    x->x_hop = hop;
+    if (0 == hop) return;
         /* check parameter ranges */
     if (x->x_hop != (1 << sigmund_ilog2(x->x_hop)))
         post("sigmund~: adjusting analysis size to %d points",

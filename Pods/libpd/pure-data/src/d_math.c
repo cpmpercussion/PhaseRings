@@ -67,6 +67,7 @@ static void clip_setup(void)
 #define DUMTAB1SIZE 256
 #define DUMTAB2SIZE 1024
 
+/* These are only written at setup time when there's a global lock in place. */
 static float rsqrt_exptab[DUMTAB1SIZE], rsqrt_mantissatab[DUMTAB2SIZE];
 
 static void init_rsqrt(void)
@@ -257,6 +258,21 @@ static t_int *sigwrap_perform(t_int *w)
     {
         t_sample f = *in++;
         int k = f;
+        if (k <= f) *out++ = f-k;
+        else *out++ = f - (k-1);
+    }
+    return (w + 4);
+}
+
+     /* old buggy version that sometimes output 1 instead of 0 */
+static t_int *sigwrap_old_perform(t_int *w)
+{
+    t_sample *in = *(t_sample **)(w+1), *out = *(t_sample **)(w+2);
+    t_int n = *(t_int *)(w+3);
+    while (n--)
+    {
+        t_sample f = *in++;
+        int k = f;
         if (f > 0) *out++ = f-k;
         else *out++ = f - (k-1);
     }
@@ -265,7 +281,9 @@ static t_int *sigwrap_perform(t_int *w)
 
 static void sigwrap_dsp(t_sigwrap *x, t_signal **sp)
 {
-    dsp_add(sigwrap_perform, 3, sp[0]->s_vec, sp[1]->s_vec, sp[0]->s_n);
+    dsp_add((pd_compatibilitylevel < 48 ?
+        sigwrap_old_perform : sigwrap_perform),
+            3, sp[0]->s_vec, sp[1]->s_vec, sp[0]->s_n);
 }
 
 void sigwrap_setup(void)
@@ -670,10 +688,11 @@ typedef struct _log_tilde
     t_float x_f;
 } t_log_tilde;
 
-static void *log_tilde_new( void)
+static void *log_tilde_new(t_floatarg f)
 {
     t_log_tilde *x = (t_log_tilde *)pd_new(log_tilde_class);
-    inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_signal, &s_signal);
+    pd_float(
+        (t_pd *)inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_signal, &s_signal), f);
     outlet_new(&x->x_obj, &s_signal);
     x->x_f = 0;
     return (x);
