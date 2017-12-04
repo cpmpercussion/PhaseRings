@@ -1,6 +1,6 @@
 PODS:
   - Audiobus (2.3.1)
-  - InAppSettingsKit (2.7.1)
+  - InAppSettingsKit (2.8.1)
   - libpd (0.10.0)
   - SocketRocket (0.5.1)
 
@@ -23,10 +23,10 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   Audiobus: d75ef3f0d625abf3007a147548423e76ca61043d
-  InAppSettingsKit: 2b9fcdb82cdff2f99c51cae544e9f4df0df7afbf
+  InAppSettingsKit: 94d2fba3ccd700fc4e32c6d09fabcc0af2426744
   libpd: 77d1445db7649a0d2357f0b5fd83409799008f62
   SocketRocket: d57c7159b83c3c6655745cd15302aa24b6bae531
 
-PODFILE CHECKSUM: 98c15ae5ce50b1bf007754eae443e50a8cfad555
+PODFILE CHECKSUM: 62715b3a91981b319a2860169165f69d8de4049c
 
 COCOAPODS: 1.3.1
