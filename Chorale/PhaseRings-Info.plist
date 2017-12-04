@@ -49,7 +49,9 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>152</string>
+	<string>153</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIBackgroundModes</key>
@@ -82,6 +84,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-    <key>ITSAppUsesNonExemptEncryption</key><false/>
 </dict>
 </plist>

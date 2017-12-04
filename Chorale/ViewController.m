@@ -72,7 +72,7 @@
 @property (weak, nonatomic) IBOutlet SingingBowlView *bowlView;
 @property (weak, nonatomic) IBOutlet MetatoneEnsembleView *ensembleView;
 
-@property (nonatomic) CGFloat viewRadius;
+//@property (nonatomic) CGFloat viewRadius;
 @property (weak, nonatomic) IBOutlet UISlider *distortSlider;
 @property (weak, nonatomic) IBOutlet UILabel *oscStatusLabel;
 @property (weak, nonatomic) IBOutlet UILabel *setupDescription;
@@ -235,7 +235,7 @@
 
     // Update bowl view.
     self.bowlSetup = [[SingingBowlSetup alloc] initWithPitches:[NSMutableArray arrayWithArray:[self.composition firstSetup]]];
-    self.viewRadius = [self calculateMaximumRadius];
+//    self.viewRadius = [self calculateMaximumRadius];
     [self.bowlView drawSetup:self.bowlSetup];
 }
 
@@ -555,9 +555,8 @@
 
 #pragma mark - For note calculation.
 -(CGFloat)calculateMaximumRadius {
-    CGFloat xDist = (self.view.center.x);
-    CGFloat yDist = (self.view.center.y);
-    return sqrt((xDist * xDist) + (yDist * yDist));
+    CGPoint cent = self.view.center;
+    return sqrt((cent.x * cent.x) + (cent.y * cent.y));
 }
 
 -(CGFloat)calculateDistanceFromCenter:(CGPoint)touchPoint {
@@ -569,7 +568,7 @@
 -(int)noteFromPosition:(CGPoint) point
 {
     CGFloat distance = [self calculateDistanceFromCenter:point];
-    CGFloat radius = distance/self.viewRadius;
+    CGFloat radius = distance / [self calculateMaximumRadius];
     int note = [self.bowlSetup pitchAtRadius:radius];
     return note;
 }
