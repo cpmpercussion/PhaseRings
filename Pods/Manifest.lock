@@ -1,5 +1,5 @@
 PODS:
-  - Audiobus (2.3.1)
+  - Audiobus (2.3.3)
   - InAppSettingsKit (2.8.1)
   - libpd (0.10.0)
   - SocketRocket (0.5.1)
@@ -22,7 +22,7 @@ CHECKOUT OPTIONS:
     :submodules: true
 
 SPEC CHECKSUMS:
-  Audiobus: d75ef3f0d625abf3007a147548423e76ca61043d
+  Audiobus: 850af0ab9da4dc53dd7222afe9aeba928379e5ad
   InAppSettingsKit: 94d2fba3ccd700fc4e32c6d09fabcc0af2426744
   libpd: 77d1445db7649a0d2357f0b5fd83409799008f62
   SocketRocket: d57c7159b83c3c6655745cd15302aa24b6bae531
