@@ -567,7 +567,6 @@
 				5623DB5C188CDB3800AA6C14 /* Sources */,
 				5623DB5D188CDB3800AA6C14 /* Frameworks */,
 				5623DB5E188CDB3800AA6C14 /* Resources */,
-				CB6A577ED049BB67AAE7F27E /* [CP] Embed Pods Frameworks */,
 				37E51A4E6E309655D6A05CA9 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
@@ -770,30 +769,15 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-PhaseRings/Pods-PhaseRings-resources.sh",
-				$PODS_CONFIGURATION_BUILD_DIR/InAppSettingsKit/InAppSettingsKit.bundle,
+				"${PODS_CONFIGURATION_BUILD_DIR}/InAppSettingsKit/InAppSettingsKit.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/InAppSettingsKit.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-PhaseRings/Pods-PhaseRings-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		CB6A577ED049BB67AAE7F27E /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-PhaseRings/Pods-PhaseRings-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
