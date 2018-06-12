@@ -1,4 +1,5 @@
 # Uncomment this line to define a global platform for your project
+use_frameworks!
 platform :ios, '9.0'
 
 target 'PhaseRings' do
@@ -7,4 +8,5 @@ target 'PhaseRings' do
   pod 'Audiobus', '~> 2.1'
   # pod 'SocketRocket', '0.3.1-beta2'
   pod 'SocketRocket', '~> 0.5'
+  pod 'CocoaAsyncSocket'
 end

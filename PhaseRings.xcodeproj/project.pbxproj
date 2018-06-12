@@ -21,8 +21,6 @@
 		562375C819F764FC004F1281 /* F53OSCServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 562375AE19F764FC004F1281 /* F53OSCServer.m */; };
 		562375C919F764FC004F1281 /* F53OSCSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 562375B019F764FC004F1281 /* F53OSCSocket.m */; };
 		562375CA19F764FC004F1281 /* F53OSCTimeTag.m in Sources */ = {isa = PBXBuildFile; fileRef = 562375B219F764FC004F1281 /* F53OSCTimeTag.m */; };
-		562375CB19F764FC004F1281 /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 562375B419F764FC004F1281 /* GCDAsyncSocket.m */; };
-		562375CC19F764FC004F1281 /* GCDAsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 562375B619F764FC004F1281 /* GCDAsyncUdpSocket.m */; };
 		562375CE19F764FC004F1281 /* MetatoneNetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 562375B919F764FC004F1281 /* MetatoneNetworkManager.m */; };
 		562375CF19F764FC004F1281 /* NSData+F53OSCBlob.m in Sources */ = {isa = PBXBuildFile; fileRef = 562375BB19F764FC004F1281 /* NSData+F53OSCBlob.m */; };
 		562375D019F764FC004F1281 /* NSDate+F53OSCTimeTag.m in Sources */ = {isa = PBXBuildFile; fileRef = 562375BD19F764FC004F1281 /* NSDate+F53OSCTimeTag.m */; };
@@ -144,10 +142,6 @@
 		562375B019F764FC004F1281 /* F53OSCSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = F53OSCSocket.m; sourceTree = "<group>"; };
 		562375B119F764FC004F1281 /* F53OSCTimeTag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = F53OSCTimeTag.h; sourceTree = "<group>"; };
 		562375B219F764FC004F1281 /* F53OSCTimeTag.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = F53OSCTimeTag.m; sourceTree = "<group>"; };
-		562375B319F764FC004F1281 /* GCDAsyncSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GCDAsyncSocket.h; sourceTree = "<group>"; };
-		562375B419F764FC004F1281 /* GCDAsyncSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GCDAsyncSocket.m; sourceTree = "<group>"; };
-		562375B519F764FC004F1281 /* GCDAsyncUdpSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GCDAsyncUdpSocket.h; sourceTree = "<group>"; };
-		562375B619F764FC004F1281 /* GCDAsyncUdpSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GCDAsyncUdpSocket.m; sourceTree = "<group>"; };
 		562375B819F764FC004F1281 /* MetatoneNetworkManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetatoneNetworkManager.h; sourceTree = "<group>"; };
 		562375B919F764FC004F1281 /* MetatoneNetworkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MetatoneNetworkManager.m; sourceTree = "<group>"; };
 		562375BA19F764FC004F1281 /* NSData+F53OSCBlob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+F53OSCBlob.h"; sourceTree = "<group>"; };
@@ -315,10 +309,6 @@
 				562375B019F764FC004F1281 /* F53OSCSocket.m */,
 				562375B119F764FC004F1281 /* F53OSCTimeTag.h */,
 				562375B219F764FC004F1281 /* F53OSCTimeTag.m */,
-				562375B319F764FC004F1281 /* GCDAsyncSocket.h */,
-				562375B419F764FC004F1281 /* GCDAsyncSocket.m */,
-				562375B519F764FC004F1281 /* GCDAsyncUdpSocket.h */,
-				562375B619F764FC004F1281 /* GCDAsyncUdpSocket.m */,
 				562375B819F764FC004F1281 /* MetatoneNetworkManager.h */,
 				562375B919F764FC004F1281 /* MetatoneNetworkManager.m */,
 				562375BA19F764FC004F1281 /* NSData+F53OSCBlob.h */,
@@ -800,7 +790,6 @@
 				5623759A19F7610F004F1281 /* MetatoneMidiManager.m in Sources */,
 				562375C419F764FC004F1281 /* F53OSCClient.m in Sources */,
 				562375C619F764FC004F1281 /* F53OSCPacket.m in Sources */,
-				562375CB19F764FC004F1281 /* GCDAsyncSocket.m in Sources */,
 				565A2328188F94CA00093B32 /* SingingBowlSetup.m in Sources */,
 				56B02B091DA2961F00274E5C /* StateSaver.m in Sources */,
 				56C28DB6194A968400E015BB /* NoteColours.m in Sources */,
@@ -822,7 +811,6 @@
 				562375C919F764FC004F1281 /* F53OSCSocket.m in Sources */,
 				562375CE19F764FC004F1281 /* MetatoneNetworkManager.m in Sources */,
 				5623DB70188CDB3800AA6C14 /* main.m in Sources */,
-				562375CC19F764FC004F1281 /* GCDAsyncUdpSocket.m in Sources */,
 				562375CF19F764FC004F1281 /* NSData+F53OSCBlob.m in Sources */,
 				5623759D19F7610F004F1281 /* PGMidiFind.mm in Sources */,
 			);
