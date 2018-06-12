@@ -52,8 +52,10 @@ int sys_pollgui(void);
   void stdout_setup();
 #endif
 
-static t_atom *argv = NULL, *curr;
-static int argm = 0, argc;
+static PERTHREAD t_atom *argv = NULL;
+static PERTHREAD t_atom *curr = NULL;
+static PERTHREAD int argm = 0;
+static PERTHREAD int argc = 0;
 
 static void *get_object(const char *s) {
   t_pd *x = gensym(s)->s_thing;
@@ -73,7 +75,6 @@ int libpd_init(void) {
   sys_printtostderr = 0;
   sys_usestdpath = 0; // don't use pd_extrapath, only sys_searchpath
   sys_debuglevel = 0;
-  sys_verbose = 0;
   sys_noloadbang = 0;
   sys_hipriority = 0;
   sys_nmidiin = 0;
@@ -89,6 +90,7 @@ int libpd_init(void) {
   libpdreceive_setup();
   sys_set_audio_api(API_DUMMY);
   STUFF->st_searchpath = NULL;
+  sys_libdir = gensym("");
 #ifdef LIBPD_EXTRA
   bob_tilde_setup();
   bonk_tilde_setup();
@@ -617,6 +619,15 @@ int libpd_num_instances(void) {
 #else
   return 1;
 #endif
+}
+
+void libpd_set_verbose(int verbose) {
+  if (verbose < 0) verbose = 0;
+  sys_verbose = verbose;
+}
+
+int libpd_get_verbose(void) {
+  return sys_verbose;
 }
 
 // dummy routines needed because we don't use s_file.c

@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		33DECCE7006A625406719942 /* libPods-PhaseRings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 76616B931294942E675C36DB /* libPods-PhaseRings.a */; };
+		4CBFFABE7CA9A8E20FF9C7A3 /* Pods_PhaseRings.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22C7E13131F2788AB369578D /* Pods_PhaseRings.framework */; };
 		56157B601A958CFE00FBFF97 /* floatVolToDb.pd in Resources */ = {isa = PBXBuildFile; fileRef = 56157B5F1A958CFE00FBFF97 /* floatVolToDb.pd */; };
 		5623759A19F7610F004F1281 /* MetatoneMidiManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5623759019F7610F004F1281 /* MetatoneMidiManager.m */; };
 		5623759B19F7610F004F1281 /* PGMidi.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5623759319F7610F004F1281 /* PGMidi.mm */; };
@@ -112,6 +112,7 @@
 
 /* Begin PBXFileReference section */
 		088119280FAFA6FADE7AE23E /* Pods-PhaseRings.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PhaseRings.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PhaseRings/Pods-PhaseRings.debug.xcconfig"; sourceTree = "<group>"; };
+		22C7E13131F2788AB369578D /* Pods_PhaseRings.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PhaseRings.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3A0114F5E08792A1FB4B70E9 /* Pods-PhaseRings.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PhaseRings.release.xcconfig"; path = "Pods/Target Support Files/Pods-PhaseRings/Pods-PhaseRings.release.xcconfig"; sourceTree = "<group>"; };
 		56157B5F1A958CFE00FBFF97 /* floatVolToDb.pd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = floatVolToDb.pd; sourceTree = "<group>"; };
 		5623758E19F7610F004F1281 /* iOSVersionDetection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iOSVersionDetection.h; sourceTree = "<group>"; };
@@ -237,7 +238,6 @@
 		56E170F61991EAF400A36C74 /* PhaseRingSynthEnvironment.pd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PhaseRingSynthEnvironment.pd; sourceTree = "<group>"; };
 		56E170F71991EAF400A36C74 /* phasesynth.pd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = phasesynth.pd; sourceTree = "<group>"; };
 		56FF15F71A8B03AE0061BCD7 /* PhaseRings.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PhaseRings.entitlements; sourceTree = "<group>"; };
-		76616B931294942E675C36DB /* libPods-PhaseRings.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PhaseRings.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -252,7 +252,7 @@
 				5623DE7A188CDCEA00AA6C14 /* AVFoundation.framework in Frameworks */,
 				5623DB68188CDB3800AA6C14 /* UIKit.framework in Frameworks */,
 				5623DB64188CDB3800AA6C14 /* Foundation.framework in Frameworks */,
-				33DECCE7006A625406719942 /* libPods-PhaseRings.a in Frameworks */,
+				4CBFFABE7CA9A8E20FF9C7A3 /* Pods_PhaseRings.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -372,7 +372,7 @@
 				5623DB65188CDB3800AA6C14 /* CoreGraphics.framework */,
 				5623DB67188CDB3800AA6C14 /* UIKit.framework */,
 				5623DB82188CDB3800AA6C14 /* XCTest.framework */,
-				76616B931294942E675C36DB /* libPods-PhaseRings.a */,
+				22C7E13131F2788AB369578D /* Pods_PhaseRings.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -567,7 +567,7 @@
 				5623DB5C188CDB3800AA6C14 /* Sources */,
 				5623DB5D188CDB3800AA6C14 /* Frameworks */,
 				5623DB5E188CDB3800AA6C14 /* Resources */,
-				37E51A4E6E309655D6A05CA9 /* [CP] Copy Pods Resources */,
+				3C0D463EB3E8B7B7B69EB752 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -762,22 +762,28 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		37E51A4E6E309655D6A05CA9 /* [CP] Copy Pods Resources */ = {
+		3C0D463EB3E8B7B7B69EB752 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-PhaseRings/Pods-PhaseRings-resources.sh",
-				"${PODS_CONFIGURATION_BUILD_DIR}/InAppSettingsKit/InAppSettingsKit.bundle",
+				"${SRCROOT}/Pods/Target Support Files/Pods-PhaseRings/Pods-PhaseRings-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/CocoaAsyncSocket/CocoaAsyncSocket.framework",
+				"${BUILT_PRODUCTS_DIR}/InAppSettingsKit/InAppSettingsKit.framework",
+				"${BUILT_PRODUCTS_DIR}/SocketRocket/SocketRocket.framework",
+				"${BUILT_PRODUCTS_DIR}/libpd/libpd.framework",
 			);
-			name = "[CP] Copy Pods Resources";
+			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/InAppSettingsKit.bundle",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaAsyncSocket.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/InAppSettingsKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SocketRocket.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libpd.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-PhaseRings/Pods-PhaseRings-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-PhaseRings/Pods-PhaseRings-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */

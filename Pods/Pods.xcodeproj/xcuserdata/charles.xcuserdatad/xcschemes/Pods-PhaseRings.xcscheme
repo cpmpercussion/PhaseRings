@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0940"
+   LastUpgradeVersion = "0930"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,8 +14,8 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A8CC25DE28CC40130500FE8A903B0553"
-               BuildableName = "libPods-PhaseRings.a"
+               BlueprintIdentifier = "B3B9D48CCBCA14BD1E56E86D9F9A7A1F"
+               BuildableName = "Pods_PhaseRings.framework"
                BlueprintName = "Pods-PhaseRings"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
@@ -45,8 +45,8 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A8CC25DE28CC40130500FE8A903B0553"
-            BuildableName = "libPods-PhaseRings.a"
+            BlueprintIdentifier = "B3B9D48CCBCA14BD1E56E86D9F9A7A1F"
+            BuildableName = "Pods_PhaseRings.framework"
             BlueprintName = "Pods-PhaseRings"
             ReferencedContainer = "container:Pods.xcodeproj">
          </BuildableReference>
