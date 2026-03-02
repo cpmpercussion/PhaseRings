@@ -130,15 +130,19 @@
 #pragma mark - Audio Setup Methods.
 -(void) setupAudioBus {
     //Set Audio Session Properties
-    NSString *category = AVAudioSessionCategoryPlayAndRecord;
-    // Should the category be: AVAudioSessionCategoryPlayback
-    AVAudioSessionCategoryOptions options = AVAudioSessionCategoryOptionAllowBluetoothA2DP|AVAudioSessionCategoryOptionMixWithOthers|AVAudioSessionCategoryOptionDefaultToSpeaker;
+    // PlayAndRecord is wrong here — the app generates audio via Pd and does not use the microphone.
+    // PlayAndRecord forces a low-latency mic-routed mode that disrupts BT A2DP on modern iOS.
+    AVAudioSessionCategoryOptions options = AVAudioSessionCategoryOptionAllowBluetoothA2DP|AVAudioSessionCategoryOptionMixWithOthers;
     NSError *error = nil;
-    if ( ![[AVAudioSession sharedInstance] setCategory:category withOptions:options error:&error] ) {
+    if ( ![[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback withOptions:options error:&error] ) {
         NSLog(@"Couldn't set audio session category: %@", error);
     } else {
-        NSLog(@"Audio Session Properties seem to be saved.");
+        NSLog(@"Audio Session category set to Playback.");
     }
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleAudioSessionInterruption:)
+                                                 name:AVAudioSessionInterruptionNotification
+                                               object:[AVAudioSession sharedInstance]];
     self.audiobusController = [[ABAudiobusController alloc] initWithApiKey:AUDIOBUS_API_KEY];
     [self.audiobusController setConnectionPanelPosition:ABConnectionPanelPositionRight];
     self.senderport = [[ABSenderPort alloc] initWithName:@"PhaseRings"
@@ -165,7 +169,21 @@
 
 - (void) shutdownSoundProcessing {
     if (!BACKGROUND_SOUND_ALWAYS_ON) {
-        [self.audioController setActive:YES];
+        [self.audioController setActive:NO];
+    }
+}
+
+- (void)handleAudioSessionInterruption:(NSNotification *)notification {
+    NSUInteger type = [notification.userInfo[AVAudioSessionInterruptionTypeKey] unsignedIntegerValue];
+    if (type == AVAudioSessionInterruptionTypeBegan) {
+        NSLog(@"Audio session interrupted, stopping audio.");
+        [self.audioController setActive:NO];
+    } else if (type == AVAudioSessionInterruptionTypeEnded) {
+        NSUInteger options = [notification.userInfo[AVAudioSessionInterruptionOptionKey] unsignedIntegerValue];
+        if (options & AVAudioSessionInterruptionOptionShouldResume) {
+            NSLog(@"Audio session interruption ended, restarting audio.");
+            [self restartSoundProcessing];
+        }
     }
 }
 
@@ -891,44 +909,30 @@
     }
 }
 
-// This is the popover for iPad - should work now.
+// Settings popover for iPad using UIPopoverPresentationController (iOS 8+).
 - (void)showSettingsPopover:(UIButton *)sender {
-    if(self.currentPopoverController) {
-        [self dismissCurrentPopover];
+    if (self.presentedViewController) {
+        [self dismissViewControllerAnimated:YES completion:nil];
         return;
     }
     [self.appSettingsViewController setShowCreditsFooter:NO];
     [self.appSettingsViewController setShowDoneButton:NO];
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.appSettingsViewController];
-    UIPopoverController *popover = [[UIPopoverController alloc] initWithContentViewController:navController];
+    navController.modalPresentationStyle = UIModalPresentationPopover;
+    UIPopoverPresentationController *popover = navController.popoverPresentationController;
+    popover.sourceView = sender;
+    popover.sourceRect = sender.bounds;
+    popover.permittedArrowDirections = UIPopoverArrowDirectionAny;
     popover.delegate = self;
-    [popover presentPopoverFromRect:sender.bounds inView:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-    self.currentPopoverController = popover;
-}
-
-// Popover/Settings end methods, previously had settings changes as well!
-- (void) dismissCurrentPopover {
-//    NSLog(@"VC: dismissing the popover ourselves..");
-    [self.currentPopoverController dismissPopoverAnimated:YES];
-    self.currentPopoverController = nil;
+    [self presentViewController:navController animated:YES completion:nil];
 }
 
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
-//    NSLog(@"VC: Settings Changed, updating everything!");
 }
 
-- (void) popoverControllerDidDismissPopover:(UIPopoverController *)popoverController {
-//    NSLog(@"VC: Popover going away updating everything!!");
-}
-
-- (void) popoverController:(UIPopoverController *)popoverController willRepositionPopoverToRect:(inout CGRect *)rect inView:(inout UIView *__autoreleasing *)view {
-//    NSLog(@"VC: repositioning popover");
-}
-
-- (BOOL)popoverControllerShouldDismissPopover:(UIPopoverController *)popoverController {
-//    NSLog(@"VC: Popover will be dismissed.!!");
-    return YES;
+- (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController {
+    // Called when the popover is dismissed by tapping outside it on iPad.
 }
 
 // AudioBus State Saving Methods

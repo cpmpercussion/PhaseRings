@@ -19,10 +19,9 @@
 #import "IASKAppSettingsViewController.h"
 #import "IASKSettingsReader.h"
 
-@interface ViewController : UIViewController <PdReceiverDelegate,MetatoneNetworkManagerDelegate,IASKSettingsDelegate,UIPopoverControllerDelegate,ABAudiobusControllerStateIODelegate>
+@interface ViewController : UIViewController <PdReceiverDelegate,MetatoneNetworkManagerDelegate,IASKSettingsDelegate,UIAdaptivePresentationControllerDelegate,ABAudiobusControllerStateIODelegate>
 @property (strong, nonatomic) MetatoneMidiManager* midiManager;
 @property (strong, nonatomic) IASKAppSettingsViewController *appSettingsViewController;
-@property (weak, nonatomic) UIPopoverController* currentPopoverController;
 @property (strong, nonatomic) ABAudiobusController *audiobusController;
 @property (strong, nonatomic) ABSenderPort *senderport;
 
