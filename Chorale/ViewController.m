@@ -126,21 +126,19 @@
 
 #pragma mark - Audio Setup Methods.
 -(void) setupAudioSession {
-    //Set Audio Session Properties
-    // PlayAndRecord is wrong here — the app generates audio via Pd and does not use the microphone.
-    // PlayAndRecord forces a low-latency mic-routed mode that disrupts BT A2DP on modern iOS.
-    AVAudioSessionCategoryOptions options = AVAudioSessionCategoryOptionAllowBluetoothA2DP|AVAudioSessionCategoryOptionMixWithOthers;
+    // this is the currently known working combination of AVAudioSession Category and Options.
+    NSString *category = AVAudioSessionCategoryPlayback; // previously AVAudioSessionCategoryPlayAndRecord;
+    AVAudioSessionCategoryOptions options = AVAudioSessionCategoryOptionAllowBluetoothA2DP|AVAudioSessionCategoryOptionMixWithOthers|AVAudioSessionCategoryOptionDefaultToSpeaker;
     NSError *error = nil;
-    if ( ![[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback withOptions:options error:&error] ) {
+    if ( ![[AVAudioSession sharedInstance] setCategory:category withOptions:options error:&error] ) {
         NSLog(@"Couldn't set audio session category: %@", error);
     } else {
-        NSLog(@"Audio Session category set to Playback.");
+        NSLog(@"Audio Session category set to PlayAndRecord.");
     }
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleAudioSessionInterruption:)
                                                  name:AVAudioSessionInterruptionNotification
                                                object:[AVAudioSession sharedInstance]];
-
     // Register as an IAA Remote Generator so hosts like AUM can route our audio.
     AudioComponentDescription iaaDesc = {
         .componentType         = kAudioUnitType_RemoteGenerator,
