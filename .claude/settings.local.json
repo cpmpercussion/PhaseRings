@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep:*)",
+      "Bash(git:*)",
+      "Bash(wc:*)",
+      "Bash(pod install:*)",
+      "Bash(xcodebuild:*)",
+      "Bash(sudo xcode-select:*)",
+      "Bash(lipo:*)"
+    ]
+  }
+}
