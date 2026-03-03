@@ -28,16 +28,13 @@
 #define SOUND_SCHEMES @[PHASE_SYNTH_PATCH,STRING_SYNTH_PATCH,BOWL_SYNTH_PATCH,GONG_SYNTH_PATCH,CROTALES_SYNTH_PATCH,POT_SYNTH_PATCH,MARIMBA_SYNTH_PATCH]
 #define NUMBER_COMPOSITIONS_AVAILABLE 5
 #define BASE_A 33
-// Audiobus API Key v1.1.
-//#define AUDIOBUS_API_KEY @"MCoqKlBoYXNlUmluZ3MqKipQaGFzZVJpbmdzLTEuMS5hdWRpb2J1czovLw==:jTpvhuIUrdRrePgvcT7+ZUXZwsDApvArFO7iOO5+91PWD6l9brvWT8lZu3Jxq85v0uK10mdzragYHbm+1K7rvB0G6FnkVrvC/WjQ4ELkA40s+idjVA7fgnaRu3csGFy4"
-// Audiobus API Key v1.2.
-#define AUDIOBUS_API_KEY @"MCoqKlBoYXNlUmluZ3MqKipQaGFzZVJpbmdzLTEuMi5hdWRpb2J1czovLyoqKlthdXJnLmNtcGMuc3ludC4yXQ==:iKMBjau2P6z7AzkLUJ6nwJmdDOMO3FZV5PYqKqnJAykOb+r16NrbWRJEZSW0gsgOtndbwCKdeRgO95BkDgE4JIUIUY3t/BH5RsXuR7bO/nx84WSmqIVW8OTNet0XiDRJ"
 #define BACKGROUND_SOUND_ALWAYS_ON YES
-#define SAMPLE_RATE 44100
+#define SAMPLE_RATE 48000
 #define SOUND_OUTPUT_CHANNELS 2
 #define TICKS_PER_BUFFER 4
 
 #import "ViewController.h"
+#import <AudioToolbox/AudioToolbox.h>
 #import "ScaleMaker.h"
 #import "SingingBowlSetup.h"
 #import "SingingBowlView.h"
@@ -100,7 +97,7 @@
     [self.compositionStepper setHidden:NO];
     [self updateUITextLabels];
     [self startAudioEngine];
-    [self setupAudioBus];
+    [self setupAudioSession];
     
     [PdBase setDelegate:self];
     self.midiManager = [[MetatoneMidiManager alloc] init];
@@ -128,7 +125,7 @@
 
 
 #pragma mark - Audio Setup Methods.
--(void) setupAudioBus {
+-(void) setupAudioSession {
     //Set Audio Session Properties
     // PlayAndRecord is wrong here — the app generates audio via Pd and does not use the microphone.
     // PlayAndRecord forces a low-latency mic-routed mode that disrupts BT A2DP on modern iOS.
@@ -143,24 +140,28 @@
                                              selector:@selector(handleAudioSessionInterruption:)
                                                  name:AVAudioSessionInterruptionNotification
                                                object:[AVAudioSession sharedInstance]];
-    self.audiobusController = [[ABAudiobusController alloc] initWithApiKey:AUDIOBUS_API_KEY];
-    [self.audiobusController setConnectionPanelPosition:ABConnectionPanelPositionRight];
-    self.senderport = [[ABSenderPort alloc] initWithName:@"PhaseRings"
-                                                   title:@"Audio Output"
-                               audioComponentDescription:(AudioComponentDescription) {
-                                   .componentType = kAudioUnitType_RemoteGenerator,
-                                   .componentSubType = 'synt',
-                                   .componentManufacturer = 'cmpc'
-                               }
-                                               audioUnit:self.audioController.audioUnit.audioUnit];
-    [self.audiobusController addSenderPort:self.senderport];
-    // Set the AudioBus StateIO Delegate Here.
-    [self.audiobusController setStateIODelegate:self];
+
+    // Register as an IAA Remote Generator so hosts like AUM can route our audio.
+    AudioComponentDescription iaaDesc = {
+        .componentType         = kAudioUnitType_RemoteGenerator,
+        .componentSubType      = 'synt',
+        .componentManufacturer = 'cmpc'
+    };
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    OSStatus err = AudioOutputUnitPublish(&iaaDesc, CFSTR("PhaseRings"), 2,
+                                         self.audioController.audioUnit.audioUnit);
+#pragma clang diagnostic pop
+    if (err != noErr) {
+        NSLog(@"IAA: AudioOutputUnitPublish failed (%d)", (int)err);
+    } else {
+        NSLog(@"IAA: Published as Remote Generator.");
+    }
 }
 
 - (void) startAudioEngine {
     [self.audioController configurePlaybackWithSampleRate:SAMPLE_RATE numberChannels:SOUND_OUTPUT_CHANNELS inputEnabled:NO mixingEnabled:YES];
-    [self.audioController configureTicksPerBuffer:TICKS_PER_BUFFER];
+//    [self.audioController configureTicksPerBuffer:TICKS_PER_BUFFER];
     [self openPdPatch];
     [self.audioController setActive:YES];
     [self.audioController print];
@@ -933,20 +934,6 @@
 
 - (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController {
     // Called when the popover is dismissed by tapping outside it on iPad.
-}
-
-// AudioBus State Saving Methods
-- (NSDictionary *) audiobusStateDictionaryForCurrentState
-{
-    NSLog(@"VC: Request to save state.");
-    return [StateSaver currentState];
-}
-
-- (void) loadStateFromAudiobusStateDictionary: (NSDictionary *)dictionary responseMessage:(NSString **) outResponseMessage
-{
-    NSLog(@"VC: Request to load state.");
-    [StateSaver loadState:dictionary];
-    *outResponseMessage = @"PhaseRings State Loaded";
 }
 
 @end

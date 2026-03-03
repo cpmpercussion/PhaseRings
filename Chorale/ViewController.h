@@ -12,18 +12,14 @@
 #import "PdFile.h"
 #import "MetatoneNetworkManager.h"
 #import "MetatoneMidiManager.h"
-#import "Audiobus.h"
-#import "ABAudiobusController.h"
 #import "StateSaver.h"
 // Settings:
 #import "IASKAppSettingsViewController.h"
 #import "IASKSettingsReader.h"
 
-@interface ViewController : UIViewController <PdReceiverDelegate,MetatoneNetworkManagerDelegate,IASKSettingsDelegate,UIAdaptivePresentationControllerDelegate,ABAudiobusControllerStateIODelegate>
+@interface ViewController : UIViewController <PdReceiverDelegate,MetatoneNetworkManagerDelegate,IASKSettingsDelegate,UIAdaptivePresentationControllerDelegate>
 @property (strong, nonatomic) MetatoneMidiManager* midiManager;
 @property (strong, nonatomic) IASKAppSettingsViewController *appSettingsViewController;
-@property (strong, nonatomic) ABAudiobusController *audiobusController;
-@property (strong, nonatomic) ABSenderPort *senderport;
 
 @property (nonatomic) int currentPerformanceType;
 @property (nonatomic) bool experimentMode;

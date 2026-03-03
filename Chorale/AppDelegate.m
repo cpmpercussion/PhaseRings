@@ -10,17 +10,10 @@
 
 #define CUSTOM_COMPOSITION_PROPERTIES @[@"note_1",@"note_2",@"note_3",@"scale_1",@"scale_2",@"scale_3"]
 #define CUSTOM_COMPOSITION_NUMBER 0
-#define AUDIOBUS_SOURCE_URL @"us.audiob.Audiobus"
-
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
-    // Handle preset incoming from loading url.
-    if ([((NSString *) [options valueForKey:@"UIApplicationOpenURLOptionsSourceApplicationKey"]) isEqualToString:AUDIOBUS_SOURCE_URL]) {
-        NSLog(@"URL_LOADER: Opened by Audiobus, ready to load settings");
-        return YES;
-    }
     return NO;
 }
 
@@ -138,10 +131,7 @@
 							
 - (void)applicationWillResignActive:(UIApplication *)application
 {
-    if (!self.viewController.audiobusController.connected &&
-        !self.viewController.audiobusController.audiobusAppRunning) {
-        [self.viewController shutdownSoundProcessing];
-    }
+    [self.viewController shutdownSoundProcessing];
 //    [self.viewController stopOSCLogging];
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
