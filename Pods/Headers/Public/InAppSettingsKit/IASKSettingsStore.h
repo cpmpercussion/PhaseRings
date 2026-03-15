@@ -1,1 +1,1 @@
-../../../InAppSettingsKit/InAppSettingsKit/Models/IASKSettingsStore.h
+../../../InAppSettingsKit/Sources/InAppSettingsKit/include/IASKSettingsStore.h

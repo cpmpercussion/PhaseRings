@@ -2,8 +2,6 @@
 * For information on usage and redistribution, and for a DISCLAIMER OF ALL
 * WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-#include <stdlib.h>
-#include <string.h>
 #include "m_pd.h"
 #include "m_imp.h"
 #include "g_canvas.h"   /* just for LB_LOAD */
@@ -13,8 +11,10 @@
 t_pd *pd_new(t_class *c)
 {
     t_pd *x;
-    if (!c)
+    if (!c) {
         bug ("pd_new: apparently called before setup routine");
+        return NULL;
+    }
     x = (t_pd *)t_getbytes(c->c_size);
     *x = c;
     if (c->c_patchable)
@@ -25,10 +25,12 @@ t_pd *pd_new(t_class *c)
     return (x);
 }
 
+typedef void (*t_freemethod)(t_pd *);
+
 void pd_free(t_pd *x)
 {
     t_class *c = *x;
-    if (c->c_freemethod) (*(t_gotfn)(c->c_freemethod))(x);
+    if (c->c_freemethod) (*(t_freemethod)(c->c_freemethod))(x);
     if (c->c_patchable)
     {
         while (((t_object *)x)->ob_outlet)
@@ -164,26 +166,31 @@ void pd_unbind(t_pd *x, t_symbol *s)
         if ((e = b->b_list)->e_who == x)
         {
             b->b_list = e->e_next;
+            e->e_who = 0; e->e_next = 0;
             freebytes(e, sizeof(t_bindelem));
         }
         else for (e = b->b_list; (e2 = e->e_next); e = e2)
             if (e2->e_who == x)
         {
             e->e_next = e2->e_next;
+            e2->e_who = 0; e2->e_next = 0;
             freebytes(e2, sizeof(t_bindelem));
             break;
         }
         if (!b->b_list->e_next)
         {
+
             s->s_thing = b->b_list->e_who;
             freebytes(b->b_list, sizeof(t_bindelem));
+            b->b_list = 0;
             pd_free(&b->b_pd);
+            b = 0;
         }
     }
     else pd_error(x, "%s: couldn't unbind", s->s_name);
 }
 
-t_pd *pd_findbyclass(t_symbol *s, t_class *c)
+t_pd *pd_findbyclass(t_symbol *s, const t_class *c)
 {
     t_pd *x = 0;
 
@@ -256,7 +263,7 @@ void pd_popsym(t_pd *x)
     }
 }
 
-void pd_doloadbang( void)
+void pd_doloadbang(void)
 {
     if (lastpopped)
         pd_vmess(lastpopped, gensym("loadbang"), "f", LB_LOAD);
@@ -270,7 +277,10 @@ void pd_bang(t_pd *x)
 
 void pd_float(t_pd *x, t_float f)
 {
-    (*(*x)->c_floatmethod)(x, f);
+    if (x == &pd_objectmaker)
+        ((t_floatmethodr)(*(*x)->c_floatmethod))(x, f);
+    else
+        (*(*x)->c_floatmethod)(x, f);
 }
 
 void pd_pointer(t_pd *x, t_gpointer *gp)
@@ -288,24 +298,57 @@ void pd_list(t_pd *x, t_symbol *s, int argc, t_atom *argv)
     (*(*x)->c_listmethod)(x, &s_list, argc, argv);
 }
 
+void pd_anything(t_pd *x, t_symbol *s, int argc, t_atom *argv)
+{
+    (*(*x)->c_anymethod)(x, s, argc, argv);
+}
+
 void mess_init(void);
+void sched_init(void);
 void obj_init(void);
 void conf_init(void);
 void glob_init(void);
 void garray_init(void);
+void ooura_term(void);
 
 void pd_init(void)
 {
+#ifndef PDINSTANCE
     static int initted = 0;
     if (initted)
         return;
     initted = 1;
-#ifdef PDINSTANCE
+#else
+    if (pd_instances)
+        return;
     pd_instances = (t_pdinstance **)getbytes(sizeof(*pd_instances));
     pd_instances[0] = &pd_maininstance;
     pd_ninstances = 1;
 #endif
+    pd_init_systems();
+}
+
+void pd_term(void)
+{
+    t_glist *c;
+    for (c = pd_getcanvaslist(); c; c = c->gl_next)
+        canvas_closebang(c);
+#if 0
+        /* Canvases may be slow to close and as a workaround people
+        may want Pd to shutdown quickly. Conversely, others might
+        prefer it if canvases (and all their containing objects) are
+        always freed properly. For now let's exit quickly and LATER
+        figure out a way to handle this. */
+    while ((c = pd_getcanvaslist()))
+        pd_free((t_pd *)c);
+#endif
+    pd_term_systems();
+}
+
+void pd_init_systems(void)
+{
     mess_init();
+    sched_init();
     sys_lock();
     obj_init();
     conf_init();
@@ -314,8 +357,12 @@ void pd_init(void)
     sys_unlock();
 }
 
-EXTERN t_canvas *pd_getcanvaslist(void)
+void pd_term_systems(void)
+{
+        /* TODO free resources */
+}
+
+t_canvas *pd_getcanvaslist(void)
 {
     return (pd_this->pd_canvaslist);
 }
-

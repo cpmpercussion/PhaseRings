@@ -7,6 +7,8 @@
 //  For information on usage and redistribution, and for a DISCLAIMER OF ALL
 //  WARRANTIES, see the file, "LICENSE.txt," in this distribution.
 //
+//  Updated 2013, 2018 Dan Wilcox <danomatika@gmail.com>
+//
 
 #import "PdDispatcher.h"
 
@@ -56,7 +58,7 @@
 			[listenerMap removeObjectForKey:symbol];
 		}
 	}
-  return 0;
+	return 0;
 }
 
 - (void)removeAllListeners {
@@ -133,30 +135,29 @@
 
 @end
 
-
 @implementation LoggingDispatcher
 
--(void)receiveBangFromSource:(NSString *)source {
+- (void)receiveBangFromSource:(NSString *)source {
 	NSLog(@"Received bang from source %@", source);
 	[super receiveBangFromSource:source];
 }
 
--(void)receiveFloat:(float)received fromSource:(NSString *)source {
+- (void)receiveFloat:(float)received fromSource:(NSString *)source {
 	NSLog(@"Received float %f from source %@", received, source);
 	[super receiveFloat:received fromSource:source];
 }
 
--(void)receiveSymbol:(NSString *)symbol fromSource:(NSString *)source {
+- (void)receiveSymbol:(NSString *)symbol fromSource:(NSString *)source {
 	NSLog(@"Received symbol %@ from source %@", symbol, source);
 	[super receiveSymbol:symbol fromSource:source];
 }
 
--(void)receiveList:(NSArray *)list fromSource:(NSString *)source {
+- (void)receiveList:(NSArray *)list fromSource:(NSString *)source {
 	NSLog(@"Received list %@ from source %@", list, source);
 	[super receiveList:list fromSource:source];
 }
 
--(void)receiveMessage:(NSString *)message withArguments:(NSArray *)arguments fromSource:(NSString *)source {
+- (void)receiveMessage:(NSString *)message withArguments:(NSArray *)arguments fromSource:(NSString *)source {
 	NSLog(@"Received message %@ with arguments %@ from source %@", message, arguments, source);
 	[super receiveMessage:message withArguments:arguments fromSource:source];
 }

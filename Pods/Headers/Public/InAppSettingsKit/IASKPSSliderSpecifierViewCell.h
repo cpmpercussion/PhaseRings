@@ -1,1 +1,1 @@
-../../../InAppSettingsKit/InAppSettingsKit/Views/IASKPSSliderSpecifierViewCell.h
+../../../InAppSettingsKit/Sources/InAppSettingsKit/include/IASKPSSliderSpecifierViewCell.h

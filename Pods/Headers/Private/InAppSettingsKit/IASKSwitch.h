@@ -1,1 +1,1 @@
-../../../InAppSettingsKit/InAppSettingsKit/Views/IASKSwitch.h
+../../../InAppSettingsKit/Sources/InAppSettingsKit/include/IASKSwitch.h

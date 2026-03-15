@@ -1,1 +1,1 @@
-../../../InAppSettingsKit/InAppSettingsKit/Views/IASKTextView.h
+../../../InAppSettingsKit/Sources/InAppSettingsKit/include/IASKTextView.h

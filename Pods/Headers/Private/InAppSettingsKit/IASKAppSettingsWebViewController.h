@@ -1,1 +1,1 @@
-../../../InAppSettingsKit/InAppSettingsKit/Controllers/IASKAppSettingsWebViewController.h
+../../../InAppSettingsKit/Sources/InAppSettingsKit/include/IASKAppSettingsWebViewController.h

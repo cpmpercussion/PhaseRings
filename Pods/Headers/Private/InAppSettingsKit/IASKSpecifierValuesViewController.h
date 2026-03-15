@@ -1,1 +1,1 @@
-../../../InAppSettingsKit/InAppSettingsKit/Controllers/IASKSpecifierValuesViewController.h
+../../../InAppSettingsKit/Sources/InAppSettingsKit/include/IASKSpecifierValuesViewController.h

@@ -5,11 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "m_pd.h"
-#include "m_imp.h"
-
-/* #define LOUD */
-#ifdef LOUD
-#include <stdio.h>
+#if (defined LOUD) || (defined DEBUGMEM)
+# include <stdio.h>
 #endif
 
 /* #define DEBUGMEM */
@@ -38,11 +35,11 @@ void *getzbytes(size_t nbytes)  /* obsolete name */
     return (getbytes(nbytes));
 }
 
-void *copybytes(void *src, size_t nbytes)
+void *copybytes(const void *src, size_t nbytes)
 {
     void *ret;
     ret = getbytes(nbytes);
-    if (nbytes)
+    if (nbytes && ret)
         memcpy(ret, src, nbytes);
     return (ret);
 }
@@ -80,8 +77,6 @@ void freebytes(void *fatso, size_t nbytes)
 }
 
 #ifdef DEBUGMEM
-#include <stdio.h>
-
 void glob_foo(void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     fprintf(stderr, "total mem %d\n", totalmem);

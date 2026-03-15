@@ -6,13 +6,27 @@
 away before the panel does... */
 
 #include "m_pd.h"
+#include "g_canvas.h"
+#include "s_stuff.h"
 #include <stdio.h>
 #include <string.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#include "m_private_utils.h"
 
 /* --------------------- graphics responder  ---------------- */
+
+/* gfxstub_* are deprecated for externals and shouldn't be used directly within Pd.
+   however, the we do use them for implementing the high-level
+   communication pdgui_stub_*(), so we do not want the compiler to shout out loud.
+ */
+#ifdef __GNUC__
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#elif defined _MSC_VER
+#pragma warning( disable : 4996 )
+#endif
+
 
 /* make one of these if you want to put up a dialog window but want to be
 protected from getting deleted and then having the dialog call you back.  In
@@ -42,10 +56,16 @@ static t_gfxstub *gfxstub_list;
     it so we can provide a name by which the GUI can send us back
     messages; e.g., "pdtk_canvas_dofont %s 10". */
 
+static t_symbol*gfxstub_symbol(t_gfxstub *x)
+{
+    char namebuf[80];
+    sprintf(namebuf, ".gfxstub%lx", (t_int)x);
+    return gensym(namebuf);
+}
+
 void gfxstub_new(t_pd *owner, void *key, const char *cmd)
 {
     char buf[4*MAXPDSTRING];
-    char namebuf[80];
     char sprintfbuf[MAXPDSTRING];
     char *afterpercent;
     t_int afterpercentlen;
@@ -62,9 +82,8 @@ void gfxstub_new(t_pd *owner, void *key, const char *cmd)
         return;
     }
     x = (t_gfxstub *)pd_new(gfxstub_class);
-    sprintf(namebuf, ".gfxstub%lx", (t_int)x);
 
-    s = gensym(namebuf);
+    s = gfxstub_symbol(x);
     pd_bind(&x->x_pd, s);
     x->x_owner = owner;
     x->x_sym = s;
@@ -108,7 +127,8 @@ void gfxstub_deleteforkey(void *key)
         {
             if (y->x_key == key)
             {
-                sys_vgui("destroy .gfxstub%lx\n", y);
+                t_symbol *s = gfxstub_symbol(y);
+                pdgui_vmess("destroy", "s", s->s_name);
                 y->x_owner = 0;
                 gfxstub_offlist(y);
                 didit = 1;
@@ -148,7 +168,8 @@ static void gfxstub_end(t_gfxstub *x)
 {
     canvas_dataproperties((t_canvas *)x->x_owner,
         (t_scalar *)x->x_key, gfxstub_binbuf);
-    binbuf_free(gfxstub_binbuf);
+    if(gfxstub_binbuf)
+        binbuf_free(gfxstub_binbuf);
     gfxstub_binbuf = 0;
 }
 
@@ -180,6 +201,50 @@ static void gfxstub_setup(void)
         gensym("cancel"), 0);
 }
 
+#include <stdarg.h>
+/* pdgui_*mess() are from s_inter_gui.c */
+void pdgui_vamess(const char* message, const char* format, va_list args);
+void pdgui_endmess(void);
+
+static void _pdguistub_vamess(const char*dest, const char*fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    pdgui_vamess(dest, fmt, args);
+    va_end(args);
+}
+void pdgui_stub_vnew(t_pd *owner, const char* destination, void *key, const char* fmt, ...)
+{
+    t_symbol*s;
+    t_gfxstub *x;
+    va_list args;
+
+        /* if any exists with matching key, burn it. */
+    for (x = gfxstub_list; x; x = x->x_next)
+        if (x->x_key == key)
+            gfxstub_deleteforkey(key);
+    x = (t_gfxstub *)pd_new(gfxstub_class);
+    s = gfxstub_symbol(x);
+    pd_bind(&x->x_pd, s);
+    x->x_owner = owner;
+    x->x_sym = s;
+    x->x_key = key;
+    x->x_next = gfxstub_list;
+    gfxstub_list = x;
+
+    _pdguistub_vamess(destination, "s", s->s_name);
+    va_start(args, fmt);
+    pdgui_vamess(0, fmt, args);
+    va_end(args);
+    pdgui_endmess();
+
+
+}
+void pdgui_stub_deleteforkey(void *key)
+{
+    gfxstub_deleteforkey(key);
+}
+
 /* -------------------------- openpanel ------------------------------ */
 
 static t_class *openpanel_class;
@@ -187,15 +252,20 @@ static t_class *openpanel_class;
 typedef struct _openpanel
 {
     t_object x_obj;
+    t_canvas *x_canvas;
     t_symbol *x_s;
+    int x_mode; /* 0: file, 1: folder, 2: multiple files */
 } t_openpanel;
 
-static void *openpanel_new( void)
+static void *openpanel_new(t_floatarg mode)
 {
     char buf[50];
+    int m = (int)mode;
     t_openpanel *x = (t_openpanel *)pd_new(openpanel_class);
+    x->x_mode = (mode < 0 || mode > 2) ? 0 : mode;
     sprintf(buf, "d%lx", (t_int)x);
     x->x_s = gensym(buf);
+    x->x_canvas = canvas_getcurrent();
     pd_bind(&x->x_obj.ob_pd, x->x_s);
     outlet_new(&x->x_obj, &s_symbol);
     return (x);
@@ -203,8 +273,9 @@ static void *openpanel_new( void)
 
 static void openpanel_symbol(t_openpanel *x, t_symbol *s)
 {
-    char *path = (s && s->s_name) ? s->s_name : "\"\"";
-    sys_vgui("pdtk_openpanel {%s} {%s}\n", x->x_s->s_name, path);
+    const char *path = (s && s->s_name) ? s->s_name : "\"\"";
+    pdgui_vmess("pdtk_openpanel", "ssic",
+        x->x_s->s_name, path, x->x_mode, glist_getcanvas(x->x_canvas));
 }
 
 static void openpanel_bang(t_openpanel *x)
@@ -212,11 +283,18 @@ static void openpanel_bang(t_openpanel *x)
     openpanel_symbol(x, &s_);
 }
 
-static void openpanel_callback(t_openpanel *x, t_symbol *s)
+static void openpanel_callback(t_openpanel *x, t_symbol *s, int argc, t_atom *argv)
 {
-    outlet_symbol(x->x_obj.ob_outlet, s);
+    if (x->x_mode != 2) /* single file or folder */
+    {
+        if (argc == 1 && argv->a_type == A_SYMBOL)
+            outlet_symbol(x->x_obj.ob_outlet, argv->a_w.w_symbol);
+        else
+            bug("openpanel_callback");
+    }
+    else /* list of files */
+        outlet_list(x->x_obj.ob_outlet, s, argc, argv);
 }
-
 
 static void openpanel_free(t_openpanel *x)
 {
@@ -227,11 +305,11 @@ static void openpanel_setup(void)
 {
     openpanel_class = class_new(gensym("openpanel"),
         (t_newmethod)openpanel_new, (t_method)openpanel_free,
-        sizeof(t_openpanel), 0, 0);
+        sizeof(t_openpanel), 0, A_DEFFLOAT, 0);
     class_addbang(openpanel_class, openpanel_bang);
     class_addsymbol(openpanel_class, openpanel_symbol);
     class_addmethod(openpanel_class, (t_method)openpanel_callback,
-        gensym("callback"), A_SYMBOL, 0);
+        gensym("callback"), A_GIMME, 0);
 }
 
 /* -------------------------- savepanel ------------------------------ */
@@ -245,7 +323,7 @@ typedef struct _savepanel
     t_symbol *x_s;
 } t_savepanel;
 
-static void *savepanel_new( void)
+static void *savepanel_new(void)
 {
     char buf[50];
     t_savepanel *x = (t_savepanel *)pd_new(savepanel_class);
@@ -259,8 +337,9 @@ static void *savepanel_new( void)
 
 static void savepanel_symbol(t_savepanel *x, t_symbol *s)
 {
-    char *path = (s && s->s_name) ? s->s_name : "\"\"";
-    sys_vgui("pdtk_savepanel {%s} {%s}\n", x->x_s->s_name, path);
+    const char *path = (s && s->s_name) ? s->s_name : "\"\"";
+    pdgui_vmess("pdtk_savepanel", "ssc",
+        x->x_s->s_name, path, glist_getcanvas(x->x_canvas));
 }
 
 static void savepanel_bang(t_savepanel *x)
@@ -291,7 +370,6 @@ static void savepanel_setup(void)
 
 /* ---------------------- key and its relatives ------------------ */
 
-static t_symbol *key_sym, *keyup_sym, *keyname_sym;
 static t_class *key_class, *keyup_class, *keyname_class;
 
 typedef struct _key
@@ -299,11 +377,11 @@ typedef struct _key
     t_object x_obj;
 } t_key;
 
-static void *key_new( void)
+static void *key_new(void)
 {
     t_key *x = (t_key *)pd_new(key_class);
     outlet_new(&x->x_obj, &s_float);
-    pd_bind(&x->x_obj.ob_pd, key_sym);
+    pd_bind(&x->x_obj.ob_pd, gensym("#key"));
     return (x);
 }
 
@@ -314,7 +392,7 @@ static void key_float(t_key *x, t_floatarg f)
 
 static void key_free(t_key *x)
 {
-    pd_unbind(&x->x_obj.ob_pd, key_sym);
+    pd_unbind(&x->x_obj.ob_pd, gensym("#key"));
 }
 
 typedef struct _keyup
@@ -322,11 +400,11 @@ typedef struct _keyup
     t_object x_obj;
 } t_keyup;
 
-static void *keyup_new( void)
+static void *keyup_new(void)
 {
     t_keyup *x = (t_keyup *)pd_new(keyup_class);
     outlet_new(&x->x_obj, &s_float);
-    pd_bind(&x->x_obj.ob_pd, keyup_sym);
+    pd_bind(&x->x_obj.ob_pd, gensym("#keyup"));
     return (x);
 }
 
@@ -337,7 +415,7 @@ static void keyup_float(t_keyup *x, t_floatarg f)
 
 static void keyup_free(t_keyup *x)
 {
-    pd_unbind(&x->x_obj.ob_pd, keyup_sym);
+    pd_unbind(&x->x_obj.ob_pd, gensym("#keyup"));
 }
 
 typedef struct _keyname
@@ -347,12 +425,12 @@ typedef struct _keyname
     t_outlet *x_outlet2;
 } t_keyname;
 
-static void *keyname_new( void)
+static void *keyname_new(void)
 {
     t_keyname *x = (t_keyname *)pd_new(keyname_class);
     x->x_outlet1 = outlet_new(&x->x_obj, &s_float);
     x->x_outlet2 = outlet_new(&x->x_obj, &s_symbol);
-    pd_bind(&x->x_obj.ob_pd, keyname_sym);
+    pd_bind(&x->x_obj.ob_pd, gensym("#keyname"));
     return (x);
 }
 
@@ -364,7 +442,7 @@ static void keyname_list(t_keyname *x, t_symbol *s, int ac, t_atom *av)
 
 static void keyname_free(t_keyname *x)
 {
-    pd_unbind(&x->x_obj.ob_pd, keyname_sym);
+    pd_unbind(&x->x_obj.ob_pd, gensym("#keyname"));
 }
 
 static void key_setup(void)
@@ -373,21 +451,117 @@ static void key_setup(void)
         (t_newmethod)key_new, (t_method)key_free,
         sizeof(t_key), CLASS_NOINLET, 0);
     class_addfloat(key_class, key_float);
-    key_sym = gensym("#key");
+    class_sethelpsymbol(key_class, gensym("key-input"));
 
     keyup_class = class_new(gensym("keyup"),
         (t_newmethod)keyup_new, (t_method)keyup_free,
         sizeof(t_keyup), CLASS_NOINLET, 0);
     class_addfloat(keyup_class, keyup_float);
-    keyup_sym = gensym("#keyup");
-    class_sethelpsymbol(keyup_class, gensym("key"));
+    class_sethelpsymbol(keyup_class, gensym("key-input"));
 
     keyname_class = class_new(gensym("keyname"),
         (t_newmethod)keyname_new, (t_method)keyname_free,
         sizeof(t_keyname), CLASS_NOINLET, 0);
     class_addlist(keyname_class, keyname_list);
-    keyname_sym = gensym("#keyname");
-    class_sethelpsymbol(keyname_class, gensym("key"));
+    class_sethelpsymbol(keyname_class, gensym("key-input"));
+}
+
+/* ------------------------ pdcontrol --------------------------------- */
+
+static t_class *pdcontrol_class;
+
+typedef struct _pdcontrol
+{
+    t_object x_obj;
+    t_canvas *x_canvas;
+    t_outlet *x_outlet;
+} t_pdcontrol;
+
+static void *pdcontrol_new( void)
+{
+    t_pdcontrol *x = (t_pdcontrol *)pd_new(pdcontrol_class);
+    x->x_canvas = canvas_getcurrent();
+    x->x_outlet = outlet_new(&x->x_obj, 0);
+    return (x);
+}
+
+    /* output containing directory of patch.  optional args:
+    1. a number, zero for this patch, one for the parent, etc.;
+    2. a symbol to concatenate onto the directory; */
+
+static void pdcontrol_dir(t_pdcontrol *x, t_symbol *s, t_floatarg f)
+{
+    t_canvas *c = x->x_canvas;
+    int i;
+    for (i = 0; i < (int)f; i++)
+    {
+        while (!c->gl_env)  /* back up to containing canvas or abstraction */
+            c = c->gl_owner;
+        if (c->gl_owner)    /* back up one more into an owner if any */
+            c = c->gl_owner;
+    }
+    if (*s->s_name)
+    {
+        char buf[MAXPDSTRING];
+        pd_snprintf(buf, MAXPDSTRING, "%s/%s",
+            canvas_getdir(c)->s_name, s->s_name);
+        buf[MAXPDSTRING-1] = 0;
+        outlet_symbol(x->x_outlet, gensym(buf));
+    }
+    else outlet_symbol(x->x_outlet, canvas_getdir(c));
+}
+
+static void pdcontrol_args(t_pdcontrol *x, t_floatarg f)
+{
+    t_canvas *c = x->x_canvas;
+    int i;
+    int argc;
+    t_atom *argv;
+    for (i = 0; i < (int)f; i++)
+    {
+        while (!c->gl_env)  /* back up to containing canvas or abstraction */
+            c = c->gl_owner;
+        if (c->gl_owner)    /* back up one more into an owner if any */
+            c = c->gl_owner;
+    }
+    canvas_setcurrent(c);
+    canvas_getargs(&argc, &argv);
+    canvas_unsetcurrent(c);
+    outlet_list(x->x_outlet, &s_list, argc, argv);
+}
+
+static void pdcontrol_browse(t_pdcontrol *x, t_symbol *s)
+{
+    pdgui_vmess("::pd_menucommands::menu_openfile", "s", s->s_name);
+}
+
+static void pdcontrol_isvisible(t_pdcontrol *x)
+{
+    outlet_float(x->x_outlet, glist_isvisible(x->x_canvas));
+}
+
+static void pdcontrol_sendcanvas(t_pdcontrol *x, t_symbol *s,
+    int argc, t_atom *argv)
+{
+    if (argc && argv[0].a_type == A_SYMBOL)
+        typedmess((t_pd *)(x->x_canvas), argv[0].a_w.w_symbol, argc-1, argv+1);
+    else pd_error(x, "pdcontrol_sendcanvas: first argument not a symbol");
+}
+
+static void pdcontrol_setup(void)
+{
+    pdcontrol_class = class_new(gensym("pdcontrol"),
+        (t_newmethod)pdcontrol_new, 0, sizeof(t_pdcontrol), 0, 0);
+    class_addmethod(pdcontrol_class, (t_method)pdcontrol_dir,
+        gensym("dir"), A_DEFFLOAT, A_DEFSYMBOL, 0);
+    class_addmethod(pdcontrol_class, (t_method)pdcontrol_args,
+        gensym("args"), A_DEFFLOAT, 0);
+    class_addmethod(pdcontrol_class, (t_method)pdcontrol_browse,
+        gensym("browse"), A_SYMBOL, 0);
+    class_addmethod(pdcontrol_class, (t_method)pdcontrol_isvisible,
+        gensym("isvisible"), 0);
+    class_addmethod(pdcontrol_class, (t_method)pdcontrol_sendcanvas,
+        gensym("sendcanvas"), A_GIMME, 0);
 }
 
 /* -------------------------- setup routine ------------------------------ */
@@ -398,4 +572,5 @@ void x_gui_setup(void)
     openpanel_setup();
     savepanel_setup();
     key_setup();
+    pdcontrol_setup();
 }

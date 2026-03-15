@@ -67,6 +67,7 @@ decay and other times in msec
 #include "ext_obex.h"
 
 typedef double t_floatarg;      /* from m_pd.h */
+typedef float t_float;               /* from m_pd.h */
 #define flog log
 #define fexp exp
 #define fsqrt sqrt
@@ -82,10 +83,12 @@ void *bonk_class;
 static t_class *bonk_class;
 #endif
 
-#ifdef _WIN32
-#include <malloc.h>
-#elif ! defined(_MSC_VER)
-#include <alloca.h>
+#ifdef HAVE_ALLOCA_H
+# include <alloca.h> /* linux, mac, mingw, cygwin,... */
+#elif defined _WIN32
+# include <malloc.h> /* MSVC or mingw on windows */
+#else
+# include <stdlib.h> /* BSDs for example */
 #endif
 
 /* ------------------------ bonk~ ----------------------------- */
@@ -159,7 +162,7 @@ static t_filterkernel bonk_filterkernels[NFILTERS];
 #endif
 
    /* and 1.3 */
-#define MAXNFILTERS 50
+#define MAXNFILTERS 200
 #define MASKHIST 8
 
 static t_filterbank *bonk_filterbanklist;
@@ -406,6 +409,7 @@ static void bonk_freefilterbank(t_filterbank *b)
         if (b->b_vec[i].k_stuff)
             freebytes(b->b_vec[i].k_stuff,
                 b->b_vec[i].k_filterpoints * sizeof(t_float));
+    freebytes(b->b_vec, b->b_nfilters * sizeof(*b->b_vec));
     freebytes(b, sizeof(*b));
 }
 
@@ -434,7 +438,7 @@ static void bonk_donew(t_bonk *x, int npoints, int period, int nsig,
     x->x_npoints = npoints;
     x->x_period = period;
     x->x_ninsig = nsig;
-    x->x_nfilters = nfilters;
+    x->x_nfilters = (nfilters > MAXNFILTERS ? MAXNFILTERS : nfilters);
     x->x_halftones = halftones;
     x->x_template = (t_template *)getbytes(0);
     x->x_ntemplate = 0;
@@ -449,7 +453,7 @@ static void bonk_donew(t_bonk *x, int npoints, int period, int nsig,
     x->x_masktime = DEFMASKTIME;
     x->x_maskdecay = DEFMASKDECAY;
     x->x_learn = 0;
-    x->x_learndebounce = clock_getsystime();
+    x->x_learndebounce = clock_getlogicaltime();
     x->x_learncount = 0;
     x->x_debouncedecay = DEFDEBOUNCEDECAY;
     x->x_minvel = DEFMINVEL;
@@ -570,7 +574,7 @@ static void bonk_tick(t_bonk *x)
             }
             else return;
         }
-        x->x_learndebounce = clock_getsystime();
+        x->x_learndebounce = clock_getlogicaltime();
         if (ntemplate)
         {
             t_float bestfit = -1e30;
@@ -817,7 +821,7 @@ static void bonk_dsp(t_bonk *x, t_signal **sp)
     for (i = 0, gp = x->x_insig; i < ninsig; i++, gp++)
         gp->g_invec = (*(sp++))->s_vec;
     
-    dsp_add(bonk_perform, 2, x, n);
+    dsp_add(bonk_perform, 2, x, (t_int)n);
 }
 
 static void bonk_thresh(t_bonk *x, t_floatarg f1, t_floatarg f2)
@@ -939,12 +943,15 @@ static void bonk_print(t_bonk *x, t_floatarg f)
                      h->h_power, h->h_mask[x->x_maskphase],
                      h->h_before, h->h_countup);
         }
-        post("filter details (frequencies are in units of %.2f-Hz. bins):",
+        post("bin size %.2f Hz ... filters:",
              x->x_sr/x->x_npoints);
         for (j = 0; j < x->x_nfilters; j++)
-            post("%2d  cf %.2f  bw %.2f  nhops %d hop %d skip %d npoints %d",
+            post("\
+    %2d  cf %.2f(%.2f bins) bw %.2f(%.2f) nhops %d hop %d skip %d npoints %d",
                  j, 
+                 x->x_filterbank->b_vec[j].k_centerfreq*x->x_sr/x->x_npoints,
                  x->x_filterbank->b_vec[j].k_centerfreq,
+                 x->x_filterbank->b_vec[j].k_bandwidth*x->x_sr/x->x_npoints,
                  x->x_filterbank->b_vec[j].k_bandwidth,
                  x->x_filterbank->b_vec[j].k_nhops,
                  x->x_filterbank->b_vec[j].k_hoppoints,
@@ -1231,10 +1238,11 @@ static void bonk_free(t_bonk *x)
 #endif
     for (i = 0, gp = x->x_insig; i < ninsig; i++, gp++)
         freebytes(gp->g_inbuf, x->x_npoints * sizeof(t_float));
+    freebytes(x->x_insig, ninsig * sizeof(*x->x_insig));
     clock_free(x->x_clock);
     if (!--(x->x_filterbank->b_refcount))
         bonk_freefilterbank(x->x_filterbank);
-    
+    freebytes(x->x_template, x->x_ntemplate * sizeof(x->x_template[0]));
 }
 
 /* -------------------------- Pd glue ------------------------- */
@@ -1349,7 +1357,7 @@ void bonk_tilde_setup(void)
     bonk_class = class_new(gensym("bonk~"), (t_newmethod)bonk_new,
         (t_method)bonk_free, sizeof(t_bonk), 0, A_GIMME, 0);
     class_addmethod(bonk_class, nullfn, gensym("signal"), 0);
-    class_addmethod(bonk_class, (t_method)bonk_dsp, gensym("dsp"), 0);
+    class_addmethod(bonk_class, (t_method)bonk_dsp, gensym("dsp"), A_CANT, 0);
     class_addbang(bonk_class, bonk_bang);
     class_addmethod(bonk_class, (t_method)bonk_learn,
         gensym("learn"), A_FLOAT, 0);

@@ -1,1 +1,1 @@
-../../../InAppSettingsKit/InAppSettingsKit/Models/IASKSpecifier.h
+../../../InAppSettingsKit/Sources/InAppSettingsKit/include/IASKSpecifier.h

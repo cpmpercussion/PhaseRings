@@ -108,10 +108,11 @@ static fts_symbol_t *dsp_symbol = 0;
 #endif /* MSP */
 
 #ifdef MSP
-#define t_floatarg double
 #include "ext.h"
 #include "z_dsp.h"
 #include "fft_mayer.proto.h"
+typedef float t_float;
+typedef double t_floatarg;
 #endif /* MSP */
 
 #include <math.h>
@@ -1079,12 +1080,12 @@ int sigfiddle_setnpoints(t_sigfiddle *x, t_floatarg fnpoints)
     sigfiddle_freebird(x);
     if (npoints < MINPOINTS || npoints > MAXPOINTS)
     {
-        error("fiddle~: npoints out of range; using %d",
+        pd_error(0, "fiddle~: npoints out of range; using %d",
             npoints = DEFAULTPOINTS);
     }
     if (npoints != (1 << sigfiddle_ilog2(npoints)))
     {
-        error("fiddle~: npoints not a power of 2; using %d", 
+        pd_error(0, "fiddle~: npoints not a power of 2; using %d",
             npoints = (1 << sigfiddle_ilog2(npoints)));
     }
     x->x_hop = npoints >> 1;
@@ -1128,21 +1129,21 @@ int sigfiddle_doinit(t_sigfiddle *x, long npoints, long npitch,
         npoints = DEFAULTPOINTS;
     if (!sigfiddle_setnpoints(x, npoints))
     {
-        error("fiddle~: out of memory");
+        pd_error(0, "fiddle~: out of memory");
         return (0);
     }
     if (!(buf4 = (t_peakout *)getbytes(sizeof(*buf4) * npeakout)))
     {
         sigfiddle_freebird(x);
-        error("fiddle~: out of memory");
+        pd_error(0, "fiddle~: out of memory");
         return (0);
     }
     for (i = 0; i < npeakout; i++)
         buf4[i].po_freq = buf4[i].po_amp = 0;
     x->x_peakbuf = buf4;
 
-    x->x_npeakout = npeakout;
-    x->x_npeakanal = npeakanal;
+    x->x_npeakout = (int)npeakout;
+    x->x_npeakanal = (int)npeakanal;
     x->x_phase = 0;
     x->x_histphase = 0;
     x->x_sr = 44100;            /* this and the next are filled in later */
@@ -1157,7 +1158,7 @@ int sigfiddle_doinit(t_sigfiddle *x, long npoints, long npitch,
             x->x_hist[i].h_amps[j] = x->x_hist[i].h_pitches[j] = 0;
     }
     x->x_nprint = 0;
-    x->x_npitch = npitch;
+    x->x_npitch = (int)npitch;
     for (i = 0; i < HISTORY; i++) x->x_dbs[i] = 0;
     x->x_dbage = 0;
     x->x_peaked = 0;
@@ -1416,7 +1417,7 @@ void sigfiddle_dsp(t_sigfiddle *x, t_signal **sp)
     x->x_sr = sp[0]->s_sr;
     sigfiddle_reattack(x, x->x_attacktime, x->x_attackthresh);
     sigfiddle_vibrato(x, x->x_vibtime, x->x_vibdepth);
-    dsp_add(fiddle_perform, 3, sp[0]->s_vec, x, sp[0]->s_n);
+    dsp_add(fiddle_perform, 3, sp[0]->s_vec, x, (t_int)sp[0]->s_n);
 }
 
     /* This is the callback function for the clock, but also acts as
@@ -1676,7 +1677,7 @@ void sigfiddle_dsp(t_sigfiddle *x, t_signal **sp)
         }
         sigfiddle_reattack(x, x->x_attacktime, x->x_attackthresh);
     sigfiddle_vibrato(x, x->x_vibtime, x->x_vibdepth);
-    dsp_add(fiddle_perform, 3, sp[0]->s_vec, x, sp[0]->s_n);
+    dsp_add(fiddle_perform, 3, sp[0]->s_vec, x, (t_int)sp[0]->s_n);
 }
 
 void sigfiddle_tick(t_sigfiddle *x)     /* callback function for the clock MSP*/

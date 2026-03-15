@@ -1,0 +1,20 @@
+/* IASKLocalizable.strings
+  InAppSettingsKit
+
+  Created by Ortwin Gentz on 20.10.14.
+  Copyright (c) 2014 FutureTap. All rights reserved. */
+
+/* Privacy cell: title */
+"Privacy" = "私隱";
+
+/* Privacy cell: subtitle */
+"Open in Settings app" = "在「設定」中開啟";
+
+/* warning title */
+"Mail not configured" = "郵件未設定";
+
+"OK" = "好";
+
+/* warning message */
+"This device is not configured for sending Email. Please configure the Mail settings in the Settings app." = "這個裝置未設定用於傳送電郵。請在「設定」App 中設定郵件。";
+

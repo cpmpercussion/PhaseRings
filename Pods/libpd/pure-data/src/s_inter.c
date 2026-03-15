@@ -9,12 +9,10 @@ that didn't really belong anywhere. */
 #include "s_stuff.h"
 #include "m_imp.h"
 #include "g_canvas.h"   /* for GUI queueing stuff */
+#include "s_net.h"
+#include <errno.h>
 #ifndef _WIN32
 #include <unistd.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <netdb.h>
 #include <stdlib.h>
 #include <sys/time.h>
 #include <sys/mman.h>
@@ -27,20 +25,16 @@ that didn't really belong anywhere. */
 #endif
 #ifdef _WIN32
 #include <io.h>
-#include <fcntl.h>
 #include <process.h>
-#include <winsock.h>
 #include <windows.h>
-typedef int socklen_t;
-#define EADDRINUSE WSAEADDRINUSE
 #endif
 
 #include <stdarg.h>
 #include <signal.h>
 #include <fcntl.h>
-#include <errno.h>
 #include <string.h>
 #include <stdio.h>
+#include <ctype.h>
 
 #ifdef __APPLE__
 #include <sys/types.h>
@@ -50,15 +44,40 @@ typedef int socklen_t;
 #include <stdlib.h>
 #endif
 
-#define DEBUG_MESSUP 1      /* messages up from pd to pd-gui */
-#define DEBUG_MESSDOWN 2    /* messages down from pd-gui to pd */
+#ifdef HAVE_SYS_UTSNAME_H
+# include <sys/utsname.h>
+# ifndef USE_UNAME
+#  define USE_UNAME 1
+# endif
+#endif
+
+#include "m_private_utils.h"
+
+/* colorize output, but only on a TTY */
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#else /* if isatty exists outside unistd, please add another #ifdef */
+# define isatty(fd) 0
+#endif
+static int stderr_isatty;
+
+
+#define stringify(s) str(s)
+#define str(s) #s
+
+#define INTER (pd_this->pd_inter)
+
+#define DEBUG_MESSUP   1<<0    /* messages up from pd to pd-gui */
+#define DEBUG_MESSDOWN 1<<1    /* messages down from pd-gui to pd */
+#define DEBUG_COLORIZE 1<<2    /* colorize messages (if we are on a TTY) */
+
 
 #ifndef PDBINDIR
 #define PDBINDIR "bin/"
 #endif
 
 #ifndef PDGUIDIR
-#define PDGUIDIR "tcl/"
+#define PDGUIDIR "tcl"
 #endif
 
 #ifndef WISH
@@ -72,11 +91,7 @@ typedef int socklen_t;
 # endif
 #endif
 
-#if defined(__linux__) || defined(__FreeBSD_kernel__) || defined(__GNU__)
-#define LOCALHOST "127.0.0.1"
-#else
 #define LOCALHOST "localhost"
-#endif
 
 #if PDTHREADS
 #include "pthread.h"
@@ -89,8 +104,6 @@ typedef struct _fdpoll
     void *fdp_ptr;
 } t_fdpoll;
 
-#define INBUFSIZE 4096
-
 struct _socketreceiver
 {
     char *sr_inbuf;
@@ -98,8 +111,10 @@ struct _socketreceiver
     int sr_intail;
     void *sr_owner;
     int sr_udp;
+    struct sockaddr_storage *sr_fromaddr; /* optional */
     t_socketnotifier sr_notifier;
     t_socketreceivefn sr_socketreceivefn;
+    t_socketfromaddrfn sr_fromaddrfn; /* optional */
 };
 
 typedef struct _guiqueue
@@ -112,7 +127,6 @@ typedef struct _guiqueue
 
 struct _instanceinter
 {
-    int i_havegui;
     int i_nfdpoll;
     t_fdpoll *i_fdpoll;
     int i_maxfd;
@@ -124,8 +138,11 @@ struct _instanceinter
     int i_guihead;
     int i_guitail;
     int i_guisize;
-    int i_waitingforping;
     int i_bytessincelastping;
+    unsigned int i_havetkproc:1;    /* TK process started  */
+    unsigned int i_havegui:1;       /* have TK proc and font metrics too */
+    unsigned int i_fdschanged:1;    /* need to break fdpoll loop */
+    unsigned int i_waitingforping:1;/* sent a ping out and should get answer */
 
 #ifdef _WIN32
     LARGE_INTEGER i_inittime;
@@ -134,14 +151,13 @@ struct _instanceinter
 #if PDTHREADS
     pthread_mutex_t i_mutex;
 #endif
+
+    unsigned char i_recvbuf[NET_MAXPACKETSIZE];
 };
 
 extern int sys_guisetportnumber;
 extern int sys_addhist(int phase);
-void sys_set_searchpath(void);
-void sys_set_extrapath(void);
-void sys_set_startup(void);
-void sys_stopgui( void);
+void sys_stopgui(void);
 
 /* ----------- functions for timing, signals, priorities, etc  --------- */
 
@@ -157,8 +173,8 @@ static void sys_initntclock(void)
           fprintf(stderr, "pd: QueryPerformanceFrequency failed\n");
           f1.QuadPart = 1;
     }
-    pd_this->pd_inter->i_freq = f1.QuadPart;
-    pd_this->pd_inter->i_inittime = now;
+    INTER->i_freq = f1.QuadPart;
+    INTER->i_inittime = now;
 }
 
 #if 0
@@ -168,9 +184,9 @@ static void sys_initntclock(void)
 
 double nt_tixtotime(LARGE_INTEGER *dumbass)
 {
-    if (pd_this->pd_inter->i_freq == 0) sys_initntclock();
+    if (INTER->i_freq == 0) sys_initntclock();
     return (((double)(dumbass->QuadPart -
-        pd_this->pd_inter->i_inittime.QuadPart)) / pd_this->pd_inter->i_freq);
+        INTER->i_inittime.QuadPart)) / INTER->i_freq);
 }
 #endif
 #endif /* _WIN32 */
@@ -189,72 +205,73 @@ double sys_getrealtime(void)
 #else
     LARGE_INTEGER now;
     QueryPerformanceCounter(&now);
-    if (pd_this->pd_inter->i_freq == 0) sys_initntclock();
+    if (INTER->i_freq == 0) sys_initntclock();
     return (((double)(now.QuadPart -
-        pd_this->pd_inter->i_inittime.QuadPart)) / pd_this->pd_inter->i_freq);
+        INTER->i_inittime.QuadPart)) / INTER->i_freq);
 #endif
 }
 
-extern int sys_nosleep;
-
-static int sys_domicrosleep(int microsec, int pollem)
+/* sleep (but cancel the sleeping if any file descriptors are
+ready - in that case, dispatch any resulting Pd messages and return.  Called
+with sys_lock() set.  We will temporarily release the lock if we actually
+sleep. */
+static int sys_domicrosleep(int microsec)
 {
-    struct timeval timout;
+    struct timeval timeout;
     int i, didsomething = 0;
     t_fdpoll *fp;
-    timout.tv_sec = 0;
-    timout.tv_usec = (sys_nosleep ? 0 : microsec);
-    if (pollem)
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 0;
+    if (INTER->i_nfdpoll)
     {
-        fd_set readset, writeset, exceptset;
+        fd_set readset, writeset;
         FD_ZERO(&writeset);
         FD_ZERO(&readset);
-        FD_ZERO(&exceptset);
-        for (fp = pd_this->pd_inter->i_fdpoll,
-            i = pd_this->pd_inter->i_nfdpoll; i--; fp++)
+        for (fp = INTER->i_fdpoll,
+            i = INTER->i_nfdpoll; i--; fp++)
                 FD_SET(fp->fdp_fd, &readset);
-#ifdef _WIN32
-        if (pd_this->pd_inter->i_maxfd == 0)
-                Sleep(microsec/1000);
-        else
-#endif
-        if(select(pd_this->pd_inter->i_maxfd+1,
-                  &readset, &writeset, &exceptset, &timout) < 0)
+        if(select(INTER->i_maxfd+1,
+                  &readset, &writeset, NULL, &timeout) < 0)
           perror("microsleep select");
-        for (i = 0; i < pd_this->pd_inter->i_nfdpoll; i++)
-            if (FD_ISSET(pd_this->pd_inter->i_fdpoll[i].fdp_fd, &readset))
+        INTER->i_fdschanged = 0;
+        for (i = 0; i < INTER->i_nfdpoll &&
+            !INTER->i_fdschanged; i++)
+                if (FD_ISSET(INTER->i_fdpoll[i].fdp_fd, &readset))
         {
-#ifdef THREAD_LOCKING
-            sys_lock();
-#endif
-            (*pd_this->pd_inter->i_fdpoll[i].fdp_fn)
-                (pd_this->pd_inter->i_fdpoll[i].fdp_ptr,
-                    pd_this->pd_inter->i_fdpoll[i].fdp_fd);
-#ifdef THREAD_LOCKING
-            sys_unlock();
-#endif
+            (*INTER->i_fdpoll[i].fdp_fn)
+                (INTER->i_fdpoll[i].fdp_ptr,
+                    INTER->i_fdpoll[i].fdp_fd);
             didsomething = 1;
         }
-        return (didsomething);
+        if (didsomething)
+            return (1);
     }
-    else
+    if (microsec)
     {
+        sys_unlock();
 #ifdef _WIN32
-        if (pd_this->pd_inter->i_maxfd == 0)
-              Sleep(microsec/1000);
-        else
+        Sleep(microsec/1000);
+#else
+        usleep(microsec);
 #endif
-        select(0, 0, 0, 0, &timout);
-        return (0);
+        sys_lock();
     }
+    return (0);
 }
 
-void sys_microsleep(int microsec)
+    /* sleep (but if any incoming or to-gui sending to do, do that instead.)
+    Call with the PD instance lock UNSET - we set it here. */
+void sys_microsleep( void)
 {
-    sys_domicrosleep(microsec, 1);
+    sys_lock();
+    sys_domicrosleep(sched_get_sleepgrain());
+    sys_unlock();
 }
 
 #if !defined(_WIN32) && !defined(__CYGWIN__)
+#if DONT_HAVE_SIG_T
+typedef void (*sig_t)(int);
+#endif
 static void sys_signal(int signo, sig_t sigfun)
 {
     struct sigaction action;
@@ -287,10 +304,10 @@ static void sys_alarmhandler(int n)
 
 static void sys_huphandler(int n)
 {
-    struct timeval timout;
-    timout.tv_sec = 0;
-    timout.tv_usec = 30000;
-    select(1, 0, 0, 0, &timout);
+    struct timeval timeout;
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 30000;
+    select(1, 0, 0, 0, &timeout);
 }
 
 void sys_setalarm(int microsec)
@@ -314,13 +331,12 @@ void sys_setalarm(int microsec)
 #endif /* NOT _WIN32 && NOT __CYGWIN__ */
 
     /* on startup, set various signal handlers */
-void sys_setsignalhandlers( void)
+void sys_setsignalhandlers(void)
 {
 #if !defined(_WIN32) && !defined(__CYGWIN__)
     signal(SIGHUP, sys_huphandler);
     signal(SIGINT, sys_exithandler);
     signal(SIGQUIT, sys_exithandler);
-    signal(SIGILL, sys_exithandler);
 # ifdef SIGIOT
     signal(SIGIOT, sys_exithandler);
 # endif
@@ -336,15 +352,14 @@ void sys_setsignalhandlers( void)
 #endif /* NOT _WIN32 && NOT __CYGWIN__ */
 }
 
+#define MODE_NRT 0
+#define MODE_RT 1
+#define MODE_WATCHDOG 2
 #if defined(__linux__) || defined(__FreeBSD_kernel__) || defined(__GNU__)
 
 #if defined(_POSIX_PRIORITY_SCHEDULING) || defined(_POSIX_MEMLOCK)
 #include <sched.h>
 #endif
-
-#define MODE_NRT 0
-#define MODE_RT 1
-#define MODE_WATCHDOG 2
 
 void sys_set_priority(int mode)
 {
@@ -367,13 +382,13 @@ void sys_set_priority(int mode)
         else post("priority %d scheduling failed; running at normal priority",
                 p3);
     }
-    else if (sys_verbose)
+    else
     {
         if (mode == MODE_RT)
-            post("priority %d scheduling enabled.\n", p3);
-        else post("running at normal (non-real-time) priority.\n");
+            logpost(NULL, PD_VERBOSE, "priority %d scheduling enabled.\n", p3);
+        else logpost(NULL, PD_VERBOSE, "running at normal (non-real-time) priority.\n");
     }
-#endif
+#endif /* _POSIX_PRIORITY_SCHEDULING */
 
 #if !defined(USEAPI_JACK)
     if (mode != MODE_NRT)
@@ -388,28 +403,33 @@ void sys_set_priority(int mode)
             fprintf(stderr, "memory locking enabled.\n");
     }
     else munlockall();
-#endif
+#endif /* ! USEAPI_JACK */
 }
 
-#endif /* __linux__ */
+#else /* !__linux__ */
+void sys_set_priority(int mode)
+{
+        /* dummy */
+    (void)mode;
+}
+
+#endif /* !__linux__ */
 
 /* ------------------ receiving incoming messages over sockets ------------- */
 
-void sys_sockerror(char *s)
+unsigned char *sys_getrecvbuf(unsigned int *size)
 {
-#ifdef _WIN32
-    int err = WSAGetLastError();
-    if (err == 10054) return;
-    else if (err == 10044)
-    {
-        fprintf(stderr,
-            "Warning: you might not have TCP/IP \"networking\" turned on\n");
-        fprintf(stderr, "which is needed for Pd to talk to its GUI layer.\n");
-    }
-#else
-    int err = errno;
-#endif
-    post("%s: %s (%d)\n", s, strerror(err), err);
+    if (size)
+        *size = NET_MAXPACKETSIZE;
+    return INTER->i_recvbuf;
+}
+
+void sys_sockerror(const char *s)
+{
+    char buf[MAXPDSTRING];
+    int err = socket_errno();
+    socket_strerror(err, buf, sizeof(buf));
+    pd_error(0, "%s: %s (%d)", s, buf, err);
 }
 
 void sys_addpollfn(int fd, t_fdpollfn fn, void *ptr)
@@ -417,25 +437,27 @@ void sys_addpollfn(int fd, t_fdpollfn fn, void *ptr)
     int nfd, size;
     t_fdpoll *fp;
     sys_init_fdpoll();
-    nfd = pd_this->pd_inter->i_nfdpoll;
+    nfd = INTER->i_nfdpoll;
     size = nfd * sizeof(t_fdpoll);
-    pd_this->pd_inter->i_fdpoll = (t_fdpoll *)t_resizebytes(
-        pd_this->pd_inter->i_fdpoll, size, size + sizeof(t_fdpoll));
-    fp = pd_this->pd_inter->i_fdpoll + nfd;
+    INTER->i_fdpoll = (t_fdpoll *)t_resizebytes(
+        INTER->i_fdpoll, size, size + sizeof(t_fdpoll));
+    fp = INTER->i_fdpoll + nfd;
     fp->fdp_fd = fd;
     fp->fdp_fn = fn;
     fp->fdp_ptr = ptr;
-    pd_this->pd_inter->i_nfdpoll = nfd + 1;
-    if (fd >= pd_this->pd_inter->i_maxfd)
-        pd_this->pd_inter->i_maxfd = fd + 1;
+    INTER->i_nfdpoll = nfd + 1;
+    if (fd >= INTER->i_maxfd)
+        INTER->i_maxfd = fd + 1;
+    INTER->i_fdschanged = 1;
 }
 
 void sys_rmpollfn(int fd)
 {
-    int nfd = pd_this->pd_inter->i_nfdpoll;
+    int nfd = INTER->i_nfdpoll;
     int i, size = nfd * sizeof(t_fdpoll);
     t_fdpoll *fp;
-    for (i = nfd, fp = pd_this->pd_inter->i_fdpoll; i--; fp++)
+    INTER->i_fdschanged = 1;
+    for (i = nfd, fp = INTER->i_fdpoll; i--; fp++)
     {
         if (fp->fdp_fd == fd)
         {
@@ -444,14 +466,19 @@ void sys_rmpollfn(int fd)
                 fp[0] = fp[1];
                 fp++;
             }
-            pd_this->pd_inter->i_fdpoll = (t_fdpoll *)t_resizebytes(
-                pd_this->pd_inter->i_fdpoll, size, size - sizeof(t_fdpoll));
-            pd_this->pd_inter->i_nfdpoll = nfd - 1;
+            INTER->i_fdpoll = (t_fdpoll *)t_resizebytes(
+                INTER->i_fdpoll, size, size - sizeof(t_fdpoll));
+            INTER->i_nfdpoll = nfd - 1;
             return;
         }
     }
     post("warning: %d removed from poll list but not found", fd);
 }
+
+    /* Size of the buffer used for parsing FUDI messages
+    received over TCP. Must be a power of two!
+    LATER make this settable per socketreceiver instance */
+#define INBUFSIZE 4096
 
 t_socketreceiver *socketreceiver_new(void *owner, t_socketnotifier notifier,
     t_socketreceivefn socketreceivefn, int udp)
@@ -462,13 +489,23 @@ t_socketreceiver *socketreceiver_new(void *owner, t_socketnotifier notifier,
     x->sr_notifier = notifier;
     x->sr_socketreceivefn = socketreceivefn;
     x->sr_udp = udp;
-    if (!(x->sr_inbuf = malloc(INBUFSIZE))) bug("t_socketreceiver");;
+    x->sr_fromaddr = NULL;
+    x->sr_fromaddrfn = NULL;
+    if (!udp)
+    {
+        if (!(x->sr_inbuf = malloc(INBUFSIZE)))
+            bug("t_socketreceiver");
+    }
+    else
+        x->sr_inbuf = NULL;
     return (x);
 }
 
 void socketreceiver_free(t_socketreceiver *x)
 {
-    free(x->sr_inbuf);
+    if (x->sr_inbuf)
+        free(x->sr_inbuf);
+    if (x->sr_fromaddr) free(x->sr_fromaddr);
     freebytes(x, sizeof(*x));
 }
 
@@ -484,18 +521,37 @@ static int socketreceiver_doread(t_socketreceiver *x)
     for (indx = intail; first || (indx != inhead);
         first = 0, (indx = (indx+1)&(INBUFSIZE-1)))
     {
-            /* if we hit a semi that isn't preceeded by a \, it's a message
-            boundary.  LATER we should deal with the possibility that the
-            preceeding \ might itself be escaped! */
+            /* if we hit a semi that isn't preceded by a \, it's a message
+            boundary. LATER we should deal with the possibility that the
+            preceding \ might itself be escaped! */
         char c = *bp++ = inbuf[indx];
         if (c == ';' && (!indx || inbuf[indx-1] != '\\'))
         {
             intail = (indx+1)&(INBUFSIZE-1);
-            binbuf_text(pd_this->pd_inter->i_inbinbuf, messbuf, bp - messbuf);
+            binbuf_text(INTER->i_inbinbuf, messbuf, bp - messbuf);
             if (sys_debuglevel & DEBUG_MESSDOWN)
             {
-                write(2,  messbuf, bp - messbuf);
-                write(2, "\n", 1);
+                size_t bufsize = (bp>messbuf)?(bp-messbuf):0;
+                int colorize = stderr_isatty && (sys_debuglevel & DEBUG_COLORIZE);
+                const char*msg = messbuf;
+                if (('\r' == messbuf[0]) && ('\n' == messbuf[1]))
+                {
+                    bufsize-=2;
+                    msg+=2;
+                }
+        #ifdef _WIN32
+            #ifdef _MSC_VER
+                fwprintf(stderr, L"<< %.*S\n", (int)bufsize, msg);
+            #else
+                fwprintf(stderr, L"<< %.*s\n", (int)bufsize, msg);
+            #endif
+                fflush(stderr);
+        #else
+                if(colorize)
+                    fprintf(stderr, "\e[0;1;36m<< %.*s\e[0m\n", (int)bufsize, msg);
+                else
+                    fprintf(stderr, "<< %.*s\n", (int)bufsize, msg);
+        #endif
             }
             x->sr_inhead = inhead;
             x->sr_intail = intail;
@@ -507,43 +563,72 @@ static int socketreceiver_doread(t_socketreceiver *x)
 
 static void socketreceiver_getudp(t_socketreceiver *x, int fd)
 {
-    char buf[INBUFSIZE+1];
-    int ret = recv(fd, buf, INBUFSIZE, 0);
-    if (ret < 0)
+    char *buf = (char *)sys_getrecvbuf(0);
+    socklen_t fromaddrlen = sizeof(struct sockaddr_storage);
+    int ret, readbytes = 0;
+    while (1)
     {
-        sys_sockerror("recv");
-        sys_rmpollfn(fd);
-        sys_closesocket(fd);
-    }
-    else if (ret > 0)
-    {
-        buf[ret] = 0;
-#if 0
-        post("%s", buf);
-#endif
-        if (buf[ret-1] != '\n')
+        ret = (int)recvfrom(fd, buf, NET_MAXPACKETSIZE-1, 0,
+            (struct sockaddr *)x->sr_fromaddr, (x->sr_fromaddr ? &fromaddrlen : 0));
+        if (ret < 0)
         {
-#if 0
-            buf[ret] = 0;
-            error("dropped bad buffer %s\n", buf);
-#endif
+                /* socket_errno_udp() ignores some error codes */
+            if (socket_errno_udp())
+            {
+                sys_sockerror("recv (udp)");
+                    /* only notify and shutdown a UDP sender! */
+                if (x->sr_notifier)
+                {
+                    (*x->sr_notifier)(x->sr_owner, fd);
+                    sys_rmpollfn(fd);
+                    sys_closesocket(fd);
+                }
+            }
+            return;
         }
-        else
+        else if (ret > 0)
         {
-            char *semi = strchr(buf, ';');
-            if (semi)
-                *semi = 0;
-            binbuf_text(pd_this->pd_inter->i_inbinbuf, buf, strlen(buf));
-            outlet_setstacklim();
-            if (x->sr_socketreceivefn)
-                (*x->sr_socketreceivefn)(x->sr_owner,
-                    pd_this->pd_inter->i_inbinbuf);
-            else bug("socketreceiver_getudp");
+                /* handle too large UDP packets */
+            if (ret > NET_MAXPACKETSIZE-1)
+            {
+                post("warning: incoming UDP packet truncated from %d to %d bytes.",
+                    ret, NET_MAXPACKETSIZE-1);
+                ret = NET_MAXPACKETSIZE-1;
+            }
+            buf[ret] = 0;
+    #if 0
+            post("%s", buf);
+    #endif
+            if (buf[ret-1] != '\n')
+            {
+    #if 0
+                pd_error(0, "dropped bad buffer %s\n", buf);
+    #endif
+            }
+            else
+            {
+                char *semi = strchr(buf, ';');
+                if (semi)
+                    *semi = 0;
+                if (x->sr_fromaddrfn)
+                    (*x->sr_fromaddrfn)(x->sr_owner, (const void *)x->sr_fromaddr);
+                binbuf_text(INTER->i_inbinbuf, buf, strlen(buf));
+                outlet_setstacklim();
+                if (x->sr_socketreceivefn)
+                    (*x->sr_socketreceivefn)(x->sr_owner,
+                        INTER->i_inbinbuf);
+                else bug("socketreceiver_getudp");
+            }
+            readbytes += ret;
+            /* throttle */
+            if (readbytes >= NET_MAXPACKETSIZE)
+                return;
+            /* check for pending UDP packets */
+            if (socket_bytes_available(fd) <= 0)
+                return;
         }
     }
 }
-
-void sys_exit(void);
 
 void socketreceiver_read(t_socketreceiver *x, int fd)
 {
@@ -556,7 +641,7 @@ void socketreceiver_read(t_socketreceiver *x, int fd)
             (x->sr_inhead >= x->sr_intail ? INBUFSIZE : x->sr_intail-1);
         int ret;
 
-            /* the input buffer might be full.  If so, drop the whole thing */
+            /* the input buffer might be full. If so, drop the whole thing */
         if (readto == x->sr_inhead)
         {
             fprintf(stderr, "pd: dropped message from gui\n");
@@ -565,16 +650,20 @@ void socketreceiver_read(t_socketreceiver *x, int fd)
         }
         else
         {
-            ret = recv(fd, x->sr_inbuf + x->sr_inhead,
+            ret = (int)recv(fd, x->sr_inbuf + x->sr_inhead,
                 readto - x->sr_inhead, 0);
             if (ret <= 0)
             {
                 if (ret < 0)
-                    sys_sockerror("recv");
-                if (x == pd_this->pd_inter->i_socketreceiver)
+                    sys_sockerror("recv (tcp)");
+                if (x == INTER->i_socketreceiver)
                 {
                     if (pd_this == &pd_maininstance)
+                    {
+                        fprintf(stderr, "read from GUI socket: %s; stopping\n",
+                            strerror(errno));
                         sys_bail(1);
+                    }
                     else
                     {
                         sys_rmpollfn(fd);
@@ -596,11 +685,20 @@ void socketreceiver_read(t_socketreceiver *x, int fd)
                 if (x->sr_inhead >= INBUFSIZE) x->sr_inhead = 0;
                 while (socketreceiver_doread(x))
                 {
+                    if (x->sr_fromaddrfn)
+                    {
+                        socklen_t fromaddrlen = sizeof(struct sockaddr_storage);
+                        if(!getpeername(fd,
+                                        (struct sockaddr *)x->sr_fromaddr,
+                                        &fromaddrlen))
+                            (*x->sr_fromaddrfn)(x->sr_owner,
+                                (const void *)x->sr_fromaddr);
+                    }
                     outlet_setstacklim();
                     if (x->sr_socketreceivefn)
                         (*x->sr_socketreceivefn)(x->sr_owner,
-                            pd_this->pd_inter->i_inbinbuf);
-                    else binbuf_eval(pd_this->pd_inter->i_inbinbuf, 0, 0, 0);
+                            INTER->i_inbinbuf);
+                    else binbuf_eval(INTER->i_inbinbuf, 0, 0, 0);
                     if (x->sr_inhead == x->sr_intail)
                         break;
                 }
@@ -609,16 +707,25 @@ void socketreceiver_read(t_socketreceiver *x, int fd)
     }
 }
 
-void sys_closesocket(int fd)
+void socketreceiver_set_fromaddrfn(t_socketreceiver *x,
+    t_socketfromaddrfn fromaddrfn)
 {
-#ifdef HAVE_UNISTD_H
-    if(fd<0)
-        return;
-    close(fd);
-#endif
-#ifdef _WIN32
-    closesocket(fd);
-#endif
+    x->sr_fromaddrfn = fromaddrfn;
+    if (fromaddrfn)
+    {
+        if (!x->sr_fromaddr)
+            x->sr_fromaddr = malloc(sizeof(struct sockaddr_storage));
+    }
+    else if (x->sr_fromaddr)
+    {
+        free(x->sr_fromaddr);
+        x->sr_fromaddr = NULL;
+    }
+}
+
+void sys_closesocket(int sockfd)
+{
+    socket_close(sockfd);
 }
 
 /* ---------------------- sending messages to the GUI ------------------ */
@@ -628,21 +735,32 @@ void sys_closesocket(int fd)
 
 static void sys_trytogetmoreguibuf(int newsize)
 {
-    char *newbuf = realloc(pd_this->pd_inter->i_guibuf, newsize);
+        /* newsize can be negative if it overflows (at 0x7FFFFFFF)
+         * which only happens if we push a huge amount of data to the GUI,
+         * such as printing a billion numbers
+         *
+         * we could fix this by using size_t (or ssize_t), but this will
+         * possibly lead to memory exhaustion.
+         * as the overflow happens at 2GB which is rather large anyhow,
+         * but most machines will still be able to handle this without swapping
+         * and crashing, we just use the 2GB limit to trigger a synchronous write.
+	 * also note that on the Tcl/Tk side, the maximum size of a buffer is 2GB,
+	 * so there's a nice analogy here.
+         */
+    char *newbuf = (newsize>=0)?realloc(INTER->i_guibuf, newsize):0;
 #if 0
     static int sizewas;
     if (newsize > 70000 && sizewas < 70000)
     {
         int i;
-        for (i = pd_this->pd_inter->i_guitail;
-            i < pd_this->pd_inter->i_guihead; i++)
-                fputc(pd_this->pd_inter->i_guibuf[i], stderr);
+        for (i = INTER->i_guitail; i < INTER->i_guihead; i++)
+                fputc(INTER->i_guibuf[i], stderr);
     }
     sizewas = newsize;
 #endif
 #if 0
     fprintf(stderr, "new size %d (head %d, tail %d)\n",
-        newsize, pd_this->pd_inter->i_guihead, pd_this->pd_inter->i_guitail);
+        newsize, INTER->i_guihead, INTER->i_guitail);
 #endif
 
         /* if realloc fails, make a last-ditch attempt to stay alive by
@@ -650,14 +768,14 @@ static void sys_trytogetmoreguibuf(int newsize)
         this by intentionally setting newbuf to zero */
     if (!newbuf)
     {
-        int bytestowrite = pd_this->pd_inter->i_guitail -
-            pd_this->pd_inter->i_guihead;
+        int bytestowrite = INTER->i_guihead - INTER->i_guitail;
         int written = 0;
         while (1)
         {
-            int res = send(pd_this->pd_inter->i_guisock,
-                pd_this->pd_inter->i_guibuf + pd_this->pd_inter->i_guitail +
-                    written, bytestowrite, 0);
+            int res = (int)send(
+                INTER->i_guisock,
+                INTER->i_guibuf + INTER->i_guitail + written,
+                bytestowrite, 0);
             if (res < 0)
             {
                 perror("pd output pipe");
@@ -670,91 +788,147 @@ static void sys_trytogetmoreguibuf(int newsize)
                     break;
             }
         }
-        pd_this->pd_inter->i_guihead = pd_this->pd_inter->i_guitail = 0;
+        INTER->i_guihead = INTER->i_guitail = 0;
     }
     else
     {
-        pd_this->pd_inter->i_guisize = newsize;
-        pd_this->pd_inter->i_guibuf = newbuf;
+        INTER->i_guisize = newsize;
+        INTER->i_guibuf = newbuf;
     }
 }
 
-int sys_havegui( void)
+int sys_havegui(void)
 {
-    return (pd_this->pd_inter->i_havegui);
+    return (INTER->i_havegui);
 }
 
-void sys_vgui(char *fmt, ...)
+int sys_havetkproc(void)
+{
+    return (INTER->i_havetkproc);
+}
+
+void sys_vgui(const char *fmt, ...)
 {
     int msglen, bytesleft, headwas, nwrote;
     va_list ap;
 
-    if (!sys_havegui())
+    if (!INTER->i_havetkproc)
+    {       /* if there's no TK process just throw it to stderr */
+        va_start(ap, fmt);
+        vfprintf(stderr, fmt, ap);
+        va_end(ap);
         return;
-    if (!pd_this->pd_inter->i_guibuf)
+    }
+    if (!INTER->i_guibuf)
     {
-        if (!(pd_this->pd_inter->i_guibuf = malloc(GUI_ALLOCCHUNK)))
+        if (!(INTER->i_guibuf = malloc(GUI_ALLOCCHUNK)))
         {
             fprintf(stderr, "Pd: couldn't allocate GUI buffer\n");
             sys_bail(1);
         }
-        pd_this->pd_inter->i_guisize = GUI_ALLOCCHUNK;
-        pd_this->pd_inter->i_guihead = pd_this->pd_inter->i_guitail = 0;
+        INTER->i_guisize = GUI_ALLOCCHUNK;
+        INTER->i_guihead = INTER->i_guitail = 0;
     }
-    if (pd_this->pd_inter->i_guihead > pd_this->pd_inter->i_guisize -
-        (GUI_ALLOCCHUNK/2))
-            sys_trytogetmoreguibuf(pd_this->pd_inter->i_guisize +
-                GUI_ALLOCCHUNK);
+    if (INTER->i_guihead > INTER->i_guisize - (GUI_ALLOCCHUNK/2)) {
+            sys_trytogetmoreguibuf(INTER->i_guisize + GUI_ALLOCCHUNK);
+    }
     va_start(ap, fmt);
-    msglen = vsnprintf(pd_this->pd_inter->i_guibuf +
-        pd_this->pd_inter->i_guihead,
-            pd_this->pd_inter->i_guisize - pd_this->pd_inter->i_guihead,
-                fmt, ap);
+    msglen = pd_vsnprintf(
+        INTER->i_guibuf  + INTER->i_guihead,
+        INTER->i_guisize - INTER->i_guihead,
+        fmt, ap);
     va_end(ap);
     if(msglen < 0)
     {
         fprintf(stderr,
-            "Pd: buffer space wasn't sufficient for long GUI string\n");
+            "sys_vgui: pd_snprintf() failed with error code %d\n", errno);
         return;
     }
-    if (msglen >= pd_this->pd_inter->i_guisize - pd_this->pd_inter->i_guihead)
+    if (msglen >= INTER->i_guisize - INTER->i_guihead)
     {
-        int msglen2, newsize = pd_this->pd_inter->i_guisize + 1 +
-            (msglen > GUI_ALLOCCHUNK ? msglen : GUI_ALLOCCHUNK);
+        int msglen2, newsize =
+            INTER->i_guisize
+            + (msglen < GUI_ALLOCCHUNK ? GUI_ALLOCCHUNK : msglen + 1);
         sys_trytogetmoreguibuf(newsize);
 
         va_start(ap, fmt);
-        msglen2 = vsnprintf(pd_this->pd_inter->i_guibuf +
-            pd_this->pd_inter->i_guihead,
-                pd_this->pd_inter->i_guisize - pd_this->pd_inter->i_guihead,
-                    fmt, ap);
+        msglen2 = pd_vsnprintf(
+            INTER->i_guibuf  + INTER->i_guihead,
+            INTER->i_guisize - INTER->i_guihead,
+            fmt, ap);
         va_end(ap);
         if (msglen2 != msglen)
             bug("sys_vgui");
-        if (msglen >= pd_this->pd_inter->i_guisize -
-            pd_this->pd_inter->i_guihead) msglen =
-                pd_this->pd_inter->i_guisize - pd_this->pd_inter->i_guihead;
+        if (msglen >= INTER->i_guisize - INTER->i_guihead)
+            msglen  = INTER->i_guisize - INTER->i_guihead;
     }
     if (sys_debuglevel & DEBUG_MESSUP)
-        fprintf(stderr, "%s",
-            pd_this->pd_inter->i_guibuf + pd_this->pd_inter->i_guihead);
-    pd_this->pd_inter->i_guihead += msglen;
-    pd_this->pd_inter->i_bytessincelastping += msglen;
+    {
+        const char *mess = INTER->i_guibuf + INTER->i_guihead;
+        int colorize = stderr_isatty && (sys_debuglevel & DEBUG_COLORIZE);
+        static int newmess = 1;
+#ifdef _WIN32
+    #ifdef _MSC_VER
+        fwprintf(stderr, L"%S", mess);
+    #else
+        fwprintf(stderr, L"%s", mess);
+    #endif
+        fflush(stderr);
+#else
+        if (colorize)
+            fprintf(stderr, "\e[0;1;35m%s%s\e[0m", (newmess)?">> ":"", mess);
+        else
+            fprintf(stderr, "%s%s", (newmess)?">> ":"", mess);
+
+        newmess = ('\n' == mess[msglen-1]);
+#endif
+    }
+    INTER->i_guihead += msglen;
+    INTER->i_bytessincelastping += msglen;
 }
 
-void sys_gui(char *s)
+
+/* sys_vgui() and sys_gui() are deprecated for externals
+   and shouldn't be used directly within Pd.
+   however, the we do use them for implementing the high-level
+   communication, so we do not want the compiler to shout out loud.
+ */
+#ifdef __GNUC__
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#elif defined _MSC_VER
+#pragma warning( disable : 4996 )
+#endif
+
+void sys_gui(const char *s)
 {
     sys_vgui("%s", s);
 }
 
-static int sys_flushtogui( void)
+static const char**namelist2strings(t_namelist *nl, unsigned int *N) {
+    const char**result = 0;
+    unsigned int n=0;
+    *N = 0;
+    for(; nl; nl = nl->nl_next) {
+        const char**newresult = resizebytes(result, n*sizeof(*result), (n+1)*sizeof(*result));
+        if(!newresult)
+            break;
+        result = newresult;
+        result[n] = nl->nl_string;
+        n++;
+        *N = n;
+    }
+    return result;
+}
+
+static int sys_flushtogui(void)
 {
-    int writesize = pd_this->pd_inter->i_guihead - pd_this->pd_inter->i_guitail,
+    int writesize = INTER->i_guihead - INTER->i_guitail,
         nwrote = 0;
     if (writesize > 0)
-        nwrote = send(pd_this->pd_inter->i_guisock,
-            pd_this->pd_inter->i_guibuf + pd_this->pd_inter->i_guitail,
-                writesize, 0);
+        nwrote = (int)send(
+            INTER->i_guisock,
+            INTER->i_guibuf + INTER->i_guitail,
+            writesize, 0);
 
 #if 0
     if (writesize)
@@ -768,21 +942,18 @@ static int sys_flushtogui( void)
     }
     else if (!nwrote)
         return (0);
-    else if (nwrote >= pd_this->pd_inter->i_guihead -
-        pd_this->pd_inter->i_guitail)
-            pd_this->pd_inter->i_guihead = pd_this->pd_inter->i_guitail = 0;
+    else if (nwrote >= INTER->i_guihead - INTER->i_guitail)
+        INTER->i_guihead = INTER->i_guitail = 0;
     else if (nwrote)
     {
-        pd_this->pd_inter->i_guitail += nwrote;
-        if (pd_this->pd_inter->i_guitail > (pd_this->pd_inter->i_guisize >> 2))
+        INTER->i_guitail += nwrote;
+        if (INTER->i_guitail > (INTER->i_guisize >> 2))
         {
-            memmove(pd_this->pd_inter->i_guibuf,
-                pd_this->pd_inter->i_guibuf + pd_this->pd_inter->i_guitail,
-                    pd_this->pd_inter->i_guihead -
-                        pd_this->pd_inter->i_guitail);
-            pd_this->pd_inter->i_guihead = pd_this->pd_inter->i_guihead -
-                pd_this->pd_inter->i_guitail;
-            pd_this->pd_inter->i_guitail = 0;
+            memmove(INTER->i_guibuf,
+                INTER->i_guibuf  + INTER->i_guitail,
+                INTER->i_guihead - INTER->i_guitail);
+            INTER->i_guihead = INTER->i_guihead - INTER->i_guitail;
+            INTER->i_guitail = 0;
         }
     }
     return (1);
@@ -790,34 +961,34 @@ static int sys_flushtogui( void)
 
 void glob_ping(t_pd *dummy)
 {
-    pd_this->pd_inter->i_waitingforping = 0;
+    INTER->i_waitingforping = 0;
 }
 
-static int sys_flushqueue(void )
+static int sys_flushqueue(void)
 {
-    int wherestop = pd_this->pd_inter->i_bytessincelastping + GUI_UPDATESLICE;
+    int wherestop = INTER->i_bytessincelastping + GUI_UPDATESLICE;
     if (wherestop + (GUI_UPDATESLICE >> 1) > GUI_BYTESPERPING)
         wherestop = 0x7fffffff;
-    if (pd_this->pd_inter->i_waitingforping)
+    if (INTER->i_waitingforping)
         return (0);
-    if (!pd_this->pd_inter->i_guiqueuehead)
+    if (!INTER->i_guiqueuehead)
         return (0);
     while (1)
     {
-        if (pd_this->pd_inter->i_bytessincelastping >= GUI_BYTESPERPING)
+        if (INTER->i_bytessincelastping >= GUI_BYTESPERPING)
         {
-            sys_gui("pdtk_ping\n");
-            pd_this->pd_inter->i_bytessincelastping = 0;
-            pd_this->pd_inter->i_waitingforping = 1;
+            pdgui_vmess("pdtk_ping", "");
+            INTER->i_bytessincelastping = 0;
+            INTER->i_waitingforping = 1;
             return (1);
         }
-        if (pd_this->pd_inter->i_guiqueuehead)
+        if (INTER->i_guiqueuehead)
         {
-            t_guiqueue *headwas = pd_this->pd_inter->i_guiqueuehead;
-            pd_this->pd_inter->i_guiqueuehead = headwas->gq_next;
+            t_guiqueue *headwas = INTER->i_guiqueuehead;
+            INTER->i_guiqueuehead = headwas->gq_next;
             (*headwas->gq_fn)(headwas->gq_client, headwas->gq_glist);
             t_freebytes(headwas, sizeof(*headwas));
-            if (pd_this->pd_inter->i_bytessincelastping >= wherestop)
+            if (INTER->i_bytessincelastping >= wherestop)
                 break;
         }
         else break;
@@ -829,12 +1000,12 @@ static int sys_flushqueue(void )
     /* flush output buffer and update queue to gui in small time slices */
 static int sys_poll_togui(void) /* returns 1 if did anything */
 {
-    if (!sys_havegui())
+    if (!INTER->i_havetkproc)
         return (0);
         /* in case there is stuff still in the buffer, try to flush it. */
     sys_flushtogui();
         /* if the flush wasn't complete, wait. */
-    if (pd_this->pd_inter->i_guihead > pd_this->pd_inter->i_guitail)
+    if (INTER->i_guihead > INTER->i_guitail)
         return (0);
 
         /* check for queued updates */
@@ -848,17 +1019,17 @@ static int sys_poll_togui(void) /* returns 1 if did anything */
     us to back off from doing more updates by faking a big one itself. */
 void sys_pretendguibytes(int n)
 {
-    pd_this->pd_inter->i_bytessincelastping += n;
+    INTER->i_bytessincelastping += n;
 }
 
 void sys_queuegui(void *client, t_glist *glist, t_guicallbackfn f)
 {
     t_guiqueue **gqnextptr, *gq;
-    if (!pd_this->pd_inter->i_guiqueuehead)
-        gqnextptr = &pd_this->pd_inter->i_guiqueuehead;
+    if (!INTER->i_guiqueuehead)
+        gqnextptr = &INTER->i_guiqueuehead;
     else
     {
-        for (gq = pd_this->pd_inter->i_guiqueuehead; gq->gq_next;
+        for (gq = INTER->i_guiqueuehead; gq->gq_next;
             gq = gq->gq_next)
                 if (gq->gq_client == client)
                     return;
@@ -878,85 +1049,285 @@ void sys_queuegui(void *client, t_glist *glist, t_guicallbackfn f)
 void sys_unqueuegui(void *client)
 {
     t_guiqueue *gq, *gq2;
-    while (pd_this->pd_inter->i_guiqueuehead &&
-        pd_this->pd_inter->i_guiqueuehead->gq_client == client)
+    while (INTER->i_guiqueuehead && INTER->i_guiqueuehead->gq_client == client)
     {
-        gq = pd_this->pd_inter->i_guiqueuehead;
-        pd_this->pd_inter->i_guiqueuehead =
-            pd_this->pd_inter->i_guiqueuehead->gq_next;
+        gq = INTER->i_guiqueuehead;
+        INTER->i_guiqueuehead = INTER->i_guiqueuehead->gq_next;
         t_freebytes(gq, sizeof(*gq));
     }
-    if (!pd_this->pd_inter->i_guiqueuehead)
+    if (!INTER->i_guiqueuehead)
         return;
-    for (gq = pd_this->pd_inter->i_guiqueuehead; (gq2 = gq->gq_next); gq = gq2)
+    for (gq = INTER->i_guiqueuehead; (gq2 = gq->gq_next); gq = gq2)
         if (gq2->gq_client == client)
-    {
-        gq->gq_next = gq2->gq_next;
-        t_freebytes(gq2, sizeof(*gq2));
-        break;
-    }
+        {
+            gq->gq_next = gq2->gq_next;
+            t_freebytes(gq2, sizeof(*gq2));
+            break;
+        }
 }
 
+    /* poll for any incoming packets, or for GUI updates to send.  call with
+    the PD instance lock set. */
 int sys_pollgui(void)
 {
-    return (sys_domicrosleep(0, 1) || sys_poll_togui());
+    static double lasttime = 0;
+    double now = 0;
+    int didsomething = sys_domicrosleep(0);
+    if (!didsomething || (now = sys_getrealtime()) > lasttime + 0.5)
+    {
+        didsomething |= sys_poll_togui();
+        if (now)
+            lasttime = now;
+    }
+    return (didsomething);
 }
 
 void sys_init_fdpoll(void)
 {
-    if (pd_this->pd_inter->i_fdpoll)
+    if (INTER->i_fdpoll)
         return;
     /* create an empty FD poll list */
-    pd_this->pd_inter->i_fdpoll = (t_fdpoll *)t_getbytes(0);
-    pd_this->pd_inter->i_nfdpoll = 0;
-    pd_this->pd_inter->i_inbinbuf = binbuf_new();
+    INTER->i_fdpoll = (t_fdpoll *)t_getbytes(0);
+    INTER->i_nfdpoll = 0;
+    INTER->i_inbinbuf = binbuf_new();
 }
+
+void sys_gui_preferences(void)
+{
+    unsigned int nsearch, ntemp, nstatic, nlibs;
+    const char**searchpath = namelist2strings(STUFF->st_searchpath, &nsearch);
+    const char**temppath = namelist2strings(STUFF->st_temppath, &ntemp);
+    const char**staticpath = namelist2strings(STUFF->st_staticpath, &nstatic);
+    const char**startuplibs = namelist2strings(STUFF->st_externlist, &nlibs);
+    pdgui_vmess("::dialog_path::set_paths", "SSS"
+                , nsearch, searchpath
+                , ntemp, temppath
+                , nstatic, staticpath
+                );
+
+        /* send the list of loaded libraries ... */
+    pdgui_vmess("::dialog_startup::set_libraries", "S"
+                , nlibs, startuplibs
+                );
+
+    sys_vgui("set_escaped ::sys_verbose %d\n", sys_verbose);
+    sys_vgui("set_escaped ::sys_use_stdpath %d\n", sys_usestdpath);
+    sys_vgui("set_escaped ::sys_defeatrt %d\n", sys_defeatrt);
+    sys_vgui("set_escaped ::sys_zoom_open %d\n", (sys_zoom_open == 2));
+    pdgui_vmess("::dialog_startup::set_flags", "s",
+                (sys_flags? sys_flags->s_name : ""));
+
+    freebytes(searchpath, nsearch * sizeof(*searchpath));
+    freebytes(temppath, ntemp * sizeof(*temppath));
+    freebytes(staticpath, nstatic * sizeof(*staticpath));
+    freebytes(startuplibs, nlibs * sizeof(*startuplibs));
+}
+
+
+
 
 /* --------------------- starting up the GUI connection ------------- */
 
-static int sys_watchfd;
+static int sys_watchfd = -1;
 
-#if defined(__linux__) || defined(__FreeBSD_kernel__) || defined(__GNU__)
-void glob_watchdog(t_pd *dummy)
+void glob_watchdog(void *dummy)
 {
+    if (sys_watchfd < 0)
+        return;
     if (write(sys_watchfd, "\n", 1) < 1)
     {
         fprintf(stderr, "pd: watchdog process died\n");
         sys_bail(1);
     }
 }
-#endif
 
-#define FIRSTPORTNUM 5400
+static const char*deken_OS =
+#if defined DEKEN_OS
+        stringify(DEKEN_OS)
+#elif defined __linux__
+        "Linux"
+#elif defined __APPLE__
+        "Darwin"
+#elif defined _WIN32
+        "Windows"
+#else
+# if defined(__GNUC__)
+#  warning unknown OS
+# endif
+        0
+#endif
+        ;
+static const char*deken_CPU[] = {
+#if defined DEKEN_CPU
+        stringify(DEKEN_CPU)
+#elif defined(__x86_64__) || defined(__amd64__) || defined(_M_X64) || defined(_M_AMD64)
+        "amd64"
+#elif defined(__i386__) || defined(__i486__) || defined(__i586__) || defined(__i686__) || defined(_M_IX86)
+        "i386"
+#elif defined(__ppc__)
+        "ppc"
+#elif defined(__aarch64__)
+        "arm64"
+#elif defined (__ARM_ARCH)
+        "armv" stringify(__ARM_ARCH)
+# if defined(__BYTE_ORDER__) && defined(__ORDER_BIG_ENDIAN__)
+#  if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+        "b"
+#  endif
+# endif
+#else
+# if defined(__GNUC__)
+#  warning unknown architecture
+# endif
+        0
+#endif
+        , 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+static const char*strip_quotes(const char*s, char*outbuf, size_t outsize) {
+    size_t len = strlen(s);
+    const char q = (len>1)?s[0]:0;
+        /* only strip single or double quotes */
+    switch(q) {
+    case '\'':
+    case '"':
+        break;
+    case 0:
+    default:
+        return s;
+    }
+        /* only strip quotes if they are both at the beginning and the end */
+    if (q != s[len-1])
+        return s;
+
+    if(len>outsize)
+        len = outsize;
+
+    outbuf[0] = 0;
+    strncpy(outbuf, s+1, len-2);
+    outbuf[outsize-1] = 0;
+    return outbuf;
+}
+
+static void init_deken_arch(void)
+{
+    static int initialized = 0;
+    static char deken_OS_noquotes[MAXPDSTRING];
+    static char deken_CPU_noquotes[MAXPDSTRING];
+
+    if(initialized)
+        return;
+    initialized = 1;
+
+#if defined(DEKEN_OS)
+    deken_OS = strip_quotes(deken_OS, deken_OS_noquotes, MAXPDSTRING);
+#endif /* DEKEN_OS */
+
+#define CPUNAME_SIZE 15
+#if defined(DEKEN_CPU)
+    deken_CPU[0] = strip_quotes(deken_CPU[0], deken_CPU_noquotes, MAXPDSTRING);
+#else /* !DEKEN_CPU */
+# if defined(__aarch64__)
+    /* no special-casing for arm64 */
+# elif defined __ARM_ARCH
+        /* ARM-specific:
+         * if we are running ARMv7, we can also load ARMv6 externals
+         */
+    if (deken_CPU && sizeof(deken_CPU)/sizeof(*deken_CPU) > 0)
+    {
+        int arm_cpu = __ARM_ARCH;
+        int cpu_v;
+        int n = 0;
+        const char endianness =
+#  if defined(__BYTE_ORDER__) && defined(__ORDER_BIG_ENDIAN__) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
+            'b';
+#  else
+            0;
+#  endif
+
+#  if USE_UNAME
+        /*
+         * Pd might be compiled for ARMv6 (as in Raspbian),
+         * but run on an ARMv7 (or higher) (e.g. RPi2 and newer).
+         * Therefore we try to detect the actual CPU, and announce that
+         */
+        struct utsname name;
+        if (uname (&name) >= 0) {
+            if(!strncmp(name.machine, "armv", 4)) {
+                cpu_v = name.machine[4] - '0';
+                if((cpu_v >= 6) && (cpu_v <= 9))
+                    arm_cpu = cpu_v;
+            }
+        }
+#  endif /* uname() */
+
+            /* list all compatible ARM CPUs */
+        for(cpu_v = arm_cpu;
+            (cpu_v >= 6 && n < (sizeof(deken_CPU)/sizeof(*deken_CPU)));
+            cpu_v--)
+        {
+            static char cpuname[CPUNAME_SIZE+1];
+            pd_snprintf(cpuname, CPUNAME_SIZE, "armv%d%c", cpu_v, endianness);
+            deken_CPU[n++] = gensym(cpuname)->s_name;
+        }
+    }
+# endif /* arm */
+#endif /* !DEKEN_CPU */
+}
+
+/* get the (normalized) deken-specifier
+ * if 'float_agnostic' is non-0, the float-size is included.
+ *   otherwise a floatsize-agnostic specifier is generated.
+ * 'cpu' is an index in the list of preferred compatible CPUs
+ *   (higher numbers indicate less preferred CPUs)
+ *   a negative 'cpu' indicates 'fat' binaries
+ * returns 0, if the deken-specifier cannot be determined
+ * (e.g. on new architectures, or because the 'cpu' index is invalid)
+ */
+const char*sys_deken_specifier(char*buf, size_t bufsize, int float_agnostic, int cpu) {
+    unsigned int i;
+    init_deken_arch();
+    if (!deken_OS)
+        return 0;
+    if ((cpu>=0) && (((!deken_CPU) || (cpu >= (sizeof(deken_CPU)/sizeof(*deken_CPU))) || (!deken_CPU[cpu]))))
+        return 0;
+
+    pd_snprintf(buf, bufsize-1,
+        "%s-%s-%d", deken_OS, (cpu<0)?"fat":deken_CPU[cpu], (int)((float_agnostic?0:8) * sizeof(t_float)));
+
+    buf[bufsize-1] = 0;
+    for(i=0; i<bufsize && buf[i]; i++)
+        buf[i] = tolower(buf[i]);
+    return buf;
+}
+
+static void sys_init_deken(void)
+{
+    init_deken_arch();
+        /* only send the arch info, if we are sure about it... */
+    if (deken_OS && deken_CPU && deken_CPU[0])
+        pdgui_vmess("::deken::set_platform", "ssff",
+                 deken_OS, deken_CPU[0],
+                 8. * sizeof(char*),
+                 8. * sizeof(t_float));
+}
 
 static int sys_do_startgui(const char *libdir)
 {
-    char cmdbuf[4*MAXPDSTRING], *guicmd, apibuf[256], apibuf2[256];
-    struct sockaddr_in server = {0};
-    int msgsock;
-    char buf[15];
-    int len = sizeof(server);
-    const int maxtry = 20;
-    int ntry = 0, portno = FIRSTPORTNUM;
-    int xsock = -1, dumbo = -1;
-#ifdef _WIN32
-    short version = MAKEWORD(2, 0);
-    WSADATA nobby;
-#else
+    char quotebuf[MAXPDSTRING];
+    char apibuf[256], apibuf2[256];
+    struct addrinfo *ailist = NULL, *ai;
+    int sockfd = -1;
+    int portno = -1;
+#ifndef _WIN32
     int stdinpipe[2];
     pid_t childpid;
 #endif /* _WIN32 */
 
     sys_init_fdpoll();
 
-#ifdef _WIN32
-    if (WSAStartup(version, &nobby)) sys_sockerror("WSAstartup");
-#endif /* _WIN32 */
-
     if (sys_guisetportnumber)  /* GUI exists and sent us a port number */
     {
-        struct sockaddr_in server = {0};
-        struct hostent *hp;
+        int status;
 #ifdef __APPLE__
             /* guisock might be 1 or 2, which will have offensive results
             if somebody writes to stdout or stderr - so we just open a few
@@ -972,100 +1343,122 @@ static int sys_do_startgui(const char *libdir)
         if (burnfd3 > 2)
             close(burnfd3);
 #endif
-        /* create a socket */
-        pd_this->pd_inter->i_guisock = socket(AF_INET, SOCK_STREAM, 0);
-        if (pd_this->pd_inter->i_guisock < 0)
-            sys_sockerror("socket");
 
-        /* connect socket using hostname provided in command line */
-        server.sin_family = AF_INET;
-
-        hp = gethostbyname(LOCALHOST);
-
-        if (hp == 0)
+        /* get addrinfo list using hostname & port */
+        status = addrinfo_get_list(&ailist,
+            LOCALHOST, sys_guisetportnumber, SOCK_STREAM);
+        if (status != 0)
         {
             fprintf(stderr,
-                "localhost not found (inet protocol not installed?)\n");
+                "localhost not found (inet protocol not installed?)\n%s (%d)",
+                gai_strerror(status), status);
             return (1);
         }
-        memcpy((char *)&server.sin_addr, (char *)hp->h_addr, hp->h_length);
 
-        /* assign client port number */
-        server.sin_port = htons((unsigned short)sys_guisetportnumber);
+        /* Sort to IPv4 for now as the Pd gui uses IPv4. */
+        addrinfo_sort_list(&ailist, addrinfo_ipv4_first);
 
+        /* We don't know in advance whether the GUI uses IPv4 or IPv6,
+           so we try both and pick the one which works. */
+        for (ai = ailist; ai != NULL; ai = ai->ai_next)
+        {
+            /* create a socket */
+            sockfd = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
+            if (sockfd < 0)
+                continue;
+        #if 1
+            if (socket_set_boolopt(sockfd, IPPROTO_TCP, TCP_NODELAY, 1) < 0)
+                fprintf(stderr, "setsockopt (TCP_NODELAY) failed");
+        #endif
             /* try to connect */
-        if (connect(pd_this->pd_inter->i_guisock,
-            (struct sockaddr *) &server, sizeof (server)) < 0)
+            if (socket_connect(sockfd, ai->ai_addr, ai->ai_addrlen, 10.f) < 0)
+            {
+                sys_closesocket(sockfd);
+                sockfd = -1;
+                continue;
+            }
+            /* this addr worked */
+            break;
+        }
+        freeaddrinfo(ailist);
+
+        /* confirm that we could connect */
+        if (sockfd < 0)
         {
             sys_sockerror("connecting stream socket");
             return (1);
         }
+
+        INTER->i_guisock = sockfd;
     }
     else    /* default behavior: start up the GUI ourselves. */
     {
+        struct sockaddr_storage addr;
+        int status;
 #ifdef _WIN32
-        char scriptbuf[MAXPDSTRING+30], wishbuf[MAXPDSTRING+30], portbuf[80];
-        int spawnret;
-        char intarg;
+        char scriptbuf[MAXPDSTRING+30], wishbuf[MAXPDSTRING+30];
+        STARTUPINFO si;
+        PROCESS_INFORMATION pi;
 #else
-        int intarg;
+        const char *guicmd;
 #endif
-
-        /* create a socket */
-        xsock = socket(AF_INET, SOCK_STREAM, 0);
-        if (xsock < 0)
+        char cmdbuf[4*MAXPDSTRING];
+        /* get addrinfo list using hostname (get random port from OS) */
+        status = addrinfo_get_list(&ailist, LOCALHOST, 0, SOCK_STREAM);
+        if (status != 0)
         {
-            sys_sockerror("socket");
+            fprintf(stderr,
+                "localhost not found (inet protocol not installed?)\n%s (%d)",
+                gai_strerror(status), status);
             return (1);
         }
-        intarg = 1;
-        if (setsockopt(xsock, IPPROTO_TCP, TCP_NODELAY,
-            &intarg, sizeof(intarg)) < 0)
-#ifndef _WIN32
-                post("setsockopt (TCP_NODELAY) failed\n")
-#endif
-                    ;
-
-
-        server.sin_family = AF_INET;
-        server.sin_addr.s_addr = INADDR_ANY;
-
-        /* assign server port number */
-        server.sin_port =  htons((unsigned short)portno);
-        /* name the socket */
-        while (bind(xsock, (struct sockaddr *)&server, sizeof(server)) < 0)
+        /* we prefer the IPv4 addresses because the GUI might not be IPv6 capable. */
+        addrinfo_sort_list(&ailist, addrinfo_ipv4_first);
+        /* try each addr until we find one that works */
+        for (ai = ailist; ai != NULL; ai = ai->ai_next)
         {
-#ifdef _WIN32
-            int err = WSAGetLastError();
-#else
-            int err = errno;
-#endif
-            if ((ntry++ > maxtry) || (err != EADDRINUSE))
+            sockfd = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
+            if (sockfd < 0)
+                continue;
+        #if 1
+            /* ask OS to allow another process to reopen this port after we close it */
+            if (socket_set_boolopt(sockfd, SOL_SOCKET, SO_REUSEADDR, 1) < 0)
+                fprintf(stderr, "setsockopt (SO_REUSEADDR) failed\n");
+        #endif
+        #if 1
+            /* stream (TCP) sockets are set NODELAY */
+            if (socket_set_boolopt(sockfd, IPPROTO_TCP, TCP_NODELAY, 1) < 0)
+                fprintf(stderr, "setsockopt (TCP_NODELAY) failed");
+        #endif
+            /* name the socket */
+            if (bind(sockfd, ai->ai_addr, ai->ai_addrlen) < 0)
             {
-                perror("bind");
-                fprintf(stderr,
-                    "Pd was unable to find a port number to bind to\n");
-                sys_closesocket(xsock);
-                return (1);
-            } else if (ntry > maxtry) {
-                    /* last try: let the system pick a random port for us */
-                portno = 0;
-            } else
-                portno++;
-            server.sin_port = htons((unsigned short)(portno));
+                socket_close(sockfd);
+                sockfd = -1;
+                continue;
+            }
+            /* this addr worked */
+            memcpy(&addr, ai->ai_addr, ai->ai_addrlen);
+            break;
         }
-        if (!portno) {
-                /* if the system chose a port for us, we need to know which */
-            socklen_t serversize=sizeof(server);
-            if(!getsockname(xsock, (struct sockaddr *)&server, &serversize))
-                portno = ntohs(server.sin_port);
-        }
-        if (sys_verbose) fprintf(stderr, "port %d\n", portno);
+        freeaddrinfo(ailist);
 
+        /* confirm that socket/bind worked */
+        if (sockfd < 0)
+        {
+            sys_sockerror("bind");
+            return (1);
+        }
+        /* get the actual port number */
+        portno = socket_get_port(sockfd);
+        if (sys_verbose) fprintf(stderr, "port %d\n", portno);
 
 #ifndef _WIN32
         if (sys_guicmd)
-            guicmd = sys_guicmd;
+        {
+            sprintf(cmdbuf, "\"%s\" %d\n", sys_guicmd, portno);
+            guicmd = cmdbuf;
+        }
         else
         {
 #ifdef __APPLE__
@@ -1103,13 +1496,14 @@ static int sys_do_startgui(const char *libdir)
                 sprintf(cmdbuf, "\"%s\" %d\n", glob_buffer.gl_pathv[0], portno);
             else
             {
+                int wish_paths_count = sizeof(wish_paths)/sizeof(*wish_paths);
                 #ifdef WISH
                     wish_paths[0] = WISH;
                 #endif
                 sprintf(home_filename,
                         "%s/Applications/Wish.app/Contents/MacOS/Wish",homedir);
                 wish_paths[1] = home_filename;
-                for(i=0; i<11; i++)
+                for(i=0; i<wish_paths_count; i++)
                 {
                     if (sys_verbose)
                         fprintf(stderr, "Trying Wish at \"%s\"\n",
@@ -1117,7 +1511,13 @@ static int sys_do_startgui(const char *libdir)
                     if (stat(wish_paths[i], &statbuf) >= 0)
                         break;
                 }
-                sprintf(cmdbuf, "\"%s\" \"%s/%spd-gui.tcl\" %d\n",
+                if(i>=wish_paths_count)
+                {
+                    fprintf(stderr, "sys_startgui couldn't find tcl/tk\n");
+                    sys_closesocket(sockfd);
+                    return (1);
+                }
+                sprintf(cmdbuf, "\"%s\" \"%s/%s/pd-gui.tcl\" %d\n",
                         wish_paths[i], libdir, PDGUIDIR, portno);
             }
 #else /* __APPLE__ */
@@ -1140,15 +1540,13 @@ static int sys_do_startgui(const char *libdir)
         {
             if (errno) perror("sys_startgui");
             else fprintf(stderr, "sys_startgui failed\n");
-            sys_closesocket(xsock);
+            sys_closesocket(sockfd);
             return (1);
         }
         else if (!childpid)                     /* we're the child */
         {
-            sys_closesocket(xsock);     /* child doesn't listen */
-#if defined(__linux__) || defined(__FreeBSD_kernel__) || defined(__GNU__)
+            sys_closesocket(sockfd);     /* child doesn't listen */
             sys_set_priority(MODE_NRT);  /* child runs non-real-time */
-#endif
 #ifndef __APPLE__
 // TODO this seems unneeded on any platform hans@eds.org
                 /* the wish process in Unix will make a wish shell and
@@ -1175,67 +1573,84 @@ static int sys_do_startgui(const char *libdir)
 #else /* NOT _WIN32 */
         /* fprintf(stderr, "%s\n", libdir); */
 
-        strcpy(scriptbuf, "\"");
-        strcat(scriptbuf, libdir);
-        strcat(scriptbuf, "/" PDGUIDIR "pd-gui.tcl\"");
-        sys_bashfilename(scriptbuf, scriptbuf);
-
-        sprintf(portbuf, "%d", portno);
-
-        strcpy(wishbuf, libdir);
-        strcat(wishbuf, "/" PDBINDIR WISH);
+        pd_snprintf(wishbuf, sizeof(wishbuf), "%s/" PDBINDIR WISH, libdir);
         sys_bashfilename(wishbuf, wishbuf);
 
-        spawnret = _spawnl(P_NOWAIT, wishbuf, WISH, scriptbuf, portbuf, 0);
-        if (spawnret < 0)
+        pd_snprintf(scriptbuf, sizeof(scriptbuf), "%s/" PDGUIDIR "/pd-gui.tcl", libdir);
+        sys_bashfilename(scriptbuf, scriptbuf);
+
+        pd_snprintf(cmdbuf, sizeof(cmdbuf), "%s \"%s\" %d", /* quote script path! */
+            WISH, scriptbuf, portno);
+
+        memset(&si, 0, sizeof(si));
+        si.cb = sizeof(si);
+            /* CHR: DETACHED_PROCESS makes sure that the GUI process cannot
+            possibly interfere with the core. */
+        if (!CreateProcessA(wishbuf, cmdbuf, NULL, NULL, FALSE,
+            DETACHED_PROCESS, NULL, NULL, &si, &pi))
         {
-            perror("spawnl");
-            fprintf(stderr, "%s: couldn't load TCL\n", wishbuf);
+            char errbuf[MAXPDSTRING];
+            socket_strerror(GetLastError(), errbuf, sizeof(errbuf));
+            fprintf(stderr, "could not start %s: %s\n", wishbuf, errbuf);
+            return (1);
+        }
+#endif /* NOT _WIN32 */
+        if (sys_verbose)
+            fprintf(stderr, "Waiting for connection request... \n");
+        if (listen(sockfd, 5) < 0)
+        {
+            sys_sockerror("listen");
+            sys_closesocket(sockfd);
             return (1);
         }
 
-#endif /* NOT _WIN32 */
-    }
+        INTER->i_guisock = accept(sockfd, 0, 0);
 
+        sys_closesocket(sockfd);
 
-    if (!sys_guisetportnumber)
-    {
-        if (sys_verbose)
-            fprintf(stderr, "Waiting for connection request... \n");
-        if (listen(xsock, 5) < 0) sys_sockerror("listen");
-
-        pd_this->pd_inter->i_guisock = accept(xsock,
-            (struct sockaddr *) &server, (socklen_t *)&len);
-
-        sys_closesocket(xsock);
-
-        if (pd_this->pd_inter->i_guisock < 0) sys_sockerror("accept");
+        if (INTER->i_guisock < 0)
+        {
+            sys_sockerror("accept");
+            return (1);
+        }
         if (sys_verbose)
             fprintf(stderr, "... connected\n");
-        pd_this->pd_inter->i_guihead = pd_this->pd_inter->i_guitail = 0;
+        INTER->i_guihead = INTER->i_guitail = 0;
     }
 
-    pd_this->pd_inter->i_socketreceiver = socketreceiver_new(0, 0, 0, 0);
-    sys_addpollfn(pd_this->pd_inter->i_guisock,
+    INTER->i_socketreceiver = socketreceiver_new(0, 0, 0, 0);
+    sys_addpollfn(INTER->i_guisock,
         (t_fdpollfn)socketreceiver_read,
-            pd_this->pd_inter->i_socketreceiver);
+            INTER->i_socketreceiver);
 
             /* here is where we start the pinging. */
-#if defined(__linux__) || defined(__FreeBSD_kernel__)
+#if PD_WATCHDOG
     if (sys_hipriority)
-        sys_gui("pdtk_watchdog\n");
+        pdgui_vmess("pdtk_watchdog", "");
 #endif
     sys_get_audio_apis(apibuf);
     sys_get_midi_apis(apibuf2);
-    sys_set_searchpath();     /* tell GUI about path and startup flags */
-    sys_set_extrapath();
-    sys_set_startup();
-                       /* ... and about font, medio APIS, etc */
+
+    sys_gui_preferences();     /* tell GUI about path and startup flags */
+
+        /* ... and about font, media APIS, etc */
     sys_vgui("pdtk_pd_startup %d %d %d {%s} %s %s {%s} %s\n",
              PD_MAJOR_VERSION, PD_MINOR_VERSION,
              PD_BUGFIX_VERSION, PD_TEST_VERSION,
-             apibuf, apibuf2, sys_font, sys_fontweight);
-    sys_vgui("set pd_whichapi %d\n", sys_audioapi);
+             apibuf, apibuf2,
+             pdgui_strnescape(quotebuf, MAXPDSTRING, sys_font, 0),
+             sys_fontweight);
+
+    sys_init_deken();
+
+    {
+        t_audiosettings as;
+        sys_get_audio_settings(&as);
+        sys_vgui("set pd_whichapi %d\n", as.a_api);
+
+        pdgui_vmess("pdtk_pd_dsp", "s",
+            THISGUI->i_dspstate ? "ON" : "OFF");
+    }
 
     return (0);
 }
@@ -1243,9 +1658,9 @@ static int sys_do_startgui(const char *libdir)
 void sys_setrealtime(const char *libdir)
 {
     char cmdbuf[MAXPDSTRING];
-#if defined(__linux__) || defined(__FreeBSD_kernel__)
+#if PD_WATCHDOG
         /*  promote this process's priority, if we can and want to.
-        If sys_hipriority not specfied (-1), we assume real-time was wanted.
+        If sys_hipriority not specified (-1), we assume real-time was wanted.
         Starting in Linux 2.6 one can permit real-time operation of Pd by]
         putting lines like:
                 @audio - rtprio 99
@@ -1255,7 +1670,7 @@ void sys_setrealtime(const char *libdir)
     if (sys_hipriority == -1)
         sys_hipriority = 1;
 
-    snprintf(cmdbuf, MAXPDSTRING, "%s/bin/pd-watchdog", libdir);
+    pd_snprintf(cmdbuf, MAXPDSTRING, "%s/bin/pd-watchdog", libdir);
     cmdbuf[MAXPDSTRING-1] = 0;
     if (sys_hipriority)
     {
@@ -1305,7 +1720,7 @@ void sys_setrealtime(const char *libdir)
             close(pipe9[1]);
 
             if (sys_verbose) fprintf(stderr, "%s\n", cmdbuf);
-            execl("/bin/sh", "sh", "-c", cmdbuf, (char*)0);
+            execl(cmdbuf, cmdbuf, (char*)0);
             perror("pd: exec");
             _exit(1);
         }
@@ -1324,8 +1739,7 @@ void sys_setrealtime(const char *libdir)
                 this is done later when the socket is open. */
         }
     }
-    else if (sys_verbose)
-        post("not setting real-time priority");
+    else logpost(NULL, PD_VERBOSE, "not setting real-time priority");
 #endif /* __linux__ */
 
 #ifdef _WIN32
@@ -1342,15 +1756,15 @@ void sys_setrealtime(const char *libdir)
 
         err = pthread_setschedparam(pthread_self(), policy, &param);
         if (err)
-            post("warning: high priority scheduling failed\n");
+            post("warning: high priority scheduling failed");
     }
 #endif /* __APPLE__ */
 }
 
-extern void sys_exit(void);
+void sys_do_close_audio(void);
 
 /* This is called when something bad has happened, like a segfault.
-Call glob_quit() below to exit cleanly.
+Call glob_exit() below to exit cleanly.
 LATER try to save dirty documents even in the bad case. */
 void sys_bail(int n)
 {
@@ -1360,9 +1774,9 @@ void sys_bail(int n)
         reentered = 1;
 #if !defined(__linux__) && !defined(__FreeBSD_kernel__) && !defined(__GNU__)
             /* sys_close_audio() hangs if you're in a signal? */
-        fprintf(stderr ,"gui socket %d - ", pd_this->pd_inter->i_guisock);
+        fprintf(stderr ,"gui socket %d - \n", INTER->i_guisock);
         fprintf(stderr, "closing audio...\n");
-        sys_close_audio();
+        sys_do_close_audio();
         fprintf(stderr, "closing MIDI...\n");
         sys_close_midi();
         fprintf(stderr, "... done.\n");
@@ -1372,16 +1786,18 @@ void sys_bail(int n)
     else _exit(1);
 }
 
-void glob_quit(void *dummy)
+void sys_exit(int status);
+
+    /* exit scheduler and shut down gracefully */
+void glob_exit(void *dummy, t_floatarg status)
 {
-    sys_close_audio();
-    sys_close_midi();
-    if (sys_havegui())
-    {
-        sys_closesocket(pd_this->pd_inter->i_guisock);
-        sys_rmpollfn(pd_this->pd_inter->i_guisock);
-    }
-    exit(0);
+    sys_exit(status);
+}
+
+    /* force-quit */
+void glob_quit(void *dummy, t_floatarg status)
+{
+    exit(status);
 }
 
     /* recursively descend to all canvases and send them "vis" messages
@@ -1399,15 +1815,13 @@ static void glist_maybevis(t_glist *gl)
     }
 }
 
-int sys_startgui(const char *libdir)
+    /* this is called from main when GUI has given us our font metrics,
+    so that we can now draw all "visible" canvases.  These include all
+    root canvases and all subcanvases that already believe they're visible. */
+void sys_doneglobinit( void)
 {
     t_canvas *x;
-    for (x = pd_getcanvaslist(); x; x = x->gl_next)
-        canvas_vis(x, 0);
-    pd_this->pd_inter->i_havegui = 1;
-    pd_this->pd_inter->i_guihead = pd_this->pd_inter->i_guitail = 0;
-    if (sys_do_startgui(libdir))
-        return (-1);
+    INTER->i_havegui = 1;
     for (x = pd_getcanvaslist(); x; x = x->gl_next)
         if (strcmp(x->gl_name->s_name, "_float_template") &&
             strcmp(x->gl_name->s_name, "_float_array_template") &&
@@ -1416,45 +1830,82 @@ int sys_startgui(const char *libdir)
         glist_maybevis(x);
         canvas_vis(x, 1);
     }
+}
+
+    /* start the GUI up.  Before we actually draw our "visible" windows
+    we have to wait for the GUI to give us our font metrics, see
+    glob_initfromgui().  LATER it would be cool to figure out what metrics
+    we really need and tell the GUI - that way we can support arbitrary
+    zoom with appropriate font sizes.   And/or: if we ever move definitively
+    to a vector-based GUI lib we might be able to skip this step altogether. */
+int sys_startgui(const char *libdir)
+{
+    t_canvas *x;
+    stderr_isatty = isatty(2);
+    for (x = pd_getcanvaslist(); x; x = x->gl_next)
+        canvas_vis(x, 0);
+    INTER->i_havegui = 0;
+    INTER->i_havetkproc = 1;
+    INTER->i_guihead = INTER->i_guitail = 0;
+    INTER->i_waitingforping = 0;
+    if (sys_do_startgui(libdir))
+        return (-1);
     return (0);
 }
 
- /* more work needed here - for some reason we can't restart the gui after
- shutting it down this way.  I think the second 'init' message never makes
- it because the to-gui buffer isn't re-initialized. */
-void sys_stopgui( void)
+    /* Shut the GUI down. */
+void sys_stopgui(void)
 {
     t_canvas *x;
     for (x = pd_getcanvaslist(); x; x = x->gl_next)
         canvas_vis(x, 0);
-    sys_vgui("%s", "exit\n");
-    if (pd_this->pd_inter->i_guisock >= 0)
+
+    if (INTER->i_guisock >= 0)
     {
-        sys_closesocket(pd_this->pd_inter->i_guisock);
-        sys_rmpollfn(pd_this->pd_inter->i_guisock);
-        pd_this->pd_inter->i_guisock = -1;
+        sys_closesocket(INTER->i_guisock);
+        sys_rmpollfn(INTER->i_guisock);
+        INTER->i_guisock = -1;
     }
-    pd_this->pd_inter->i_havegui = 0;
+    INTER->i_havegui = 0;
+    INTER->i_havetkproc = 0;
 }
 
 /* ----------- mutexes for thread safety --------------- */
 
-void s_inter_newpdinstance( void)
+void s_inter_newpdinstance(void)
 {
-    pd_this->pd_inter = getbytes(sizeof(*pd_this->pd_inter));
+    INTER = getbytes(sizeof(*INTER));
 #if PDTHREADS
-    pthread_mutex_init(&pd_this->pd_inter->i_mutex, NULL);
+    pthread_mutex_init(&INTER->i_mutex, NULL);
     pd_this->pd_islocked = 0;
 #endif
 #ifdef _WIN32
-    pd_this->pd_inter->i_freq = 0;
+    INTER->i_freq = 0;
 #endif
-    pd_this->pd_inter->i_havegui = 0;
+    INTER->i_havegui = 0;
+    INTER->i_havetkproc = 0;
+    INTER->i_guisock = -1;
 }
 
-void s_inter_freepdinstance( void)
+void s_inter_free(t_instanceinter *inter)
 {
-    freebytes(pd_this->pd_inter, sizeof(*pd_this->pd_inter));
+    if (inter->i_fdpoll)
+    {
+        binbuf_free(inter->i_inbinbuf);
+        inter->i_inbinbuf = 0;
+        t_freebytes(inter->i_fdpoll, inter->i_nfdpoll * sizeof(t_fdpoll));
+        inter->i_fdpoll = 0;
+        inter->i_nfdpoll = 0;
+    }
+#if PDTHREADS
+    pthread_mutex_destroy(&inter->i_mutex);
+#endif
+    freebytes(inter, sizeof(*inter));
+}
+
+void s_inter_freepdinstance(void)
+{
+    s_inter_free(INTER);
 }
 
 #if PDTHREADS
@@ -1475,7 +1926,7 @@ current instance of Pd is currently locked via sys_lock() below; this gains
 read access to the class and instance lists which must be released for the
 write-lock to be available. */
 
-void pd_globallock( void)
+void pd_globallock(void)
 {
 #ifdef PDINSTANCE
     if (!pd_this->pd_islocked)
@@ -1485,7 +1936,7 @@ void pd_globallock( void)
 #endif /* PDINSTANCE */
 }
 
-void pd_globalunlock( void)
+void pd_globalunlock(void)
 {
 #ifdef PDINSTANCE
     pthread_rwlock_unlock(&sys_rwlock);
@@ -1496,10 +1947,10 @@ void pd_globalunlock( void)
 /* routines to lock/unlock a Pd instance for thread safety.  Call pd_setinsance
 first.  The "pd_this"  variable can be written and read thread-safely as it
 is defined as per-thread storage. */
-void sys_lock( void)
+void sys_lock(void)
 {
 #ifdef PDINSTANCE
-    pthread_mutex_lock(&pd_this->pd_inter->i_mutex);
+    pthread_mutex_lock(&INTER->i_mutex);
     pthread_rwlock_rdlock(&sys_rwlock);
     pd_this->pd_islocked = 1;
 #else
@@ -1507,28 +1958,28 @@ void sys_lock( void)
 #endif
 }
 
-void sys_unlock( void)
+void sys_unlock(void)
 {
 #ifdef PDINSTANCE
     pd_this->pd_islocked = 0;
     pthread_rwlock_unlock(&sys_rwlock);
-    pthread_mutex_unlock(&pd_this->pd_inter->i_mutex);
+    pthread_mutex_unlock(&INTER->i_mutex);
 #else
     pthread_mutex_unlock(&sys_mutex);
 #endif
 }
 
-int sys_trylock( void)
+int sys_trylock(void)
 {
 #ifdef PDINSTANCE
     int ret;
-    if (!(ret = pthread_mutex_trylock(&pd_this->pd_inter->i_mutex)))
+    if (!(ret = pthread_mutex_trylock(&INTER->i_mutex)))
     {
         if (!(ret = pthread_rwlock_tryrdlock(&sys_rwlock)))
             return (0);
         else
         {
-            pthread_mutex_unlock(&pd_this->pd_inter->i_mutex);
+            pthread_mutex_unlock(&INTER->i_mutex);
             return (ret);
         }
     }
@@ -1540,9 +1991,24 @@ int sys_trylock( void)
 
 #else /* PDTHREADS */
 
-void sys_lock( void) {}
-void sys_unlock( void) {}
-void pd_globallock( void) {}
-void pd_globalunlock( void) {}
+#ifdef TEST_LOCKING /* run standalone Pd with this to find deadlocks */
+static int amlocked;
+void sys_lock(void)
+{
+    if (amlocked) bug("duplicate lock");
+    amlocked = 1;
+}
+
+void sys_unlock(void)
+{
+    if (!amlocked) bug("duplicate unlock");
+    amlocked = 0;
+}
+#else
+void sys_lock(void) {}
+void sys_unlock(void) {}
+#endif
+void pd_globallock(void) {}
+void pd_globalunlock(void) {}
 
 #endif /* PDTHREADS */

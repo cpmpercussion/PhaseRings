@@ -1,1 +1,1 @@
-../../../InAppSettingsKit/InAppSettingsKit/Controllers/IASKViewController.h
+../../../InAppSettingsKit/Sources/InAppSettingsKit/include/IASKViewController.h

@@ -1,9 +1,12 @@
 /* Copyright (c) 1997-1999 Miller Puckette.
 * For information on usage and redistribution, and for a DISCLAIMER OF ALL
 * WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
+#if !defined (HAVE_LIBDL) && HAVE_DLOPEN
+# define HAVE_LIBDL 1
+#endif
 
-#if defined(HAVE_LIBDL) || defined(__FreeBSD__)
-#include <dlfcn.h>
+#if HAVE_LIBDL
+# include <dlfcn.h>
 #endif
 #ifdef HAVE_UNISTD_H
 #include <stdlib.h>
@@ -22,43 +25,195 @@
 #include "s_stuff.h"
 #include <stdio.h>
 #include <sys/stat.h>
+#include "m_private_utils.h"
 #ifdef _MSC_VER  /* This is only for Microsoft's compiler, not cygwin, e.g. */
-#define snprintf _snprintf
 #define stat _stat
 #endif
 
 typedef void (*t_xxx)(void);
 
 /* naming convention for externs.  The names are kept distinct for those
-who wich to make "fat" externs compiled for many platforms.  Less specific
+who wish to make "fat" externs compiled for many platforms.  Less specific
 fallbacks are provided, primarily for back-compatibility; these suffice if
 you are building a package which will run with a single set of compiled
 objects.  The specific name is the letter b, l, d, or m for  BSD, linux,
 darwin, or microsoft, followed by a more specific string, either "fat" for
 a fat binary or an indication of the instruction set. */
 
-#if defined(__linux__) || defined(__FreeBSD_kernel__) || defined(__GNU__) || defined(__FreeBSD__)
-static char sys_dllextent2[] = ".pd_linux";
-# ifdef __x86_64__
-static char sys_dllextent[] = ".l_ia64"; // this should be .l_x86_64 or .l_amd64
-# elif defined(__i386__) || defined(_M_IX86)
-static char sys_dllextent[] = ".l_i386";
-# elif defined(__arm__)
-static char sys_dllextent[] = ".l_arm";
-# else
-static char sys_dllextent[] = ".so";
-# endif
-#elif defined(__APPLE__)
-# ifndef MACOSX3
-static char sys_dllextent[] = ".d_fat", sys_dllextent2[] = ".pd_darwin";
-# else
-static char sys_dllextent[] = ".d_ppc", sys_dllextent2[] = ".pd_darwin";
-# endif
-#elif defined(_WIN32) || defined(__CYGWIN__)
-static char sys_dllextent[] = ".m_i386", sys_dllextent2[] = ".dll";
-#else
-static char sys_dllextent[] = ".so", sys_dllextent2[] = ".so";
+#ifdef __APPLE__
+# define FAT_BINARIES 1
 #endif
+
+#define STR(s) #s
+#define STRINGIFY(s) STR(s)
+
+
+#if defined(__x86_64__) || defined(_M_X64)
+# define ARCHEXT "amd64"
+#elif defined(__i386__) || defined(_M_IX86)
+# define ARCHEXT "i386"
+#elif defined(__arm__)
+# define ARCHEXT "arm"
+#elif defined(__aarch64__)
+# define ARCHEXT "arm64"
+#elif defined(__ppc__)
+# define ARCHEXT "ppc"
+#endif
+
+#ifdef ARCHEXT
+#define ARCHDLLEXT(prefix) prefix ARCHEXT ,
+#else
+#define ARCHDLLEXT(prefix)
+#endif
+
+
+#if defined(_WIN32) || defined(__CYGWIN__)
+# define SYSTEMEXT ".dll"
+#else
+# define SYSTEMEXT ".so"
+#endif
+
+static const char*sys_dllextent_base[] = {
+#if defined(__linux__) || defined(__FreeBSD_kernel__) || defined(__GNU__)
+    ARCHDLLEXT(".l_")
+# if defined(__x86_64__) || defined(_M_X64)
+    ".l_ia64",      /* incorrect but probably in wide use */
+# endif
+    ".pd_linux",
+#elif defined(__APPLE__)
+    ARCHDLLEXT(".d_")
+    ".d_fat",
+    ".pd_darwin",
+#elif defined(_WIN32) || defined(__CYGWIN__)
+    ARCHDLLEXT(".m_")
+    SYSTEMEXT,
+#endif
+    0
+    };
+
+static const char**sys_dllextent = 0;
+static size_t num_dllextents = 0;
+static void add_dllextension(const char*ext) {
+    const char**extensions;
+    if(ext) {
+        /* prevent duplicate entries */
+        int i;
+        for(i=0; i<num_dllextents; i++) {
+            if(!strcmp(ext, sys_dllextent[i]))
+                return;
+        }
+    }
+    extensions = resizebytes(sys_dllextent
+        , sizeof(*sys_dllextent) * num_dllextents
+        , sizeof(*sys_dllextent) * (num_dllextents+1)
+        );
+    if(!extensions)
+        return;
+    sys_dllextent = extensions;
+    sys_dllextent[num_dllextents] = ext;
+    num_dllextents++;
+}
+
+const char*sys_deken_specifier(char*buf, size_t bufsize, int include_floatsize, int cpu);
+
+static char*add_deken_extension(const char*systemext, int float_agnostic, int cpu)
+{
+    char extbuf[MAXPDSTRING];
+    char*ext = 0;
+
+    if(!(sys_deken_specifier(extbuf, sizeof(extbuf), float_agnostic, cpu)))
+        return 0;
+
+    ext = getbytes(MAXPDSTRING);
+    if(!ext)
+        return 0;
+    ext[MAXPDSTRING-1] = 0;
+
+    if(pd_snprintf(ext, MAXPDSTRING-1, ".%s%s", extbuf, systemext) > 0)
+        add_dllextension(ext);
+    else
+    {
+        freebytes(ext, MAXPDSTRING);
+        ext = 0;
+    }
+    return ext;
+}
+
+    /* get an array of dll-extensions */
+const char**sys_get_dllextensions(void)
+{
+    if(!sys_dllextent) {
+        const char *extraext = 0;
+#if defined EXTERNAL_EXTENSION
+        do {
+            /* the EXTERNAL_EXTENSION might be surrounded by single-quotes
+             * to prevent macro-expansion within the macro
+             * if so, get rid of them
+             */
+            unsigned int i,j;
+            static char extern_extension[MAXPDSTRING];
+            strcpy(extern_extension, STRINGIFY(EXTERNAL_EXTENSION));
+            extern_extension[MAXPDSTRING-1] = 0;
+            for(i=0,j=0; i<MAXPDSTRING; i++) {
+                if(!extern_extension[i]) {
+                    extern_extension[j] = 0;
+                    break;
+                }
+                switch(extern_extension[i]) {
+                case '\'': break;
+                default:
+                    extern_extension[j++] = extern_extension[i];
+                }
+            }
+            extraext = extern_extension;
+        } while (0);
+#endif
+
+        int i, cpu;
+
+            /* create deken-based extensions */
+        for(cpu=0; ; cpu++)
+        {
+            /* iterate over compatible CPUs  */
+            if (!add_deken_extension(SYSTEMEXT, 0, cpu))
+                break;
+            if (!add_deken_extension(SYSTEMEXT, 1, cpu))
+                break;
+        }
+#if FAT_BINARIES
+        add_deken_extension(SYSTEMEXT, 0, -1);
+        add_deken_extension(SYSTEMEXT, 1, -1);
+#endif
+
+        if(extraext) {
+            /* check if the extra-extension is part of sys_dllextent_base
+             * and if so drop it as redundant.
+             */
+            for(i=0; i<sizeof(sys_dllextent_base)/sizeof(*sys_dllextent_base); i++) {
+                if(!sys_dllextent_base[i])
+                    continue;
+                if(!strcmp(sys_dllextent_base[i], extraext)) {
+                    extraext=0;
+                    break;
+                }
+            }
+        }
+        if(extraext)
+            add_dllextension(extraext);
+
+#if PD_FLOATSIZE == 32
+            /* and add the legacy extensions */
+        for(i=0; i<sizeof(sys_dllextent_base)/sizeof(*sys_dllextent_base); i++)
+        {
+            if(sys_dllextent_base[i])
+                add_dllextension(sys_dllextent_base[i]);
+        }
+#endif
+            /* 0-terminate the extension list */
+        add_dllextension(0);
+    }
+    return sys_dllextent;
+}
 
     /* maintain list of loaded modules to avoid repeating loads */
 typedef struct _loadedlist
@@ -92,18 +247,108 @@ void class_set_extern_dir(t_symbol *s);
 
 static int sys_do_load_abs(t_canvas *canvas, const char *objectname,
     const char *path);
+
+
+static int sys_do_load_lib_from_file(int fd,
+    const char*objectname,
+    const char*dirbuf,
+    const char*nameptr,
+    const char*symname) {
+    char filename[MAXPDSTRING];
+    t_xxx makeout = NULL;
+#ifdef _WIN32
+    HINSTANCE dlobj;
+#else
+    void*dlobj = NULL;
+#endif
+        /* close dangling filedescriptor */
+    close(fd);
+
+        /* attempt to open the library and call the setup function */
+
+
+    class_set_extern_dir(gensym(dirbuf));
+
+        /* rebuild the absolute pathname */
+    strncpy(filename, dirbuf, MAXPDSTRING);
+    filename[MAXPDSTRING-2] = 0;
+    strcat(filename, "/");
+    strncat(filename, nameptr, MAXPDSTRING-strlen(filename));
+    filename[MAXPDSTRING-1] = 0;
+
+#ifdef _WIN32
+    {
+        char dirname[MAXPDSTRING], *s, *basename;
+        sys_bashfilename(filename, filename);
+        /* set the dirname as DllDirectory, meaning in the path for
+           loading other DLLs so that dependent libraries can be included
+           in the same folder as the external. SetDllDirectory() needs a
+           minimum supported version of Windows XP SP1 for
+           SetDllDirectory, so WINVER must be 0x0502 */
+        strncpy(dirname, filename, MAXPDSTRING);
+        s = strrchr(dirname, '\\');
+        basename = s;
+        if (s && *s)
+          *s = '\0';
+        if (!SetDllDirectory(dirname))
+           pd_error(0, "could not set '%s' as DllDirectory(), '%s' might not load.",
+                 dirname, basename);
+        /* now load the DLL for the external */
+        dlobj = LoadLibrary(filename);
+        if (!dlobj)
+        {
+            wchar_t wbuf[MAXPDSTRING];
+            char buf[MAXPDSTRING];
+            DWORD count, err = GetLastError();
+            count = FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                0, err, MAKELANGID (LANG_NEUTRAL, SUBLANG_DEFAULT), wbuf, MAXPDSTRING, NULL);
+            if (!count || !WideCharToMultiByte(CP_UTF8, 0, wbuf, count+1, buf, MAXPDSTRING, 0, 0))
+                *buf = '\0';
+            pd_error(0, "%s: %s (%d)", filename, buf, err);
+        } else {
+            makeout = (t_xxx)GetProcAddress(dlobj, symname);
+            if (!makeout)
+                makeout = (t_xxx)GetProcAddress(dlobj, "setup");
+        }
+        SetDllDirectory(NULL); /* reset DLL dir to nothing */
+    }
+#elif defined(HAVE_LIBDL)
+    {
+        dlobj = dlopen(filename, RTLD_NOW | RTLD_GLOBAL);
+        if (!dlobj)
+        {
+            pd_error(0, "%s:%s", filename, dlerror());
+        } else {
+            makeout = (t_xxx)dlsym(dlobj,  symname);
+            if(!makeout)
+                makeout = (t_xxx)dlsym(dlobj,  "setup");
+        }
+    }
+#else
+#warning "No dynamic loading mechanism specified, \
+libdl or WIN32 required for loading externals!"
+#endif
+
+    if(makeout)
+        (*makeout)();
+    else if (dlobj)
+        pd_error(0, "load_object: Symbol \"%s\" not found in \"%s\"", symname, filename);
+
+    class_set_extern_dir(&s_);
+
+    return (makeout)?1:0;
+}
+
 static int sys_do_load_lib(t_canvas *canvas, const char *objectname,
     const char *path)
 {
     char symname[MAXPDSTRING], filename[MAXPDSTRING], dirbuf[MAXPDSTRING],
-        *nameptr, altsymname[MAXPDSTRING];
+        *nameptr;
+    const char**dllextent;
     const char *classname, *cnameptr;
     void *dlobj;
     t_xxx makeout = NULL;
     int i, hexmunge = 0, fd;
-#ifdef _WIN32
-    HINSTANCE ntdll;
-#endif
         /* NULL-path is only used as a last resort,
            but we have already tried all paths */
     if(!path)return (0);
@@ -146,25 +391,26 @@ static int sys_do_load_lib(t_canvas *canvas, const char *objectname,
     fprintf(stderr, "lib: %s\n", classname);
 #endif
         /* try looking in the path for (objectname).(sys_dllextent) ... */
-    if ((fd = sys_trytoopenone(path, objectname, sys_dllextent,
-        dirbuf, &nameptr, MAXPDSTRING, 1)) >= 0)
-            goto gotone;
-        /* same, with the more generic sys_dllextent2 */
-    if ((fd = sys_trytoopenone(path, objectname, sys_dllextent2,
-        dirbuf, &nameptr, MAXPDSTRING, 1)) >= 0)
-            goto gotone;
+    for(dllextent=sys_get_dllextensions(); *dllextent; dllextent++)
+    {
+        if ((fd = sys_trytoopenit(path, objectname, *dllextent,
+            dirbuf, &nameptr, MAXPDSTRING, 1, 1)) >= 0)
+            if(sys_do_load_lib_from_file(fd, objectname, dirbuf, nameptr, symname))
+                return 1;
+    }
         /* next try (objectname)/(classname).(sys_dllextent) ... */
     strncpy(filename, objectname, MAXPDSTRING);
     filename[MAXPDSTRING-2] = 0;
     strcat(filename, "/");
     strncat(filename, classname, MAXPDSTRING-strlen(filename));
     filename[MAXPDSTRING-1] = 0;
-    if ((fd = sys_trytoopenone(path, filename, sys_dllextent,
-        dirbuf, &nameptr, MAXPDSTRING, 1)) >= 0)
-            goto gotone;
-    if ((fd = sys_trytoopenone(path, filename, sys_dllextent2,
-        dirbuf, &nameptr, MAXPDSTRING, 1)) >= 0)
-            goto gotone;
+    for(dllextent=sys_get_dllextensions(); *dllextent; dllextent++)
+    {
+        if ((fd = sys_trytoopenit(path, filename, *dllextent,
+            dirbuf, &nameptr, MAXPDSTRING, 1, 1)) >= 0)
+            if(sys_do_load_lib_from_file(fd, objectname, dirbuf, nameptr, symname))
+                return 1;
+    }
 #ifdef ANDROID
     /* Android libs have a 'lib' prefix, '.so' suffix and don't allow ~ */
     char libname[MAXPDSTRING] = "lib";
@@ -173,77 +419,12 @@ static int sys_do_load_lib(t_canvas *canvas, const char *objectname,
     if (libname[len-1] == '~' && len < MAXPDSTRING - 6) {
         strcpy(libname+len-1, "_tilde");
     }
-    if ((fd = sys_trytoopenone(path, libname, ".so",
-        dirbuf, &nameptr, MAXPDSTRING, 1)) >= 0)
-            goto gotone;
+    if ((fd = sys_trytoopenit(path, libname, ".so",
+        dirbuf, &nameptr, MAXPDSTRING, 1, 1)) >= 0)
+            if(sys_do_load_lib_from_file(fd, objectname, dirbuf, nameptr, symname))
+                return 1;
 #endif
     return (0);
-gotone:
-    close(fd);
-    class_set_extern_dir(gensym(dirbuf));
-
-        /* rebuild the absolute pathname */
-    strncpy(filename, dirbuf, MAXPDSTRING);
-    filename[MAXPDSTRING-2] = 0;
-    strcat(filename, "/");
-    strncat(filename, nameptr, MAXPDSTRING-strlen(filename));
-    filename[MAXPDSTRING-1] = 0;
-
-#ifdef _WIN32
-    {
-        char dirname[MAXPDSTRING], *s, *basename;
-        sys_bashfilename(filename, filename);
-        /* set the dirname as DllDirectory, meaning in the path for
-           loading other DLLs so that dependent libraries can be included
-           in the same folder as the external. SetDllDirectory() needs a
-           minimum supported version of Windows XP SP1 for
-           SetDllDirectory, so WINVER must be 0x0502 */
-        strncpy(dirname, filename, MAXPDSTRING);
-        s = strrchr(dirname, '\\');
-        basename = s;
-        if (s && *s)
-          *s = '\0';
-        if (!SetDllDirectory(dirname))
-           error("Could not set '%s' as DllDirectory(), '%s' might not load.",
-                 dirname, basename);
-        /* now load the DLL for the external */
-        ntdll = LoadLibrary(filename);
-        if (!ntdll)
-        {
-            verbose(1, "%s: couldn't load", filename);
-            class_set_extern_dir(&s_);
-            return (0);
-        }
-        makeout = (t_xxx)GetProcAddress(ntdll, symname);
-        if (!makeout)
-             makeout = (t_xxx)GetProcAddress(ntdll, "setup");
-        SetDllDirectory(NULL); /* reset DLL dir to nothing */
-    }
-#elif defined(HAVE_LIBDL) || defined(__FreeBSD__)
-    dlobj = dlopen(filename, RTLD_NOW | RTLD_GLOBAL);
-    if (!dlobj)
-    {
-        verbose(1, "%s: %s", filename, dlerror());
-        class_set_extern_dir(&s_);
-        return (0);
-    }
-    makeout = (t_xxx)dlsym(dlobj,  symname);
-    if(!makeout)
-        makeout = (t_xxx)dlsym(dlobj,  "setup");
-#else
-#warning "No dynamic loading mechanism specified, \
-    libdl or WIN32 required for loading externals!"
-#endif
-
-    if (!makeout)
-    {
-        verbose(1, "load_object: Symbol \"%s\" not found", symname);
-        class_set_extern_dir(&s_);
-        return 0;
-    }
-    (*makeout)();
-    class_set_extern_dir(&s_);
-    return (1);
 }
 
 
@@ -307,10 +488,8 @@ int sys_load_lib(t_canvas *canvas, const char *classname)
     data.ok = 0;
 
     if (sys_onloadlist(classname))
-    {
-        verbose(1, "%s: already loaded", classname);
-        return (1);
-    }
+        return (1); /* if lib is already loaded, dismiss. */
+
         /* if classname is absolute, try this first */
     if (sys_isabsolutepath(classname))
     {
@@ -320,7 +499,7 @@ int sys_load_lib(t_canvas *canvas, const char *classname)
         int dirlen;
         if (!z)
             return (0);
-        dirlen = z - classname;
+        dirlen = (int)(z - classname);
         if (dirlen > MAXPDSTRING-1)
             dirlen = MAXPDSTRING-1;
         strncpy(dirbuf, classname, dirlen);
@@ -329,7 +508,7 @@ int sys_load_lib(t_canvas *canvas, const char *classname)
         sys_loadlib_iter(dirbuf, &data);
     }
     data.classname = classname;
-    if(!data.ok)
+    if(!data.ok && !sys_isabsolutepath(classname)) /* don't iterate if classname is absolute */
         canvas_path_iterate(canvas, (t_canvas_path_iterator)sys_loadlib_iter,
             &data);
 
@@ -352,24 +531,24 @@ int sys_run_scheduler(const char *externalschedlibname,
     typedef int (*t_externalschedlibmain)(const char *);
     t_externalschedlibmain externalmainfunc;
     char filename[MAXPDSTRING];
-    struct stat statbuf;
-    snprintf(filename, sizeof(filename), "%s%s", externalschedlibname,
-        sys_dllextent);
-    sys_bashfilename(filename, filename);
-        /* if first-choice file extent can't 'stat', go for second */
-    if (stat(filename, &statbuf) < 0)
+    const char**dllextent;
+    for(dllextent=sys_get_dllextensions(); *dllextent; dllextent++)
     {
-        snprintf(filename, sizeof(filename), "%s%s", externalschedlibname,
-            sys_dllextent2);
+        struct stat statbuf;
+        pd_snprintf(filename, sizeof(filename), "%s%s", externalschedlibname,
+            *dllextent);
         sys_bashfilename(filename, filename);
+        if(!stat(filename, &statbuf))
+            break;
     }
+
 #ifdef _WIN32
     {
         HINSTANCE ntdll = LoadLibrary(filename);
         if (!ntdll)
         {
             fprintf(stderr, "%s: couldn't load external scheduler\n", filename);
-            error("%s: couldn't load external scheduler", filename);
+            pd_error(0, "%s: couldn't load external scheduler", filename);
             return (1);
         }
         externalmainfunc =
@@ -378,13 +557,13 @@ int sys_run_scheduler(const char *externalschedlibname,
             externalmainfunc =
                 (t_externalschedlibmain)GetProcAddress(ntdll, "main");
     }
-#elif defined HAVE_LIBDL
+#elif HAVE_LIBDL
     {
         void *dlobj;
         dlobj = dlopen(filename, RTLD_NOW | RTLD_GLOBAL);
         if (!dlobj)
         {
-            error("%s: %s", filename, dlerror());
+            pd_error(0, "%s: %s", filename, dlerror());
             fprintf(stderr, "dlopen failed for %s: %s\n", filename, dlerror());
             return (1);
         }
@@ -425,7 +604,7 @@ static t_pd *do_create_abstraction(t_symbol*s, int argc, t_atom *argv)
         int fd = -1;
 
         t_pd *was = s__X.s_thing;
-        snprintf(classslashclass, MAXPDSTRING, "%s/%s", objectname, objectname);
+        pd_snprintf(classslashclass, MAXPDSTRING, "%s/%s", objectname, objectname);
         if ((fd = canvas_open(canvas, objectname, ".pd",
                   dirbuf, &nameptr, MAXPDSTRING, 0)) >= 0 ||
             (fd = canvas_open(canvas, objectname, ".pat",
@@ -445,7 +624,7 @@ static t_pd *do_create_abstraction(t_symbol*s, int argc, t_atom *argv)
         }
             /* otherwise we couldn't do it; just return 0 */
     }
-    else error("%s: can't load abstraction within itself\n", s->s_name);
+    else pd_error(0, "%s: can't load abstraction within itself\n", s->s_name);
     pd_this->pd_newest = 0;
     return (0);
 }
@@ -461,13 +640,13 @@ static int sys_do_load_abs(t_canvas *canvas, const char *objectname,
            but we have already tried all paths */
     if (!path) return (0);
 
-    snprintf(classslashclass, MAXPDSTRING, "%s/%s", objectname, objectname);
-    if ((fd = sys_trytoopenone(path, objectname, ".pd",
-              dirbuf, &nameptr, MAXPDSTRING, 1)) >= 0 ||
-        (fd = sys_trytoopenone(path, objectname, ".pat",
-              dirbuf, &nameptr, MAXPDSTRING, 1)) >= 0 ||
-        (fd = sys_trytoopenone(path, classslashclass, ".pd",
-              dirbuf, &nameptr, MAXPDSTRING, 1)) >= 0)
+    pd_snprintf(classslashclass, MAXPDSTRING, "%s/%s", objectname, objectname);
+    if ((fd = sys_trytoopenit(path, objectname, ".pd",
+              dirbuf, &nameptr, MAXPDSTRING, 1, 1)) >= 0 ||
+        (fd = sys_trytoopenit(path, objectname, ".pat",
+              dirbuf, &nameptr, MAXPDSTRING, 1, 1)) >= 0 ||
+        (fd = sys_trytoopenit(path, classslashclass, ".pd",
+              dirbuf, &nameptr, MAXPDSTRING, 1, 1)) >= 0)
     {
         t_class*c=0;
         close(fd);
@@ -489,4 +668,30 @@ static int sys_do_load_abs(t_canvas *canvas, const char *objectname,
         return (1);
     }
     return (0);
+}
+
+t_method sys_getfunbyname(const char *name)
+{
+#ifdef _WIN32
+    HMODULE module;
+        /* Get a handle to the actual module that contains the Pd API functions.
+        For this we just have to pass *any* Pd API function to GetModuleHandleEx().
+        NB: GetModuleHandle(NULL) wouldn't work because it would return a handle
+        to the main executable and GetProcAddress(), unlike dlsym(), does not
+        reach into its dependencies. */
+    if (GetModuleHandleEx(
+        GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+        (LPCSTR)&pd_typedmess, &module))
+            return (t_method)GetProcAddress(module, name);
+    else
+    {
+        fprintf(stderr, "GetModuleHandleEx() failed with error code %d\n",
+            GetLastError());
+        return NULL;
+    }
+#elif HAVE_LIBDL
+    return (t_method)dlsym(dlopen(NULL, RTLD_NOW), name);
+#else
+    return NULL;
+#endif
 }

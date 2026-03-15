@@ -1,1 +1,1 @@
-../../../InAppSettingsKit/InAppSettingsKit/Views/IASKPSTextFieldSpecifierViewCell.h
+../../../InAppSettingsKit/Sources/InAppSettingsKit/include/IASKPSTextFieldSpecifierViewCell.h
