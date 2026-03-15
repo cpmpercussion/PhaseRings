@@ -1,11 +1,11 @@
 PODS:
-  - InAppSettingsKit (2.9)
-  - libpd (0.10.0)
-  - SocketRocket (0.6.0)
+  - InAppSettingsKit (3.9.2)
+  - libpd (0.15.0)
+  - SocketRocket (0.7.1)
 
 DEPENDENCIES:
   - InAppSettingsKit
-  - libpd (from `https://github.com/libpd/libpd`)
+  - libpd (from `https://github.com/libpd/libpd`, tag `0.15.0`)
   - SocketRocket (~> 0.6)
 
 SPEC REPOS:
@@ -17,18 +17,19 @@ EXTERNAL SOURCES:
   libpd:
     :git: https://github.com/libpd/libpd
     :submodules: true
+    :tag: 0.15.0
 
 CHECKOUT OPTIONS:
   libpd:
-    :commit: 9b87a36d50b72ab5e1182fa072dd32868e3ec6d2
     :git: https://github.com/libpd/libpd
     :submodules: true
+    :tag: 0.15.0
 
 SPEC CHECKSUMS:
-  InAppSettingsKit: fc3dea21846535b76b8289b119dbfdbe2505b2b2
-  libpd: 77d1445db7649a0d2357f0b5fd83409799008f62
-  SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
+  InAppSettingsKit: 960d91fde94cae12a007c2272e34700a171df600
+  libpd: f6798d62590e1cea550c6f48e08dc8a608805ebf
+  SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
 
-PODFILE CHECKSUM: 700e371cb1b852dfd3a6eff15f8b93e4df4352fc
+PODFILE CHECKSUM: 871e6903941d2d346db1c2c92dab5a213c79a3fc
 
 COCOAPODS: 1.16.2

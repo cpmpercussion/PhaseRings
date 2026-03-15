@@ -29,9 +29,9 @@
 #define NUMBER_COMPOSITIONS_AVAILABLE 5
 #define BASE_A 33
 #define BACKGROUND_SOUND_ALWAYS_ON YES
-#define SAMPLE_RATE 48000
+#define SAMPLE_RATE 44100
 #define SOUND_OUTPUT_CHANNELS 2
-#define TICKS_PER_BUFFER 4
+//#define TICKS_PER_BUFFER 4
 
 #import "ViewController.h"
 #import <AudioToolbox/AudioToolbox.h>
@@ -98,6 +98,7 @@
     [self updateUITextLabels];
     [self startAudioEngine];
     [self setupAudioSession];
+    [self publishAsNode];
     
     [PdBase setDelegate:self];
     self.midiManager = [[MetatoneMidiManager alloc] init];
@@ -139,6 +140,9 @@
                                              selector:@selector(handleAudioSessionInterruption:)
                                                  name:AVAudioSessionInterruptionNotification
                                                object:[AVAudioSession sharedInstance]];
+}
+
+- (void) publishAsNode {
     // Register as an IAA Remote Generator so hosts like AUM can route our audio.
     AudioComponentDescription iaaDesc = {
         .componentType         = kAudioUnitType_RemoteGenerator,
