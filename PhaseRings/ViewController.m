@@ -81,6 +81,12 @@
 @property (strong, nonatomic) NSDate* timeOfLastNewIdea;
 @end
 
+static void IAAConnectionChangedCallback(void *inRefCon,
+                                         AudioUnit inUnit,
+                                         AudioUnitPropertyID inID,
+                                         AudioUnitScope inScope,
+                                         AudioUnitElement inElement);
+
 @implementation ViewController
 #pragma mark - Setup
 - (PdAudioController *) audioController
@@ -154,16 +160,62 @@
         .componentSubType      = 'synt',
         .componentManufacturer = 'cmpc'
     };
+    AudioUnit unit = self.audioController.audioUnit.audioUnit;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    OSStatus err = AudioOutputUnitPublish(&iaaDesc, CFSTR("PhaseRings"), 2,
-                                         self.audioController.audioUnit.audioUnit);
+    OSStatus err = AudioOutputUnitPublish(&iaaDesc, CFSTR("PhaseRings"), 2, unit);
 #pragma clang diagnostic pop
     if (err != noErr) {
         NSLog(@"IAA: AudioOutputUnitPublish failed (%d)", (int)err);
-    } else {
-        NSLog(@"IAA: Published as Remote Generator.");
+        return;
     }
+    NSLog(@"IAA: Published as Remote Generator.");
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    OSStatus listenErr = AudioUnitAddPropertyListener(unit,
+                                                      kAudioUnitProperty_IsInterAppConnected,
+                                                      IAAConnectionChangedCallback,
+                                                      (__bridge void *)self);
+#pragma clang diagnostic pop
+    if (listenErr != noErr) {
+        NSLog(@"IAA: failed to install IsInterAppConnected listener (%d)", (int)listenErr);
+    }
+}
+
+- (void) handleIAAConnectionChange {
+    AudioUnit unit = self.audioController.audioUnit.audioUnit;
+    UInt32 connected = 0;
+    UInt32 size = sizeof(connected);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    OSStatus err = AudioUnitGetProperty(unit,
+                                        kAudioUnitProperty_IsInterAppConnected,
+                                        kAudioUnitScope_Global,
+                                        0,
+                                        &connected,
+                                        &size);
+#pragma clang diagnostic pop
+    if (err != noErr) {
+        NSLog(@"IAA: failed to read IsInterAppConnected (%d)", (int)err);
+        return;
+    }
+    NSLog(@"IAA: connection state changed -> %@", connected ? @"CONNECTED" : @"DISCONNECTED");
+    if (connected && !self.audioController.isActive) {
+        NSLog(@"IAA: host connected but engine was inactive; activating.");
+        [self.audioController setActive:YES];
+    }
+}
+
+static void IAAConnectionChangedCallback(void *inRefCon,
+                                         AudioUnit inUnit,
+                                         AudioUnitPropertyID inID,
+                                         AudioUnitScope inScope,
+                                         AudioUnitElement inElement) {
+    ViewController *vc = (__bridge ViewController *)inRefCon;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [vc handleIAAConnectionChange];
+    });
 }
 
 - (void) startAudioEngine {
