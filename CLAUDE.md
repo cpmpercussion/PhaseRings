@@ -32,7 +32,7 @@ The repo is wired into Xcode Cloud; builds on push to `main` and uploads to Test
 
 ### Source layout
 
-- `Chorale/` — all main app Objective-C source (the Xcode target is `PhaseRings`; "Chorale" is an older internal name)
+- `PhaseRings/` — all main app Objective-C source
 - `PhaseRingSynth/` — Pure Data patches (`.pd`) and audio samples used by libpd
 - `MetatoneOSC/` — OSC networking library (F53OSC + GCDAsyncSocket) and `MetatoneNetworkManager`
 - `MetatoneMIDI/` — Core MIDI wrapper (PGMidi) and `MetatoneMidiManager`

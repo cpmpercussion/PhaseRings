@@ -1,6 +1,6 @@
 //
 //  SingingBowlComposition.h
-//  Chorale
+//  PhaseRings
 //
 //  Created by Charles Martin on 28/01/2014.
 //  Copyright (c) 2014 Charles Martin. All rights reserved.
