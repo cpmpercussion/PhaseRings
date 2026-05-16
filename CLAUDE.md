@@ -19,6 +19,15 @@ Build and run from Xcode (Cmd+R). Target a connected iOS device or simulator. Th
 
 UI tests live in `PhaseRingsUITests/` and can be run via Xcode's test navigator (Cmd+U). The test suite is a mostly-empty template.
 
+## Xcode Cloud
+
+The repo is wired into Xcode Cloud; builds on push to `main` and uploads to TestFlight in App Store Connect.
+
+- **Shared scheme**: `PhaseRings.xcodeproj/xcshareddata/xcschemes/PhaseRings.xcscheme` is the one Xcode Cloud uses. Don't demote it to `xcuserdata/` — CI won't find it.
+- **`ci_scripts/ci_post_clone.sh`**: runs `pod install --no-repo-update` after the clone. Pods are committed, but this is a safety net if Podfile.lock drifts.
+- **Build numbers**: "Use Xcode Cloud build number" is enabled on the workflow, which overrides `CFBundleVersion` from `Chorale/PhaseRings-Info.plist` (still `200` for local archives only). Build numbers are scoped per `CFBundleShortVersionString`; current marketing version is `2.0`, so the CI counter starts fresh from 1 for v2.0 — that's expected and fine.
+- **Command-line builds on M1**: `xcodebuild test` for the iOS simulator needs `ONLY_ACTIVE_ARCH=YES ARCHS=arm64` overrides (target Debug has `ONLY_ACTIVE_ARCH=NO`). Xcode Cloud picks one arch per destination so it's not affected.
+
 ## Architecture
 
 ### Source layout
