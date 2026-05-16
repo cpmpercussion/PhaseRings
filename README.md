@@ -2,7 +2,7 @@
 
 [![DOI](https://zenodo.org/badge/20166/cpmpercussion/PhaseRings.svg)](https://zenodo.org/badge/latestdoi/20166/cpmpercussion/PhaseRings)
 
-![PhaseRings Screenshot](https://raw.githubusercontent.com/cpmpercussion/PhaseRings/master/PhaseRings-Screenshot-iPad.png)
+![PhaseRings Screenshot](https://raw.githubusercontent.com/cpmpercussion/PhaseRings/main/PhaseRings-Screenshot-iPad.png)
 
 [Now available in the AppStore for all iOS devices running iOS 8!][3]
 
