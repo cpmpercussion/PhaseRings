@@ -90,6 +90,13 @@ static void IAAConnectionChangedCallback(void *inRefCon,
                                          AudioUnitScope inScope,
                                          AudioUnitElement inElement);
 
+static OSStatus IAARenderNotifyCallback(void *inRefCon,
+                                        AudioUnitRenderActionFlags *ioActionFlags,
+                                        const AudioTimeStamp *inTimeStamp,
+                                        UInt32 inBusNumber,
+                                        UInt32 inNumberFrames,
+                                        AudioBufferList *ioData);
+
 @implementation ViewController
 #pragma mark - Setup
 - (PdAudioController *) audioController
@@ -178,6 +185,16 @@ static void IAAConnectionChangedCallback(void *inRefCon,
     if (listenErr != noErr) {
         NSLog(@"IAA: failed to install IsInterAppConnected listener (%d)", (int)listenErr);
     }
+
+    // Diagnostic: log render activity (throttled) to tell whether any host or
+    // the local speaker is actually pulling samples, and whether the resulting
+    // buffer has signal in it.
+    OSStatus rnErr = AudioUnitAddRenderNotify(unit,
+                                              IAARenderNotifyCallback,
+                                              (__bridge void *)self);
+    if (rnErr != noErr) {
+        NSLog(@"IAA: failed to install render-notify (%d)", (int)rnErr);
+    }
 }
 
 - (void) handleIAAConnectionChange {
@@ -213,6 +230,43 @@ static void IAAConnectionChangedCallback(void *inRefCon,
     dispatch_async(dispatch_get_main_queue(), ^{
         [vc handleIAAConnectionChange];
     });
+}
+
+static OSStatus IAARenderNotifyCallback(void *inRefCon,
+                                        AudioUnitRenderActionFlags *ioActionFlags,
+                                        const AudioTimeStamp *inTimeStamp,
+                                        UInt32 inBusNumber,
+                                        UInt32 inNumberFrames,
+                                        AudioBufferList *ioData) {
+    // Called on the audio thread. fprintf isn't strictly RT-safe but is
+    // acceptable for a throttled diagnostic; remove once IAA is resolved.
+    static UInt32 preCount = 0;
+    static UInt32 postCount = 0;
+    if (*ioActionFlags & kAudioUnitRenderAction_PreRender) {
+        if ((preCount++ % 200) == 0) {
+            fprintf(stderr,
+                    "IAA: render PRE  n=%u bus=%u frames=%u\n",
+                    (unsigned)preCount, (unsigned)inBusNumber, (unsigned)inNumberFrames);
+        }
+    } else if (*ioActionFlags & kAudioUnitRenderAction_PostRender) {
+        Float32 peak = 0.0f;
+        if (ioData && ioData->mNumberBuffers > 0 && ioData->mBuffers[0].mData) {
+            const Float32 *samples = (const Float32 *)ioData->mBuffers[0].mData;
+            UInt32 nFrames = ioData->mBuffers[0].mDataByteSize / sizeof(Float32);
+            for (UInt32 i = 0; i < nFrames; i++) {
+                Float32 a = fabsf(samples[i]);
+                if (a > peak) peak = a;
+            }
+        }
+        if ((postCount++ % 200) == 0) {
+            fprintf(stderr,
+                    "IAA: render POST n=%u bus=%u frames=%u peak=%.6f silence=%d\n",
+                    (unsigned)postCount, (unsigned)inBusNumber, (unsigned)inNumberFrames,
+                    peak,
+                    (*ioActionFlags & kAudioUnitRenderAction_OutputIsSilence) ? 1 : 0);
+        }
+    }
+    return noErr;
 }
 
 - (void) startAudioEngine {
