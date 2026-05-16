@@ -96,8 +96,11 @@
     [self.experimentNewSetupButton setHidden:YES];
     [self.compositionStepper setHidden:NO];
     [self updateUITextLabels];
-    [self startAudioEngine];
+    // Order matters for IAA: session must be configured with MixWithOthers
+    // before the audio unit is created, and the unit must be live before
+    // publication so hosts can connect to a real render callback.
     [self setupAudioSession];
+    [self startAudioEngine];
     [self publishAsNode];
     
     [PdBase setDelegate:self];
@@ -127,14 +130,16 @@
 
 #pragma mark - Audio Setup Methods.
 -(void) setupAudioSession {
-    // this is the currently known working combination of AVAudioSession Category and Options.
-    NSString *category = AVAudioSessionCategoryPlayback; // previously AVAudioSessionCategoryPlayAndRecord;
-    AVAudioSessionCategoryOptions options = AVAudioSessionCategoryOptionAllowBluetoothA2DP|AVAudioSessionCategoryOptionMixWithOthers|AVAudioSessionCategoryOptionDefaultToSpeaker;
+    // MixWithOthers is mandatory for Inter-App Audio hosting.
+    // DefaultToSpeaker is only valid with PlayAndRecord; including it with
+    // Playback caused setCategory to fail and silently drop MixWithOthers.
+    NSString *category = AVAudioSessionCategoryPlayback;
+    AVAudioSessionCategoryOptions options = AVAudioSessionCategoryOptionAllowBluetoothA2DP|AVAudioSessionCategoryOptionMixWithOthers;
     NSError *error = nil;
     if ( ![[AVAudioSession sharedInstance] setCategory:category withOptions:options error:&error] ) {
         NSLog(@"Couldn't set audio session category: %@", error);
     } else {
-        NSLog(@"Audio Session category set to PlayAndRecord.");
+        NSLog(@"Audio Session category set to Playback (MixWithOthers).");
     }
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleAudioSessionInterruption:)
