@@ -29,7 +29,10 @@
 #define NUMBER_COMPOSITIONS_AVAILABLE 5
 #define BASE_A 33
 #define BACKGROUND_SOUND_ALWAYS_ON YES
-#define SAMPLE_RATE 44100
+// Modern iPads run hardware at 48 kHz; asking for 44.1 forced libpd to log
+// "could not set session sample rate" and left the published IAA AU
+// advertising 44.1 while the host expected 48. Match the hardware.
+#define SAMPLE_RATE 48000
 #define SOUND_OUTPUT_CHANNELS 2
 //#define TICKS_PER_BUFFER 4
 
@@ -136,17 +139,11 @@ static void IAAConnectionChangedCallback(void *inRefCon,
 
 #pragma mark - Audio Setup Methods.
 -(void) setupAudioSession {
-    // MixWithOthers is mandatory for Inter-App Audio hosting.
-    // DefaultToSpeaker is only valid with PlayAndRecord; including it with
-    // Playback caused setCategory to fail and silently drop MixWithOthers.
-    NSString *category = AVAudioSessionCategoryPlayback;
-    AVAudioSessionCategoryOptions options = AVAudioSessionCategoryOptionAllowBluetoothA2DP|AVAudioSessionCategoryOptionMixWithOthers;
-    NSError *error = nil;
-    if ( ![[AVAudioSession sharedInstance] setCategory:category withOptions:options error:&error] ) {
-        NSLog(@"Couldn't set audio session category: %@", error);
-    } else {
-        NSLog(@"Audio Session category set to Playback (MixWithOthers).");
-    }
+    // PdAudioController configurePlayback... with mixingEnabled:YES already
+    // sets Playback + MixWithOthers (which IAA requires). Doing it again here
+    // races with whatever has already touched the session on device (PencilKit,
+    // UIScene) and fails with paramErr (-50), silently dropping MixWithOthers.
+    // Just register for interruptions; let libpd own the category.
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleAudioSessionInterruption:)
                                                  name:AVAudioSessionInterruptionNotification
