@@ -81,7 +81,7 @@
 # pragma mark - Colour Scheme External Methods
 
 -(void) setSelectedColourScheme {
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"dark_mode"]) {
+    if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
         [self setSolarizedScheme];
     } else {
         [self setLightScheme];
@@ -90,6 +90,19 @@
 
 -(void) setServerColourScheme {
     [self setDarkScheme];
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+    [super traitCollectionDidChange:previousTraitCollection];
+    if (self.traitCollection.userInterfaceStyle == previousTraitCollection.userInterfaceStyle) {
+        return;
+    }
+    [self setSelectedColourScheme];
+    // Existing rim/text CALayers were drawn with the old scheme's colours;
+    // redraw from the current setup so they pick up the new ones.
+    if (self.currentSetup) {
+        [self drawSetup:self.currentSetup];
+    }
 }
 
 -(void) drawSetup:(SingingBowlSetup *) setup

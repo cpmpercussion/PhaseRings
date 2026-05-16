@@ -31,8 +31,7 @@
                            @"reverb_volume":[[NSUserDefaults standardUserDefaults] objectForKey:@"reverb_volume"],
                            @"master_volume":[[NSUserDefaults standardUserDefaults] objectForKey:@"master_volume"],
                            @"local_classifier":[[NSUserDefaults standardUserDefaults] objectForKey:@"local_classifier"],
-                           @"display_classifier_information":[[NSUserDefaults standardUserDefaults] objectForKey:@"display_classifier_information"],
-                           @"dark_mode":[[NSUserDefaults standardUserDefaults] objectForKey:@"dark_mode"]};
+                           @"display_classifier_information":[[NSUserDefaults standardUserDefaults] objectForKey:@"display_classifier_information"]};
     return currentState;
 }
 
