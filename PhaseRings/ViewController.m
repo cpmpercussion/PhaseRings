@@ -416,6 +416,12 @@ static void IAAConnectionChangedCallback(void *inRefCon,
     // Laying out the subviews -- better draw the setup again?? Really?
     // Maybe this protects agains issues with rotation.
     [self.bowlView drawSetup:self.bowlSetup];
+    // Screenshot mode re-lights the rings after every layout pass because
+    // drawSetup wipes the layer dictionaries.
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"screenshotMode"]) {
+        [PdBase sendFloat:0.0 toReceiver:@"mastervolume"];
+        [self.bowlView lightAlternateRingsForScreenshot];
+    }
 }
 
 #pragma mark - Touch and Performance Methods

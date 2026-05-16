@@ -261,6 +261,24 @@
     }
 }
 
+-(void) lightAlternateRingsForScreenshot {
+    if (!self.currentSetup) return;
+    int n = [self.currentSetup numberOfPitches];
+    for (int i = 0; i < n; i += 2) {
+        int note = [self.currentSetup pitchAtIndex:i];
+        CAShapeLayer *tapLayer = [self.tapEdgeLayers objectForKey:@(note)];
+        if (tapLayer) {
+            tapLayer.hidden = NO;
+            tapLayer.opacity = 1.0;
+        }
+        CAShapeLayer *contLayer = [self.continuousEdgeLayers objectForKey:@(note)];
+        if (contLayer) {
+            contLayer.hidden = NO;
+            contLayer.opacity = 1.0;
+        }
+    }
+}
+
 -(void) changeContinuousColour:(CGFloat) amount forRadius:(CGFloat)radius {
     CGFloat newSaturation = 0.6 + (amount * 0.1);
     int noteNumber = [self.currentSetup pitchAtRadius: [self fractionOfTotalRadiusFromRadius:radius]];

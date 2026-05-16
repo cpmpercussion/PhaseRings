@@ -37,7 +37,17 @@
                                @"master_volume":@1.0};
     
     [[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
-    
+
+    // Screenshot mode: force a UI appearance so light/dark App Store captures
+    // are deterministic regardless of the simulator's current setting. The
+    // -uiStyle flag lands in NSArgumentDomain.
+    NSString *uiStyle = [[NSUserDefaults standardUserDefaults] stringForKey:@"uiStyle"];
+    if ([uiStyle isEqualToString:@"light"]) {
+        self.window.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
+    } else if ([uiStyle isEqualToString:@"dark"]) {
+        self.window.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+    }
+
     // Override point for customization after application launch.
     application.idleTimerDisabled = YES;
     self.viewController = (ViewController*) self.window.rootViewController;

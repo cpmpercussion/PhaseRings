@@ -42,3 +42,37 @@ class PhaseRingsUITests: XCTestCase {
         XCTAssertTrue(app.wait(for: .runningForeground, timeout: 2.0))
     }
 }
+
+/// App Store screenshot capture. Driven by scripts/make_screenshots.sh, which
+/// runs this against the iPhone 17 and iPad Pro 11" (M5) simulators for both
+/// light and dark appearance. The screenshots are attached to the test run
+/// with `.keepAlways` so xcresulttool can extract them afterwards.
+class PhaseRingsScreenshotTests: XCTestCase {
+
+    override func setUp() {
+        super.setUp()
+        continueAfterFailure = false
+    }
+
+    func testCaptureLightMode() {
+        captureScreenshot(style: "light")
+    }
+
+    func testCaptureDarkMode() {
+        captureScreenshot(style: "dark")
+    }
+
+    private func captureScreenshot(style: String) {
+        let app = XCUIApplication()
+        app.launchArguments += ["-screenshotMode", "1", "-uiStyle", style]
+        app.launch()
+        XCTAssertTrue(app.wait(for: .runningForeground, timeout: 5.0))
+        // Give the bowl view a beat to finish layout and re-light its rings;
+        // viewDidLayoutSubviews fires more than once during launch.
+        Thread.sleep(forTimeInterval: 1.5)
+        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        attachment.name = "phaserings-\(style)"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+}
