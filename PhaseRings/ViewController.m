@@ -29,7 +29,10 @@
 #define NUMBER_COMPOSITIONS_AVAILABLE 5
 #define BASE_A 33
 #define BACKGROUND_SOUND_ALWAYS_ON YES
-#define SAMPLE_RATE 44100
+// Modern iPads run hardware at 48 kHz; asking for 44.1 forced libpd to log
+// "could not set session sample rate" and left the published IAA AU
+// advertising 44.1 while the host expected 48. Match the hardware.
+#define SAMPLE_RATE 48000
 #define SOUND_OUTPUT_CHANNELS 2
 //#define TICKS_PER_BUFFER 4
 
@@ -81,6 +84,12 @@
 @property (strong, nonatomic) NSDate* timeOfLastNewIdea;
 @end
 
+static void IAAConnectionChangedCallback(void *inRefCon,
+                                         AudioUnit inUnit,
+                                         AudioUnitPropertyID inID,
+                                         AudioUnitScope inScope,
+                                         AudioUnitElement inElement);
+
 @implementation ViewController
 #pragma mark - Setup
 - (PdAudioController *) audioController
@@ -96,8 +105,11 @@
     [self.experimentNewSetupButton setHidden:YES];
     [self.compositionStepper setHidden:NO];
     [self updateUITextLabels];
-    [self startAudioEngine];
+    // Order matters for IAA: session must be configured with MixWithOthers
+    // before the audio unit is created, and the unit must be live before
+    // publication so hosts can connect to a real render callback.
     [self setupAudioSession];
+    [self startAudioEngine];
     [self publishAsNode];
     
     [PdBase setDelegate:self];
@@ -127,15 +139,11 @@
 
 #pragma mark - Audio Setup Methods.
 -(void) setupAudioSession {
-    // this is the currently known working combination of AVAudioSession Category and Options.
-    NSString *category = AVAudioSessionCategoryPlayback; // previously AVAudioSessionCategoryPlayAndRecord;
-    AVAudioSessionCategoryOptions options = AVAudioSessionCategoryOptionAllowBluetoothA2DP|AVAudioSessionCategoryOptionMixWithOthers|AVAudioSessionCategoryOptionDefaultToSpeaker;
-    NSError *error = nil;
-    if ( ![[AVAudioSession sharedInstance] setCategory:category withOptions:options error:&error] ) {
-        NSLog(@"Couldn't set audio session category: %@", error);
-    } else {
-        NSLog(@"Audio Session category set to PlayAndRecord.");
-    }
+    // PdAudioController configurePlayback... with mixingEnabled:YES already
+    // sets Playback + MixWithOthers (which IAA requires). Doing it again here
+    // races with whatever has already touched the session on device (PencilKit,
+    // UIScene) and fails with paramErr (-50), silently dropping MixWithOthers.
+    // Just register for interruptions; let libpd own the category.
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleAudioSessionInterruption:)
                                                  name:AVAudioSessionInterruptionNotification
@@ -149,16 +157,91 @@
         .componentSubType      = 'synt',
         .componentManufacturer = 'cmpc'
     };
+    AudioUnit unit = self.audioController.audioUnit.audioUnit;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    OSStatus err = AudioOutputUnitPublish(&iaaDesc, CFSTR("PhaseRings"), 2,
-                                         self.audioController.audioUnit.audioUnit);
+    OSStatus err = AudioOutputUnitPublish(&iaaDesc, CFSTR("PhaseRings"), 2, unit);
 #pragma clang diagnostic pop
     if (err != noErr) {
         NSLog(@"IAA: AudioOutputUnitPublish failed (%d)", (int)err);
-    } else {
-        NSLog(@"IAA: Published as Remote Generator.");
+        return;
     }
+    NSLog(@"IAA: Published as Remote Generator.");
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    OSStatus listenErr = AudioUnitAddPropertyListener(unit,
+                                                      kAudioUnitProperty_IsInterAppConnected,
+                                                      IAAConnectionChangedCallback,
+                                                      (__bridge void *)self);
+#pragma clang diagnostic pop
+    if (listenErr != noErr) {
+        NSLog(@"IAA: failed to install IsInterAppConnected listener (%d)", (int)listenErr);
+    }
+}
+
+- (void) handleIAAConnectionChange {
+    AudioUnit unit = self.audioController.audioUnit.audioUnit;
+    UInt32 connected = 0;
+    UInt32 size = sizeof(connected);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    OSStatus err = AudioUnitGetProperty(unit,
+                                        kAudioUnitProperty_IsInterAppConnected,
+                                        kAudioUnitScope_Global,
+                                        0,
+                                        &connected,
+                                        &size);
+#pragma clang diagnostic pop
+    if (err != noErr) {
+        NSLog(@"IAA: failed to read IsInterAppConnected (%d)", (int)err);
+        return;
+    }
+    NSLog(@"IAA: connection state changed -> %@", connected ? @"CONNECTED" : @"DISCONNECTED");
+    if (connected) {
+        // Even if isActive is YES, the underlying RemoteIO needs a full
+        // Stop/Uninit/Init/Start cycle for the IAA host bridge to start
+        // pulling. Apple's InterAppAudioSampler and briomusic's libpd-based
+        // interAppPDAudio both do this on every CONNECT. Without it the host
+        // never invokes our render callback.
+        NSLog(@"IAA: cycling audio engine to bind to host bridge.");
+        [self.audioController setActive:NO];
+        [self.audioController setActive:YES];
+
+        // Query the host callbacks struct. Some hosts use this exchange as a
+        // "generator is ready" signal before they begin pulling.
+        HostCallbackInfo hostInfo;
+        UInt32 hostInfoSize = sizeof(hostInfo);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        OSStatus hcErr = AudioUnitGetProperty(unit,
+                                              kAudioUnitProperty_HostCallbacks,
+                                              kAudioUnitScope_Global,
+                                              0,
+                                              &hostInfo,
+                                              &hostInfoSize);
+#pragma clang diagnostic pop
+        if (hcErr == noErr) {
+            NSLog(@"IAA: host callbacks acquired (beat=%p musical=%p transport=%p transport2=%p)",
+                  hostInfo.beatAndTempoProc,
+                  hostInfo.musicalTimeLocationProc,
+                  hostInfo.transportStateProc,
+                  hostInfo.transportStateProc2);
+        } else {
+            NSLog(@"IAA: host callbacks unavailable (%d)", (int)hcErr);
+        }
+    }
+}
+
+static void IAAConnectionChangedCallback(void *inRefCon,
+                                         AudioUnit inUnit,
+                                         AudioUnitPropertyID inID,
+                                         AudioUnitScope inScope,
+                                         AudioUnitElement inElement) {
+    ViewController *vc = (__bridge ViewController *)inRefCon;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [vc handleIAAConnectionChange];
+    });
 }
 
 - (void) startAudioEngine {
