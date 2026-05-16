@@ -2,6 +2,9 @@
 # Re-add tilde files for libpd
 !*~
 
+# Claude Code local settings (per-machine permissions)
+.claude/settings.local.json
+
 # Xcode - Swift.gitignore
 #
 # gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
