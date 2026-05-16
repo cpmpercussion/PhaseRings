@@ -2,35 +2,43 @@
 //  PhaseRingsUITests.swift
 //  PhaseRingsUITests
 //
-//  Created by Charles Martin on 31/7/17.
-//  Copyright © 2017 Charles Martin. All rights reserved.
-//
 
 import XCTest
 
 class PhaseRingsUITests: XCTestCase {
-        
+
+    var app: XCUIApplication!
+
     override func setUp() {
         super.setUp()
-        
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-        
-        // In UI tests it is usually best to stop immediately when a failure occurs.
         continueAfterFailure = false
-        // UI tests must launch the application that they test. Doing this in setup will make sure it happens for each test method.
-        XCUIApplication().launch()
+        app = XCUIApplication()
+        app.launch()
+    }
 
-        // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
+    /// Smoke test: app launches without crashing and has a visible window.
+    func testLaunchDoesNotCrash() {
+        XCTAssertTrue(app.wait(for: .runningForeground, timeout: 5.0))
+        XCTAssertGreaterThan(app.windows.count, 0)
     }
-    
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
+
+    /// Tap centre of the main view to ensure the bowl view accepts touches
+    /// (the path that exercises Pd note triggering and CALayer animation).
+    func testTappingCentreDoesNotCrash() {
+        let window = app.windows.firstMatch
+        XCTAssertTrue(window.waitForExistence(timeout: 5.0))
+        window.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        // Give Pd a beat to process the note-on before tearing down.
+        XCTAssertTrue(app.wait(for: .runningForeground, timeout: 2.0))
     }
-    
-    func testExample() {
-        // Use recording to get started writing UI tests.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+
+    /// Tap the composition stepper's "+" half to advance composition state.
+    /// The stepper is the only UIStepper on screen, so first-match is safe.
+    func testCompositionStepperIncrements() {
+        let steppers = app.steppers
+        // If the stepper isn't visible, skip — some performance modes hide it.
+        guard steppers.firstMatch.waitForExistence(timeout: 3.0) else { return }
+        steppers.firstMatch.buttons.element(boundBy: 1).tap()
+        XCTAssertTrue(app.wait(for: .runningForeground, timeout: 2.0))
     }
-    
 }

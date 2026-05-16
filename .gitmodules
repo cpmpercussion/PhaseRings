@@ -1,6 +1,3 @@
 [submodule "MetatoneMIDI"]
 	path = MetatoneMIDI
 	url = https://github.com/cpmpercussion/MetatoneMIDI
-[submodule "MetatoneOSC"]
-	path = MetatoneOSC
-	url = https://github.com/cpmpercussion/MetatoneOSC

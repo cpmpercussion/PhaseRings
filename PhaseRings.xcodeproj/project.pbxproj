@@ -91,6 +91,9 @@
 		56C28DB6194A968400E015BB /* NoteColours.m in Sources */ = {isa = PBXBuildFile; fileRef = 56C28DB5194A968400E015BB /* NoteColours.m */; };
 		56E172601991EAF500A36C74 /* PhaseRingSynthEnvironment.pd in Resources */ = {isa = PBXBuildFile; fileRef = 56E170F61991EAF400A36C74 /* PhaseRingSynthEnvironment.pd */; };
 		56E172611991EAF500A36C74 /* phasesynth.pd in Resources */ = {isa = PBXBuildFile; fileRef = 56E170F71991EAF400A36C74 /* phasesynth.pd */; };
+		7E06061100000000000000C0 /* ScaleMakerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E06061000000000000000C0 /* ScaleMakerTests.m */; };
+		7E06062100000000000000C0 /* SingingBowlSetupTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E06062000000000000000C0 /* SingingBowlSetupTests.m */; };
+		7E06063100000000000000C0 /* GenerativeSetupCompositionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E06063000000000000000C0 /* GenerativeSetupCompositionTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -238,6 +241,10 @@
 		56E170F71991EAF400A36C74 /* phasesynth.pd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = phasesynth.pd; sourceTree = "<group>"; };
 		56FF15F71A8B03AE0061BCD7 /* PhaseRings.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PhaseRings.entitlements; sourceTree = "<group>"; };
 		76616B931294942E675C36DB /* libPods-PhaseRings.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PhaseRings.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7E06060200000000000000C0 /* PhaseRingsTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PhaseRingsTests-Info.plist"; sourceTree = "<group>"; };
+		7E06061000000000000000C0 /* ScaleMakerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScaleMakerTests.m; sourceTree = "<group>"; };
+		7E06062000000000000000C0 /* SingingBowlSetupTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SingingBowlSetupTests.m; sourceTree = "<group>"; };
+		7E06063000000000000000C0 /* GenerativeSetupCompositionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GenerativeSetupCompositionTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -344,6 +351,7 @@
 				5623758C19F7610F004F1281 /* MetatoneMIDI */,
 				56E170F51991EAF400A36C74 /* Synth */,
 				5623DB69188CDB3800AA6C14 /* Chorale */,
+				7E06060100000000000000C0 /* PhaseRingsTests */,
 				564807E51F2EF8B100E01FB2 /* PhaseRingsUITests */,
 				5623DB62188CDB3800AA6C14 /* Frameworks */,
 				5623DB61188CDB3800AA6C14 /* Products */,
@@ -545,6 +553,17 @@
 			);
 			name = Synth;
 			path = PhaseRingSynth;
+			sourceTree = "<group>";
+		};
+		7E06060100000000000000C0 /* PhaseRingsTests */ = {
+			isa = PBXGroup;
+			children = (
+				7E06061000000000000000C0 /* ScaleMakerTests.m */,
+				7E06062000000000000000C0 /* SingingBowlSetupTests.m */,
+				7E06063000000000000000C0 /* GenerativeSetupCompositionTests.m */,
+				7E06060200000000000000C0 /* PhaseRingsTests-Info.plist */,
+			);
+			path = PhaseRingsTests;
 			sourceTree = "<group>";
 		};
 		A7860A3DAE3EC731FB516FD3 /* Pods */ = {
@@ -827,6 +846,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7E06061100000000000000C0 /* ScaleMakerTests.m in Sources */,
+				7E06062100000000000000C0 /* SingingBowlSetupTests.m in Sources */,
+				7E06063100000000000000C0 /* GenerativeSetupCompositionTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -991,7 +1013,6 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				DEVELOPMENT_TEAM = EDH387FRHA;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Chorale/PhaseRings-Prefix.pch";
 				INFOPLIST_FILE = "Chorale/PhaseRings-Info.plist";
@@ -1015,7 +1036,6 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				DEVELOPMENT_TEAM = EDH387FRHA;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Chorale/PhaseRings-Prefix.pch";
 				INFOPLIST_FILE = "Chorale/PhaseRings-Info.plist";
@@ -1033,22 +1053,25 @@
 		5623DB96188CDB3800AA6C14 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Chorale.app/Chorale";
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Chorale/Chorale-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = "ChoraleTests/PhaseRingsTests-Info.plist";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/Chorale",
+				);
+				INFOPLIST_FILE = "PhaseRingsTests/PhaseRingsTests-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "au.com.charlesmartin.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = PhaseRingsTests;
-				TEST_HOST = "$(BUNDLE_LOADER)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PhaseRings.app/PhaseRings";
 				WRAPPER_EXTENSION = xctest;
 			};
 			name = Debug;
@@ -1056,18 +1079,21 @@
 		5623DB97188CDB3800AA6C14 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Chorale.app/Chorale";
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Chorale/Chorale-Prefix.pch";
-				INFOPLIST_FILE = "ChoraleTests/PhaseRingsTests-Info.plist";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/Chorale",
+				);
+				INFOPLIST_FILE = "PhaseRingsTests/PhaseRingsTests-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "au.com.charlesmartin.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = PhaseRingsTests;
-				TEST_HOST = "$(BUNDLE_LOADER)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PhaseRings.app/PhaseRings";
 				WRAPPER_EXTENSION = xctest;
 			};
 			name = Release;
