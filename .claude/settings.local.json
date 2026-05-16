@@ -14,7 +14,10 @@
       "Bash(/usr/libexec/PlistBuddy *)",
       "Bash(pkill -f \"log stream.*PhaseRings\")",
       "Bash(open -a Simulator)",
-      "Read(//Applications/Xcode.app/Contents/Developer/**)"
+      "Read(//Applications/Xcode.app/Contents/Developer/**)",
+      "Bash(gh auth *)",
+      "Bash(gh pr *)",
+      "Bash(gh api *)"
     ]
   }
 }
