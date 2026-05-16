@@ -87,7 +87,6 @@
 		568BDC251A0349300056CF22 /* xylo.wav in Resources */ = {isa = PBXBuildFile; fileRef = 568BDC1F1A0349300056CF22 /* xylo.wav */; };
 		56B02B091DA2961F00274E5C /* StateSaver.m in Sources */ = {isa = PBXBuildFile; fileRef = 56B02B081DA2961F00274E5C /* StateSaver.m */; };
 		56B7898F1897327D00B6AE22 /* SingingBowlComposition.m in Sources */ = {isa = PBXBuildFile; fileRef = 56B7898E1897327D00B6AE22 /* SingingBowlComposition.m */; };
-		56B789921897336800B6AE22 /* TestChoraleComposition.m in Sources */ = {isa = PBXBuildFile; fileRef = 56B789911897336800B6AE22 /* TestChoraleComposition.m */; };
 		56C28DB6194A968400E015BB /* NoteColours.m in Sources */ = {isa = PBXBuildFile; fileRef = 56C28DB5194A968400E015BB /* NoteColours.m */; };
 		56E172601991EAF500A36C74 /* PhaseRingSynthEnvironment.pd in Resources */ = {isa = PBXBuildFile; fileRef = 56E170F61991EAF400A36C74 /* PhaseRingSynthEnvironment.pd */; };
 		56E172611991EAF500A36C74 /* phasesynth.pd in Resources */ = {isa = PBXBuildFile; fileRef = 56E170F71991EAF400A36C74 /* phasesynth.pd */; };
@@ -102,7 +101,7 @@
 			containerPortal = 5623DB58188CDB3800AA6C14 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 5623DB5F188CDB3800AA6C14;
-			remoteInfo = Chorale;
+			remoteInfo = PhaseRings;
 		};
 		564807E91F2EF8B100E01FB2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -172,8 +171,8 @@
 		5623DB72188CDB3800AA6C14 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		5623DB73188CDB3800AA6C14 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		5623DB76188CDB3800AA6C14 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		5623DB78188CDB3800AA6C14 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ViewController.h; path = Chorale/ViewController.h; sourceTree = "<group>"; };
-		5623DB79188CDB3800AA6C14 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ViewController.m; path = Chorale/ViewController.m; sourceTree = "<group>"; };
+		5623DB78188CDB3800AA6C14 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ViewController.h; path = PhaseRings/ViewController.h; sourceTree = "<group>"; };
+		5623DB79188CDB3800AA6C14 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ViewController.m; path = PhaseRings/ViewController.m; sourceTree = "<group>"; };
 		5623DB7B188CDB3800AA6C14 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		5623DB81188CDB3800AA6C14 /* PhaseRingsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PhaseRingsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5623DB82188CDB3800AA6C14 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
@@ -233,8 +232,6 @@
 		56B02B081DA2961F00274E5C /* StateSaver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StateSaver.m; sourceTree = "<group>"; };
 		56B7898D1897327D00B6AE22 /* SingingBowlComposition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SingingBowlComposition.h; sourceTree = "<group>"; };
 		56B7898E1897327D00B6AE22 /* SingingBowlComposition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SingingBowlComposition.m; sourceTree = "<group>"; };
-		56B789901897336800B6AE22 /* TestChoraleComposition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestChoraleComposition.h; sourceTree = "<group>"; };
-		56B789911897336800B6AE22 /* TestChoraleComposition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestChoraleComposition.m; sourceTree = "<group>"; };
 		56C28DB4194A968400E015BB /* NoteColours.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NoteColours.h; sourceTree = "<group>"; };
 		56C28DB5194A968400E015BB /* NoteColours.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NoteColours.m; sourceTree = "<group>"; };
 		56E170F61991EAF400A36C74 /* PhaseRingSynthEnvironment.pd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PhaseRingSynthEnvironment.pd; sourceTree = "<group>"; };
@@ -350,7 +347,7 @@
 				5623759F19F764FC004F1281 /* MetatoneOSC */,
 				5623758C19F7610F004F1281 /* MetatoneMIDI */,
 				56E170F51991EAF400A36C74 /* Synth */,
-				5623DB69188CDB3800AA6C14 /* Chorale */,
+				5623DB69188CDB3800AA6C14 /* PhaseRings */,
 				7E06060100000000000000C0 /* PhaseRingsTests */,
 				564807E51F2EF8B100E01FB2 /* PhaseRingsUITests */,
 				5623DB62188CDB3800AA6C14 /* Frameworks */,
@@ -385,7 +382,7 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		5623DB69188CDB3800AA6C14 /* Chorale */ = {
+		5623DB69188CDB3800AA6C14 /* PhaseRings */ = {
 			isa = PBXGroup;
 			children = (
 				5623DB72188CDB3800AA6C14 /* AppDelegate.h */,
@@ -394,7 +391,7 @@
 				5623DB6A188CDB3800AA6C14 /* Supporting Files */,
 				5658053518C82C44003F3394 /* Settings.bundle */,
 			);
-			path = Chorale;
+			path = PhaseRings;
 			sourceTree = "<group>";
 		};
 		5623DB6A188CDB3800AA6C14 /* Supporting Files */ = {
@@ -497,7 +494,7 @@
 				5674AF23195011370052121E /* MetatoneEnsembleView.m */,
 			);
 			name = views;
-			path = Chorale;
+			path = PhaseRings;
 			sourceTree = "<group>";
 		};
 		56B7898C1897324900B6AE22 /* models */ = {
@@ -509,8 +506,6 @@
 				565A2327188F94CA00093B32 /* SingingBowlSetup.m */,
 				56B7898D1897327D00B6AE22 /* SingingBowlComposition.h */,
 				56B7898E1897327D00B6AE22 /* SingingBowlComposition.m */,
-				56B789901897336800B6AE22 /* TestChoraleComposition.h */,
-				56B789911897336800B6AE22 /* TestChoraleComposition.m */,
 				568A0C6B18C96F41007E9A8C /* StudyInBowls1.h */,
 				568A0C6C18C96F41007E9A8C /* StudyInBowls1.m */,
 				564C44B11952B05500FD0E8B /* GenerativeSetupComposition.h */,
@@ -521,7 +516,7 @@
 				56B02B081DA2961F00274E5C /* StateSaver.m */,
 			);
 			name = models;
-			path = Chorale;
+			path = PhaseRings;
 			sourceTree = "<group>";
 		};
 		56C59EA71F48614D002D5C8B /* controllers */ = {
@@ -593,7 +588,7 @@
 			dependencies = (
 			);
 			name = PhaseRings;
-			productName = Chorale;
+			productName = PhaseRings;
 			productReference = 5623DB60188CDB3800AA6C14 /* PhaseRings.app */;
 			productType = "com.apple.product-type.application";
 		};
@@ -611,7 +606,7 @@
 				5623DB87188CDB3800AA6C14 /* PBXTargetDependency */,
 			);
 			name = PhaseRingsTests;
-			productName = ChoraleTests;
+			productName = PhaseRingsTests;
 			productReference = 5623DB81188CDB3800AA6C14 /* PhaseRingsTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
@@ -829,7 +824,6 @@
 				562375C719F764FC004F1281 /* F53OSCParser.m in Sources */,
 				562375C319F764FC004F1281 /* F53OSCBundle.m in Sources */,
 				5623DB74188CDB3800AA6C14 /* AppDelegate.m in Sources */,
-				56B789921897336800B6AE22 /* TestChoraleComposition.m in Sources */,
 				562375C819F764FC004F1281 /* F53OSCServer.m in Sources */,
 				564C44B71952BE7500FD0E8B /* ScaleMaker.m in Sources */,
 				5674AF24195011370052121E /* MetatoneEnsembleView.m in Sources */,
@@ -1014,8 +1008,8 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				DEVELOPMENT_TEAM = EDH387FRHA;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Chorale/PhaseRings-Prefix.pch";
-				INFOPLIST_FILE = "Chorale/PhaseRings-Info.plist";
+				GCC_PREFIX_HEADER = "PhaseRings/PhaseRings-Prefix.pch";
+				INFOPLIST_FILE = "PhaseRings/PhaseRings-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				ONLY_ACTIVE_ARCH = NO;
@@ -1037,8 +1031,8 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				DEVELOPMENT_TEAM = EDH387FRHA;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Chorale/PhaseRings-Prefix.pch";
-				INFOPLIST_FILE = "Chorale/PhaseRings-Info.plist";
+				GCC_PREFIX_HEADER = "PhaseRings/PhaseRings-Prefix.pch";
+				INFOPLIST_FILE = "PhaseRings/PhaseRings-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				ONLY_ACTIVE_ARCH = NO;
@@ -1065,7 +1059,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/Chorale",
+					"$(SRCROOT)/PhaseRings",
 				);
 				INFOPLIST_FILE = "PhaseRingsTests/PhaseRingsTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -1087,7 +1081,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/Chorale",
+					"$(SRCROOT)/PhaseRings",
 				);
 				INFOPLIST_FILE = "PhaseRingsTests/PhaseRingsTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
