@@ -215,9 +215,38 @@ static OSStatus IAARenderNotifyCallback(void *inRefCon,
         return;
     }
     NSLog(@"IAA: connection state changed -> %@", connected ? @"CONNECTED" : @"DISCONNECTED");
-    if (connected && !self.audioController.isActive) {
-        NSLog(@"IAA: host connected but engine was inactive; activating.");
+    if (connected) {
+        // Even if isActive is YES, the underlying RemoteIO needs a full
+        // Stop/Uninit/Init/Start cycle for the IAA host bridge to start
+        // pulling. Apple's InterAppAudioSampler and briomusic's libpd-based
+        // interAppPDAudio both do this on every CONNECT. Without it the host
+        // never invokes our render callback.
+        NSLog(@"IAA: cycling audio engine to bind to host bridge.");
+        [self.audioController setActive:NO];
         [self.audioController setActive:YES];
+
+        // Query the host callbacks struct. Some hosts use this exchange as a
+        // "generator is ready" signal before they begin pulling.
+        HostCallbackInfo hostInfo;
+        UInt32 hostInfoSize = sizeof(hostInfo);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        OSStatus hcErr = AudioUnitGetProperty(unit,
+                                              kAudioUnitProperty_HostCallbacks,
+                                              kAudioUnitScope_Global,
+                                              0,
+                                              &hostInfo,
+                                              &hostInfoSize);
+#pragma clang diagnostic pop
+        if (hcErr == noErr) {
+            NSLog(@"IAA: host callbacks acquired (beat=%p musical=%p transport=%p transport2=%p)",
+                  hostInfo.beatAndTempoProc,
+                  hostInfo.musicalTimeLocationProc,
+                  hostInfo.transportStateProc,
+                  hostInfo.transportStateProc2);
+        } else {
+            NSLog(@"IAA: host callbacks unavailable (%d)", (int)hcErr);
+        }
     }
 }
 
