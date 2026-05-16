@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PhaseRings — touchscreen app for creative music making</title>
+  <meta name="description" content="PhaseRings is an iOS musical instrument for tap-and-swirl performance on iPad and iPhone. Generative compositions, percussive and synth voices, Core MIDI and inter-app audio.">
+
+  <link rel="icon" type="image/png" sizes="180x180" href="images/icon-180.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="images/icon-180.png">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+  <style>
+    :root {
+      --ring-red: #ff1f1f;
+      --ring-green: #2bd96e;
+      --ring-blue: #2a8fff;
+      --ring-yellow: #d4e62a;
+      --ink: #1b1b1f;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: var(--ink);
+    }
+    .hero {
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255, 31, 31, 0.10), transparent 45%),
+        radial-gradient(circle at 80% 30%, rgba(43, 217, 110, 0.10), transparent 45%),
+        radial-gradient(circle at 50% 90%, rgba(42, 143, 255, 0.10), transparent 50%),
+        #fafafa;
+      padding: 4rem 0 3rem;
+      border-bottom: 1px solid #eee;
+    }
+    .hero h1 {
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .app-icon {
+      width: 96px;
+      height: 96px;
+      border-radius: 22px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+    }
+    .badge-pill {
+      display: inline-block;
+      background: #fff;
+      border: 1px solid #e3e3e6;
+      color: #4a4a52;
+      border-radius: 999px;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.85rem;
+      margin: 0.15rem 0.2rem 0.15rem 0;
+    }
+    .app-store-link img {
+      height: 54px;
+    }
+    .screenshot-iphone {
+      max-height: 520px;
+      border-radius: 28px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+    }
+    .screenshot-ipad {
+      width: 100%;
+      max-width: 760px;
+      border-radius: 14px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    }
+    .feature-card {
+      border: 1px solid #ececef;
+      border-radius: 14px;
+      padding: 1.25rem;
+      height: 100%;
+      background: #fff;
+    }
+    .feature-card h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+    .feature-card p {
+      margin: 0;
+      color: #55555c;
+      font-size: 0.95rem;
+    }
+    .section-photo {
+      width: 100%;
+      border-radius: 14px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    }
+    .pub-list {
+      list-style: none;
+      padding-left: 0;
+    }
+    .pub-list li {
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #eee;
+      font-size: 0.95rem;
+      color: #3a3a40;
+    }
+    .pub-list li:last-child { border-bottom: none; }
+    footer {
+      background: #f5f5f7;
+      color: #6a6a72;
+      padding: 2rem 0;
+      font-size: 0.9rem;
+    }
+    footer a { color: #3a3a40; }
+    a { text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .anchor-offset { scroll-margin-top: 80px; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-md navbar-light bg-white border-bottom sticky-top">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+      <img src="images/icon-180.png" alt="" width="32" height="32" style="border-radius:7px;">
+      <strong>PhaseRings</strong>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain" aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMain">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+        <li class="nav-item"><a class="nav-link" href="#performance">Performance</a></li>
+        <li class="nav-item"><a class="nav-link" href="#research">Research</a></li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://apps.apple.com/app/phaserings/id924795988">App Store</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-7">
+        <img src="images/icon-180.png" alt="PhaseRings app icon" class="app-icon mb-3">
+        <h1 class="display-5 mb-3">PhaseRings</h1>
+        <p class="lead mb-3">A touchscreen instrument for creative music making on iPad and iPhone. Tap and swirl on concentric rings to play notes drawn from interesting scales and modes.</p>
+        <p class="text-muted mb-4">Originally released in 2015, PhaseRings is still available and runs on current iPhones and iPads.</p>
+        <p class="app-store-link mb-3">
+          <a href="https://apps.apple.com/app/phaserings/id924795988" aria-label="Download PhaseRings on the App Store">
+            <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on the App Store">
+          </a>
+        </p>
+        <div>
+          <span class="badge-pill">iPad &amp; iPhone</span>
+          <span class="badge-pill">Free</span>
+          <span class="badge-pill">Core MIDI</span>
+          <span class="badge-pill">Inter-App Audio</span>
+        </div>
+      </div>
+      <div class="col-lg-5 text-center">
+        <img src="images/phaserings-iphone.png" alt="PhaseRings running on iPhone, showing two large concentric coloured rings" class="screenshot-iphone">
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="about" class="py-5 anchor-offset">
+  <div class="container">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-6">
+        <h2 class="mb-3">What it does</h2>
+        <p>Each ring on the screen represents a different pitch. Tap and swirl on a ring to make combinations of long and short notes — the angle and size of your touch shape the timbre.</p>
+        <p>PhaseRings ships with three built-in compositions and seven sound schemes spanning percussion (marimba, singing bowls, gongs) and synthesis (phase, strings). You can also build your own generative composition by picking three base notes and scales — the app generates a series of setups from the harmony you choose.</p>
+        <p>Audio is synthesised on the device using <a href="https://puredata.info">Pure Data</a> via libpd. Core MIDI and Inter-App Audio let PhaseRings talk to other apps and MIDI accessories.</p>
+      </div>
+      <div class="col-lg-6 text-center">
+        <img src="images/phaserings-ipad-mockup.png" alt="PhaseRings on an iPad showing nine concentric rings in bright colours" class="screenshot-ipad">
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="features" class="py-5 bg-light anchor-offset">
+  <div class="container">
+    <h2 class="mb-4">Features</h2>
+    <div class="row g-3">
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card">
+          <h3>7 sound schemes</h3>
+          <p>Percussive voices including marimba, singing bowls, gong, crotales, and pure synth tones from phase and string synthesis.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card">
+          <h3>3 built-in setups</h3>
+          <p>Hand-curated compositions to play immediately, plus a generative mode that builds setups from your chosen harmony.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card">
+          <h3>11 scales and modes</h3>
+          <p>Ionian, Dorian, Phrygian, Lydian, Mixolydian, Aeolian, Locrian, plus pentatonic, blues, chromatic, and whole-tone scales.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card">
+          <h3>Custom compositions</h3>
+          <p>Pick three base notes and three scales — PhaseRings generates a sequence of ring setups from the harmony you provide.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card">
+          <h3>Inter-App Audio</h3>
+          <p>Stream PhaseRings' audio into a compatible host app for recording, effects, or live mixing.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card">
+          <h3>Core MIDI</h3>
+          <p>Send note and aftertouch data to MIDI accessories or other apps over Core MIDI.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="performance" class="py-5 anchor-offset">
+  <div class="container">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-6">
+        <img src="images/performance.jpg" alt="A quartet of iPad performers making music with PhaseRings" class="section-photo">
+      </div>
+      <div class="col-lg-6">
+        <h2 class="mb-3">In performance</h2>
+        <p>PhaseRings has been used in improvised and experimental performances around the world. Charles Martin performed with it in <a href="https://youtu.be/aDEQMLwd8ok">quartet improvisations</a> and alongside other instruments on the <a href="https://charlesmartin.bandcamp.com/album/colour-music">Colour Music</a> album.</p>
+        <p>Designed with networked ensemble play in mind, multiple devices running PhaseRings can share gestural and compositional information over OSC.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="research" class="py-5 bg-light anchor-offset">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-5">
+        <img src="images/workshop.jpg" alt="Musicians experiment with PhaseRings at a workshop" class="section-photo mb-3">
+        <h2 class="mt-3">Research background</h2>
+        <p>PhaseRings was originally developed as part of Charles Martin's research into group music making with networked devices. It was applied in research from 2014–2017 and featured in the publications listed here.</p>
+      </div>
+      <div class="col-lg-7">
+        <ul class="pub-list">
+          <li>Charles Patrick Martin, Kai Olav Ellefsen, and Jim Torresen. 2017. <em>Deep Models for Ensemble Touch-Screen Improvisation.</em> Proceedings of the 12th International Audio Mostly Conference on Augmented and Participatory Sound and Music Experiences. <a href="https://doi.org/10.1145/3123514.3123556">doi:10.1145/3123514.3123556</a></li>
+          <li>Charles Patrick Martin. 2017. <em>Percussionist-Centred Design for Touchscreen Digital Musical Instruments.</em> Contemporary Music Review 36, 1–2, 64–85. <a href="https://doi.org/10.1080/07494467.2017.1370794">doi:10.1080/07494467.2017.1370794</a></li>
+          <li>Charles P. Martin. 2016. <em>PhaseRings for iPad Ensemble and Ensemble Director Agent.</em> Musical Program of the International Conference on Auditory Display, pp. 232–233. <a href="http://www.icad.org/icad2016/proceedings/concert/ICAD2016_paper_99.pdf">PDF</a></li>
+          <li>Charles Martin, Henry Gardner, Ben Swift, and Michael Martin. 2016. <em>Intelligent Agents and Networked Buttons Improve Free-Improvised Ensemble Music-Making on Touch-Screens.</em> Proceedings of the SIGCHI Conference on Human Factors in Computing Systems, ACM, pp. 2295–2306. <a href="https://doi.org/10.1145/2858036.2858269">doi:10.1145/2858036.2858269</a></li>
+          <li>Charles Martin, Henry Gardner, and Ben Swift. 2015. <em>Tracking Ensemble Performance on Touch-Screens with Gesture Classification and Transition Matrices.</em> Proceedings of the International Conference on New Interfaces for Musical Expression, Louisiana State University, pp. 359–364. <a href="https://doi.org/10.5281/zenodo.1179130">doi:10.5281/zenodo.1179130</a></li>
+          <li>Charles Martin and Henry Gardner. 2015. <em>That Syncing Feeling: Networked Strategies for Enabling Ensemble Creativity in iPad Musicians.</em> Proceedings of CreateWorld, Griffith University. <a href="http://hdl.handle.net/1885/95216">hdl:1885/95216</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 text-center">
+  <div class="container">
+    <h2 class="mb-3">Try it</h2>
+    <p class="text-muted mb-4">PhaseRings is a free download. Tap a ring, swirl a finger, see what comes out.</p>
+    <p class="app-store-link">
+      <a href="https://apps.apple.com/app/phaserings/id924795988" aria-label="Download PhaseRings on the App Store">
+        <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on the App Store">
+      </a>
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="container d-flex flex-wrap justify-content-between gap-3">
+    <div>
+      <strong>PhaseRings</strong> · by <a href="https://charlesmartin.au">Charles Martin</a>
+    </div>
+    <div>
+      <a href="https://github.com/cpmpercussion/PhaseRings">Source on GitHub</a>
+      · <a href="https://apps.apple.com/app/phaserings/id924795988">App Store</a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
