@@ -34,9 +34,7 @@
                                @"midi_out":@YES,
                                @"process_effects":@YES,
                                @"reverb_volume":@0.5,
-                               @"master_volume":@1.0,
-                               @"local_classifier":@YES,
-                               @"display_classifier_information":@NO};
+                               @"master_volume":@1.0};
     
     [[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
     
@@ -77,10 +75,6 @@
                                             forKeyPath:@"scale_3"
                                                options:NSKeyValueObservingOptionNew
                                                context:NULL];
-    [[NSUserDefaults standardUserDefaults] addObserver:self
-                                            forKeyPath:@"local_classifier"
-                                               options:NSKeyValueObservingOptionNew
-                                               context:NULL];
     return YES;
 }
 
@@ -101,9 +95,6 @@
     bool compositionChanged = NO;
     if ([aKeyPath isEqualToString:@"composition"]) {
         compositionChanged = YES;
-    } else if ([aKeyPath isEqualToString:@"local_classifier"]) {
-        NSLog(@"AD: Updating classifier connection due to change in Local Classifier");
-        [self.viewController updateClassifierConnections];
     }
     
     if ([CUSTOM_COMPOSITION_PROPERTIES containsObject:aKeyPath] &&

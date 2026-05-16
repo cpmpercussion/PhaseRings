@@ -29,9 +29,7 @@
                            @"midi_out":[[NSUserDefaults standardUserDefaults] objectForKey:@"midi_out"],
                            @"process_effects":[[NSUserDefaults standardUserDefaults] objectForKey:@"process_effects"],
                            @"reverb_volume":[[NSUserDefaults standardUserDefaults] objectForKey:@"reverb_volume"],
-                           @"master_volume":[[NSUserDefaults standardUserDefaults] objectForKey:@"master_volume"],
-                           @"local_classifier":[[NSUserDefaults standardUserDefaults] objectForKey:@"local_classifier"],
-                           @"display_classifier_information":[[NSUserDefaults standardUserDefaults] objectForKey:@"display_classifier_information"]};
+                           @"master_volume":[[NSUserDefaults standardUserDefaults] objectForKey:@"master_volume"]};
     return currentState;
 }
 
