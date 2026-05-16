@@ -9,14 +9,9 @@
 
 #import "MetatoneNetworkManager.h"
 
-#define USE_WEBSOCKET_CLASSIFIER @YES
-
 #define DEFAULT_PORT 51200
 #define DEFAULT_ADDRESS @"10.0.1.199"
 
-#define METATONE_CLASSIFIER_HOSTNAME @"metatonetransfer.com"
-
-#define METATONE_CLASSIFIER_PORT 8888
 #define METACLASSIFIER_SERVICE_TYPE @"_metatoneclassifier._tcp."
 #define METATONE_SERVICE_TYPE @"_metatoneapp._udp."
 #define OSCLOGGER_SERVICE_TYPE @"_osclogger._udp."
@@ -26,29 +21,19 @@
 #define SERVER_CONNECTED 2
 
 @implementation MetatoneNetworkManager
-// Designated Initialisers
 
-// This initialiser just sets web classification to NO to preserve compatibility.
 -(MetatoneNetworkManager *) initWithDelegate:(id<MetatoneNetworkManagerDelegate>)delegate shouldOscLog:(bool)osclogging {
-    return [self initWithDelegate:delegate shouldOscLog:osclogging shouldConnectToWebClassifier:NO];
-}
-
-
-// This initialiser sets web classification by argument.
--(MetatoneNetworkManager *) initWithDelegate: (id<MetatoneNetworkManagerDelegate>) delegate shouldOscLog: (bool) osclogging shouldConnectToWebClassifier: (bool) connectToWeb {
     self = [super init];
-    
+
     self.delegate = delegate;
-    // if ios: [UIDevice currentDevice].name if mac: [[NSHost currentHost] localizedName]
 #if TARGET_OS_IPHONE
     self.deviceID = [UIDevice currentDevice].name;
 #else
     self.deviceID = [[NSHost currentHost] localizedName];
 #endif
-    
+
     self.appID = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
     self.oscLogging = osclogging;
-    self.connectToWebClassifier = connectToWeb;
     self.loggingIPAddress = DEFAULT_ADDRESS;
     self.loggingPort = DEFAULT_PORT;
     self.localIPAddress = [MetatoneNetworkManager getIPAddress];
@@ -60,17 +45,13 @@
     [self.oscClient setHost:self.loggingIPAddress];
     [self.oscClient setPort:self.loggingPort];
     [self.oscClient connect];
-    
+
     // Setup OSC Server
     self.oscServer = [[F53OSCServer alloc] init];
     [self.oscServer setDelegate:self];
     [self.oscServer setPort:DEFAULT_PORT];
     [self.oscServer startListening];
-    
-    // Connect WebSocketClassifier
-    //    if (USE_WEBSOCKET_CLASSIFIER) [self connectWebClassifierWebSocket];
-    if (connectToWeb) [self connectWebClassifierWebSocket];
-    
+
     // register with Bonjour
     // if ios: [UIDevice currentDevice].name if mac: [[NSHost currentHost] localizedName]
 #if TARGET_OS_IPHONE
@@ -112,8 +93,8 @@
     [self.metatoneServiceBrowser searchForServicesOfType:METATONE_SERVICE_TYPE
                                                 inDomain:@"local."];
     
-    // try to find Metatone Web Classifier services locally
-    NSLog(@"NETWORK MANAGER: Browsing for Metatone Web Classifier Services...");
+    // try to find Metatone Classifier services locally
+    NSLog(@"NETWORK MANAGER: Browsing for Metatone Classifier Services...");
     self.metatoneWebClassifierBrowser  = [[NSNetServiceBrowser alloc] init];
     [self.metatoneWebClassifierBrowser setDelegate:self];
     [self.metatoneWebClassifierBrowser searchForServicesOfType:METACLASSIFIER_SERVICE_TYPE
@@ -122,58 +103,10 @@
 }
 
 
-
-
-
-#pragma mark WebSocket Life Cycle
-//-(void)connectClassifierWebSocket {
-//    [self.classifierWebSocket close];
-//    self.classifierWebSocket.delegate = nil;
-//    NSString* classifierUrl = [NSString stringWithFormat:@"ws://%@:%d/classifier",METATONE_CLASSIFIER_HOSTNAME,METATONE_CLASSIFIER_PORT];
-//    self.classifierWebSocket = [[SRWebSocket alloc] initWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:classifierUrl]]];
-//    [self.classifierWebSocket setDelegate:self];
-//    NSLog(@"NETWORK MANAGER: Opening Classifier WebSocket.");
-//    [self.classifierWebSocket open];
-//
-//}
-
-#pragma mark - Main Web Classifier Connection Methods.
-
-#pragma TODO these two connection methods are problematic - what if they are called when already connected?
-- (void) startConnectingToWebClassifier {
-    self.connectToWebClassifier = YES;
-    if (self.connectedToServer == SERVER_DISCONNECTED)
-    {
-        NSLog(@"NETWORK MANAGER: startConnectingToWebClassifier was called.");
-        NSLog(@"NETWORK MANAGER: WebSocket.readyState is %ld",(long)self.classifierWebSocket.readyState);
-        if (self.classifierWebSocket.readyState == SR_CLOSED || self.classifierWebSocket.readyState == SR_CONNECTING)
-        {
-            NSLog(@"NETWORK MANAGER: Classifier is closed, now starting to connect to WebClassifier");
-            [self connectWebClassifierWebSocket];
-        }
-    }
-}
-
-
-- (void) stopConnectingToWebClassifier {
-    NSLog(@"NETWORK MANAGER: stopConnectingToWebClassifier was called.");
-    self.connectToWebClassifier = NO;
-    if (!self.connectedToLocalPerformanceServer) [self closeClassifierWebSocket];
-}
+#pragma mark - Classifier WebSocket lifecycle
 
 - (bool) isClassifierConnected {
-    // Check if web classifier is connected
     return (self.connectedToServer == SERVER_CONNECTED);
-}
-
-# pragma mark - internal Web Classifier Connection Methods.
-
--(void)connectWebClassifierWebSocket {
-    [self connectClassifierWebSocketWithHostname:METATONE_CLASSIFIER_HOSTNAME andPort:METATONE_CLASSIFIER_PORT];
-}
-
--(void)reconnectWebClassifierWebSocket {
-    [self connectClassifierWebSocketWithHostname:self.webClassifierHostname andPort:self.webClassifierPort];
 }
 
 -(void)connectClassifierWebSocketWithHostname:(NSString *)hostname andPort:(int)port {
@@ -240,13 +173,9 @@
     }
 }
 
-# pragma mark TODO fix up logic about local and remote websockets.
 -(void)sendToWebClassifier:(F53OSCMessage *)message {
     if (self.classifierWebSocket.readyState == SR_OPEN) {
         [self.classifierWebSocket send:[message packetData]];
-    } else if (self.connectToWebClassifier) {
-        NSLog(@"NETWORK MANAGER: Can't send to WebSocket - Closed.");
-        if(USE_WEBSOCKET_CLASSIFIER) [self reconnectWebClassifierWebSocket];
     }
 }
 

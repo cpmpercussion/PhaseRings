@@ -30,7 +30,6 @@
                            @"process_effects":[[NSUserDefaults standardUserDefaults] objectForKey:@"process_effects"],
                            @"reverb_volume":[[NSUserDefaults standardUserDefaults] objectForKey:@"reverb_volume"],
                            @"master_volume":[[NSUserDefaults standardUserDefaults] objectForKey:@"master_volume"],
-                           @"web_classifier":[[NSUserDefaults standardUserDefaults] objectForKey:@"web_classifier"],
                            @"local_classifier":[[NSUserDefaults standardUserDefaults] objectForKey:@"local_classifier"],
                            @"display_classifier_information":[[NSUserDefaults standardUserDefaults] objectForKey:@"display_classifier_information"],
                            @"dark_mode":[[NSUserDefaults standardUserDefaults] objectForKey:@"dark_mode"]};

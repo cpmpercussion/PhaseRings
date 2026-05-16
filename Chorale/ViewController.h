@@ -46,8 +46,8 @@
 -(void) updateUITextLabels;
 /*! @brief Updates the colour scheme according to the selected settings. */
 - (void) updateBowlViewColourScheme;
-/*! @brief Updates the connections to OSC and Web Classifiers according to the selected settings. This is a disruptive method as it can
- trash the current setup. */
+/*! @brief Hook for the local_classifier user-default observer. Currently a
+ no-op because classifier connections are driven by Bonjour discovery. */
 - (void) updateClassifierConnections;
 
 - (IBAction)showSettingsModal:(id)sender;

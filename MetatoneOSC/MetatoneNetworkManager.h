@@ -45,9 +45,9 @@
 @property (strong, nonatomic) NSString *deviceID;
 @property (strong,nonatomic) NSString *appID;
 @property (strong, nonatomic) NSString *localIPAddress;
-/// Hostname for the web classifier server.
+/// Hostname of the resolved local classifier server (set by Bonjour).
 @property (strong, nonatomic) NSString *webClassifierHostname;
-/// Port for the web classifier server.
+/// Port of the resolved local classifier server (set by Bonjour).
 @property (nonatomic) int webClassifierPort;
 @property (strong, nonatomic) NSNetServiceBrowser *oscLoggerServiceBrowser;
 @property (strong, nonatomic) NSNetServiceBrowser *metatoneServiceBrowser;
@@ -58,7 +58,6 @@
 @property (strong, nonatomic) NSMutableArray *remoteMetatoneIPAddresses;
 @property (strong, nonatomic) NSMutableArray *remoteMetatoneNetServices;
 @property (nonatomic) bool oscLogging;
-@property (nonatomic) bool connectToWebClassifier;
 @property (nonatomic) bool connectToLocalClassifier;
 @property (nonatomic) bool connectToLocalWebSocket;
 /// Records if connected to a local performance server
@@ -74,7 +73,6 @@
 
 /*! Designated Initialiser. */
 - (MetatoneNetworkManager *) initWithDelegate: (id<MetatoneNetworkManagerDelegate>) delegate  shouldOscLog: (bool) osclogging;
-- (MetatoneNetworkManager *) initWithDelegate: (id<MetatoneNetworkManagerDelegate>) delegate shouldOscLog: (bool) osclogging shouldConnectToWebClassifier: (bool) connectToWeb;
 /*! Stops all searches and deletes records of remote services and addresses. */
 - (void)stopSearches;
 
@@ -88,11 +86,6 @@
 - (void)sendMessageRemoteControl;
 - (void)closeClassifierWebSocket;
 
-
-/*! Opens the websocket and attempts to connect to the web classifier. */
-- (void) startConnectingToWebClassifier;
-/*! Disconnects from the web classifier performance and closes the websocket. */
-- (void) stopConnectingToWebClassifier;
-/*! Returns YES if either the websocket or OSC connection is connected to a classifier, otherwise returns NO. */
+/*! Returns YES if connected to a local classifier server discovered via Bonjour. */
 - (bool) isClassifierConnected;
 @end

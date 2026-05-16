@@ -606,16 +606,14 @@
 -(void)setupOSCLogging {
     NSLog(@"VC: setupOSCLogging was called");
     self.metatoneClients = [[NSMutableDictionary alloc] init];
-    self.networkManager = [[MetatoneNetworkManager alloc] initWithDelegate:self shouldOscLog:YES shouldConnectToWebClassifier:[[NSUserDefaults standardUserDefaults] boolForKey:@"web_classifier"]];
+    self.networkManager = [[MetatoneNetworkManager alloc] initWithDelegate:self shouldOscLog:YES];
 }
 
 -(void)updateClassifierConnections {
+    // Stub kept for the local_classifier user-default observer in AppDelegate.
+    // Local classifier connections are driven by Bonjour service discovery,
+    // so there is nothing to toggle here today.
     NSLog(@"VC: updateClassifierConnections was called.");
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"web_classifier"]) {
-        [self.networkManager startConnectingToWebClassifier];
-    } else {
-        [self.networkManager stopConnectingToWebClassifier];
-    }
 }
 
 -(void)searchingForLoggingServer {

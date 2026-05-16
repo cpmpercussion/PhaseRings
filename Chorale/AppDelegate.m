@@ -36,7 +36,6 @@
                                @"process_effects":@YES,
                                @"reverb_volume":@0.5,
                                @"master_volume":@1.0,
-                               @"web_classifier":@NO,
                                @"local_classifier":@YES,
                                @"display_classifier_information":@NO};
     
@@ -80,10 +79,6 @@
                                                options:NSKeyValueObservingOptionNew
                                                context:NULL];
     [[NSUserDefaults standardUserDefaults] addObserver:self
-                                            forKeyPath:@"web_classifier"
-                                               options:NSKeyValueObservingOptionNew
-                                               context:NULL];
-    [[NSUserDefaults standardUserDefaults] addObserver:self
                                             forKeyPath:@"local_classifier"
                                                options:NSKeyValueObservingOptionNew
                                                context:NULL];
@@ -107,12 +102,7 @@
     bool compositionChanged = NO;
     if ([aKeyPath isEqualToString:@"composition"]) {
         compositionChanged = YES;
-    } else if ([aKeyPath isEqualToString:@"web_classifier"]) {
-        // trigger change to webclassifier connection
-        NSLog(@"AD: Updating classifier connection due to change in Web Classifier");
-        [self.viewController updateClassifierConnections];
     } else if ([aKeyPath isEqualToString:@"local_classifier"]) {
-        // trigger change to localclassifier connection.
         NSLog(@"AD: Updating classifier connection due to change in Local Classifier");
         [self.viewController updateClassifierConnections];
     }
