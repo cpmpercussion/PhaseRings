@@ -10,16 +10,6 @@
 			<key>Title</key>
 			<string>Network Settings</string>
 		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Display Classifier Status</string>
-			<key>Key</key>
-			<string>display_classifier_information</string>
-			<key>DefaultValue</key>
-			<false/>
-		</dict>
         <dict>
             <key>Type</key>
             <string>PSToggleSwitchSpecifier</string>

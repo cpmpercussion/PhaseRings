@@ -64,13 +64,6 @@
     self.textColour = [UIColor blackColor];
 }
 
--(void) setDarkScheme {
-    self.currentThemeDark = YES;
-    self.backgroundColor = [UIColor blackColor];
-    self.rimColour = [UIColor whiteColor];
-    self.textColour = [UIColor whiteColor];
-}
-
 -(void) setSolarizedScheme {
     self.currentThemeDark = YES;
     self.backgroundColor = [UIColor colorWithRed:0.00 green:0.17 blue:0.21 alpha:1.0];
@@ -86,10 +79,6 @@
     } else {
         [self setLightScheme];
     }
-}
-
--(void) setServerColourScheme {
-    [self setDarkScheme];
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {

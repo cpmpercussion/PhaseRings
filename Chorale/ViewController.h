@@ -46,9 +46,6 @@
 -(void) updateUITextLabels;
 /*! @brief Updates the colour scheme according to the selected settings. */
 - (void) updateBowlViewColourScheme;
-/*! @brief Hook for the local_classifier user-default observer. Currently a
- no-op because classifier connections are driven by Bonjour discovery. */
-- (void) updateClassifierConnections;
 
 - (IBAction)showSettingsModal:(id)sender;
 

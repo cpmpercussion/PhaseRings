@@ -268,23 +268,12 @@
     } else {
         [self.setupDescription setHidden:YES];
     }
-    // Setup OSC Status Label:
-    if (self.experimentMode) {
-//        NSLog(@"EXPERIMENT MODE: Showing OSC Status!");
-        [self.oscStatusLabel setHidden:NO];
-    } else if ([[NSUserDefaults standardUserDefaults] boolForKey:@"display_classifier_information"]) {
-        [self.oscStatusLabel setHidden:NO];
-    } else {
-        [self.oscStatusLabel setHidden:YES];
-    }
+    // OSC Status Label: only used to surface experiment-mode messages now.
+    [self.oscStatusLabel setHidden:!self.experimentMode];
 }
 
 - (void) updateBowlViewColourScheme {
-    if ([self.networkManager isClassifierConnected]) {
-        [self.bowlView setServerColourScheme]; // Server Colours
-    } else {
-        [self.bowlView setSelectedColourScheme]; // Settings-Selected Colours
-    }
+    [self.bowlView setSelectedColourScheme];
 }
 
 // Checks settings to which sound scheme is selected. If it's different from what
@@ -595,12 +584,10 @@
     return note;
 }
 
-#pragma mark - Metatone Classifier and Network Methods
-#pragma mark TODO: clean up these methods to simplify the situation.
+#pragma mark - Network Methods
 -(void)stopOSCLogging
 {
     NSLog(@"VC: stopOSCLogging was called");
-    [self.networkManager closeClassifierWebSocket];
 }
 
 -(void)setupOSCLogging {
@@ -609,23 +596,12 @@
     self.networkManager = [[MetatoneNetworkManager alloc] initWithDelegate:self shouldOscLog:YES];
 }
 
--(void)updateClassifierConnections {
-    // Stub kept for the local_classifier user-default observer in AppDelegate.
-    // Local classifier connections are driven by Bonjour service discovery,
-    // so there is nothing to toggle here today.
-    NSLog(@"VC: updateClassifierConnections was called.");
-}
-
 -(void)searchingForLoggingServer {
     NSLog(@"VC: Searching for logging server.");
-    [self.oscStatusLabel setText:@"classifier not connected"];
-    [self updateBowlViewColourScheme];
 }
 
 -(void)stoppedSearchingForLoggingServer {
     NSLog(@"VC: Stopped searching for logging server.");
-    [self.oscStatusLabel setText:@"classifier not connected"];
-    [self updateBowlViewColourScheme];
 }
 
 -(void)metatoneClientFoundWithAddress:(NSString *)address andPort:(int)port andHostname:(NSString *)hostname {
@@ -642,10 +618,7 @@
 -(void)metatoneClientRemovedwithAddress:(NSString *)address andPort:(int)port andHostname:(NSString *)hostname {}
 
 -(void)loggingServerFoundWithAddress:(NSString *)address andPort:(int)port andHostname:(NSString *)hostname {
-    NSLog(@"VC: Connected to logging server.");
-    [self.oscStatusLabel setText:[NSString stringWithFormat:@"connected to %@", hostname]];
-    [self updateBowlViewColourScheme];
-    [self.bowlView drawSetup:self.bowlSetup];
+    NSLog(@"VC: Connected to logging server: %@", hostname);
     // Check whether to send remote control message to server.
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"remote_control_enabled"]) {
         [self.networkManager sendMessageRemoteControl];

@@ -31,10 +31,8 @@
 /*! Changes the saturation of the currently animated ring.*/
 -(void) changeContinuousColour:(CGFloat) amount forRadius:(CGFloat)radius;
 
-/*! Sets the colour scheme according to the current NSUserDefaults setting.*/
+/*! Sets the colour scheme by reading the current trait collection's userInterfaceStyle. */
 -(void) setSelectedColourScheme;
-/*! Sets the colour scheme to the "server connected mode"*/
--(void) setServerColourScheme;
 
 /*! Calculates the distance of a CGPoint from the centre of the SingingBowlView */
 -(CGFloat)calculateDistanceFromCenter:(CGPoint)touchPoint;
