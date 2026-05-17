@@ -21,7 +21,7 @@ OUT_ROOT="screenshots"
 TMP_ROOT="$(mktemp -d -t phaserings-screenshots.XXXXXX)"
 trap 'rm -rf "$TMP_ROOT"' EXIT
 
-DEVICES_DEFAULT=("iPad Pro 11-inch (M5)" "iPhone 17")
+DEVICES_DEFAULT=("iPad Pro 13-inch (M5)" "iPhone 17")
 if [ "$#" -gt 0 ]; then
   DEVICES=("$@")
 else
@@ -31,6 +31,19 @@ fi
 STYLES=("light" "dark")
 
 mkdir -p "$OUT_ROOT"
+
+# App Store Connect required dimensions. The installed iPhone 17 sim emits
+# 1206x2622 and the iPad Pro 13" M5 sim emits a slightly non-standard size;
+# both are within ~1% of the targets, so a straight `sips` resize is
+# imperceptible and avoids needing older sims. ASC only offers an iPad slot
+# for the 12.9"/13" class, so the iPhone 11" output is not used.
+target_dimensions_for_slug() {
+  case "$1" in
+    iphone-*)            echo "1242 2688" ;;   # 6.5" iPhone
+    ipad-pro-13-inch-*)  echo "2048 2732" ;;   # 12.9"/13" iPad Pro
+    *)                   echo "" ;;
+  esac
+}
 
 run_one() {
   local device="$1"
@@ -99,6 +112,19 @@ PY
   else
     echo "   WARNING: no manifest.json in $export_dir" >&2
     exit 1
+  fi
+
+  # Resize to App Store Connect-accepted dimensions for this device class.
+  local dims
+  dims=$(target_dimensions_for_slug "$slug")
+  if [ -n "$dims" ]; then
+    local w h
+    read -r w h <<<"$dims"
+    local out_png="$out_dir/phaserings-${style}.png"
+    sips --resampleHeightWidth "$h" "$w" "$out_png" >/dev/null
+    echo "   resized to ${w}x${h}"
+  else
+    echo "   note: no target dimensions configured for slug '$slug' — leaving native size"
   fi
 }
 

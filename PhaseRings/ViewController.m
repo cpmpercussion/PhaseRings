@@ -339,7 +339,14 @@ static void IAAConnectionChangedCallback(void *inRefCon,
     [self updateSetupDescription:0];
 
     // Update bowl view.
-    self.bowlSetup = [[SingingBowlSetup alloc] initWithPitches:[NSMutableArray arrayWithArray:[self.composition firstSetup]]];
+    NSArray *initialPitches = [self.composition firstSetup];
+    // Screenshot mode forces a fixed 9-pitch Mixolydian-rooted spread so App
+    // Store screenshots show a consistent, busier display (5 lit by
+    // lightAlternateRingsForScreenshot's every-other pattern).
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"screenshotMode"]) {
+        initialPitches = @[@48, @50, @52, @55, @57, @60, @62, @64, @67];
+    }
+    self.bowlSetup = [[SingingBowlSetup alloc] initWithPitches:[NSMutableArray arrayWithArray:initialPitches]];
 //    self.viewRadius = [self calculateMaximumRadius];
     [self.bowlView drawSetup:self.bowlSetup];
 }
