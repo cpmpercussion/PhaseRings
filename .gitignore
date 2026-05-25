@@ -78,4 +78,7 @@ PhaseRings.xcworkspace/xcuserdata
 # Generated App Store screenshots (see scripts/make_screenshots.sh)
 screenshots/
 
+# hvcc compatibility-check venv (see scripts/install_hvcc.sh)
+.venv-hvcc/
+
 .DS_Store
