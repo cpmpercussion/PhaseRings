@@ -51,13 +51,21 @@ heavy_group = project.main_group.new_group('Heavy', 'PhaseRings/Heavy')
 added_sources = 0
 added_headers = 0
 
+# Heavy ships internal `assert(index < allocated)` bounds checks inside its
+# tabread4~ runtime. The percsampler abstraction in this repo ramps a line~
+# across hard-coded sample-rate constants larger than any actual table, which
+# fires the assert even though Heavy's release behavior (and libpd's) is to
+# simply read clamped/wrap. Compile Heavy sources with NDEBUG so the asserts
+# are no-ops; our own code is unaffected.
 add_dir = ->(group, dir) do
   Pathname.new(dir).children.sort.each do |path|
     next unless path.file?
     ref = group.new_reference(path.basename.to_s)
     case path.extname
     when '.c', '.cpp'
-      target.add_file_references([ref])
+      bf, = target.add_file_references([ref])
+      bf.settings ||= {}
+      bf.settings['COMPILER_FLAGS'] = '-DNDEBUG=1'
       added_sources += 1
     when '.h', '.hpp'
       added_headers += 1

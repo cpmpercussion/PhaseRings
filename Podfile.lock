@@ -1,31 +1,16 @@
 PODS:
   - InAppSettingsKit (3.9.2)
-  - libpd (0.15.0)
 
 DEPENDENCIES:
   - InAppSettingsKit
-  - libpd (from `https://github.com/libpd/libpd`, tag `0.15.0`)
 
 SPEC REPOS:
   trunk:
     - InAppSettingsKit
 
-EXTERNAL SOURCES:
-  libpd:
-    :git: https://github.com/libpd/libpd
-    :submodules: true
-    :tag: 0.15.0
-
-CHECKOUT OPTIONS:
-  libpd:
-    :git: https://github.com/libpd/libpd
-    :submodules: true
-    :tag: 0.15.0
-
 SPEC CHECKSUMS:
   InAppSettingsKit: 960d91fde94cae12a007c2272e34700a171df600
-  libpd: f6798d62590e1cea550c6f48e08dc8a608805ebf
 
-PODFILE CHECKSUM: 4cef8aab52ef5578a3ad9175aae28daccb931fb2
+PODFILE CHECKSUM: 1669d6bdd818cc22519d547224b153170d839300
 
 COCOAPODS: 1.16.2
