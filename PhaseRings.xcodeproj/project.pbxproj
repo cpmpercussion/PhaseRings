@@ -7,7 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		041341603E368EC9FB16EB12 /* HvSignalCPole.c in Sources */ = {isa = PBXBuildFile; fileRef = 0B1F4C4402CCFF28B9569F49 /* HvSignalCPole.c */; };
+		118050F79C9769885D7B21E0 /* HvControlSlice.c in Sources */ = {isa = PBXBuildFile; fileRef = 5106E4CC68BDC5B254B096EC /* HvControlSlice.c */; };
+		12A31FAD846741878F6D4BB1 /* Heavy_SoundScraper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55B8A3408B146EF1428A974A /* Heavy_SoundScraper.cpp */; };
+		25B3D2E181EE7642BF6D9FAD /* HvControlUnop.c in Sources */ = {isa = PBXBuildFile; fileRef = CBDC5BAA7798490B44144E27 /* HvControlUnop.c */; };
+		302450C508EB19778DDE18FF /* HvMessagePool.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB0081A822996ED9D64B548 /* HvMessagePool.c */; };
 		33DECCE7006A625406719942 /* libPods-PhaseRings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 76616B931294942E675C36DB /* libPods-PhaseRings.a */; };
+		39DB624253FBAA3631D074D6 /* HvControlPrint.c in Sources */ = {isa = PBXBuildFile; fileRef = 02AB25749648C8669C508D6B /* HvControlPrint.c */; };
+		3ABABA40FBF77FAD17EF367D /* HvControlTabhead.c in Sources */ = {isa = PBXBuildFile; fileRef = 97D572723556F183E126B157 /* HvControlTabhead.c */; };
+		3D3160774DE69AFB01B9C48E /* HvUtils.c in Sources */ = {isa = PBXBuildFile; fileRef = 4DF4D029497CB95C1DC30DFC /* HvUtils.c */; };
+		43BF9D35F164D6F4DCF04998 /* HvSignalSamphold.c in Sources */ = {isa = PBXBuildFile; fileRef = 824D886EA8468C921D8E553A /* HvSignalSamphold.c */; };
+		48F1F30D88C35CE1B3E3460C /* HvLightPipe.c in Sources */ = {isa = PBXBuildFile; fileRef = DF838CF89B8163EFDD74DFF1 /* HvLightPipe.c */; };
+		4FA1FE3F77FB29FD34DE8343 /* HvSignalTabread.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C3B363D7B9240D22D8DD0DA /* HvSignalTabread.c */; };
+		50C43794DBA445838D051043 /* HvControlVar.c in Sources */ = {isa = PBXBuildFile; fileRef = 3606A123380E9799457AC39A /* HvControlVar.c */; };
+		51EF4B11341B92B8C1DE06F3 /* HvMessageQueue.c in Sources */ = {isa = PBXBuildFile; fileRef = BFE30BC3CA3963C5436A5552 /* HvMessageQueue.c */; };
 		56157B601A958CFE00FBFF97 /* floatVolToDb.pd in Resources */ = {isa = PBXBuildFile; fileRef = 56157B5F1A958CFE00FBFF97 /* floatVolToDb.pd */; };
 		5623759A19F7610F004F1281 /* MetatoneMidiManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5623759019F7610F004F1281 /* MetatoneMidiManager.m */; };
 		5623759B19F7610F004F1281 /* PGMidi.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5623759319F7610F004F1281 /* PGMidi.mm */; };
@@ -73,8 +86,6 @@
 		5674AF24195011370052121E /* MetatoneEnsembleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5674AF23195011370052121E /* MetatoneEnsembleView.m */; };
 		568A0C6D18C96F41007E9A8C /* StudyInBowls1.m in Sources */ = {isa = PBXBuildFile; fileRef = 568A0C6C18C96F41007E9A8C /* StudyInBowls1.m */; };
 		568BDC111A03488B0056CF22 /* bellsynth.pd in Resources */ = {isa = PBXBuildFile; fileRef = 568BDC0A1A03488B0056CF22 /* bellsynth.pd */; };
-		568BDC121A03488B0056CF22 /* s_loopsmooth.pd in Resources */ = {isa = PBXBuildFile; fileRef = 568BDC0B1A03488B0056CF22 /* s_loopsmooth.pd */; };
-		568BDC131A03488B0056CF22 /* s_playolap.pd in Resources */ = {isa = PBXBuildFile; fileRef = 568BDC0C1A03488B0056CF22 /* s_playolap.pd */; };
 		568BDC141A03488B0056CF22 /* s_playtable.pd in Resources */ = {isa = PBXBuildFile; fileRef = 568BDC0D1A03488B0056CF22 /* s_playtable.pd */; };
 		568BDC151A03488B0056CF22 /* SoundScraperSynthEnvironment.pd in Resources */ = {isa = PBXBuildFile; fileRef = 568BDC0E1A03488B0056CF22 /* SoundScraperSynthEnvironment.pd */; };
 		568BDC161A03488B0056CF22 /* u_listdrip.pd in Resources */ = {isa = PBXBuildFile; fileRef = 568BDC0F1A03488B0056CF22 /* u_listdrip.pd */; };
@@ -90,9 +101,28 @@
 		56C28DB6194A968400E015BB /* NoteColours.m in Sources */ = {isa = PBXBuildFile; fileRef = 56C28DB5194A968400E015BB /* NoteColours.m */; };
 		56E172601991EAF500A36C74 /* PhaseRingSynthEnvironment.pd in Resources */ = {isa = PBXBuildFile; fileRef = 56E170F61991EAF400A36C74 /* PhaseRingSynthEnvironment.pd */; };
 		56E172611991EAF500A36C74 /* phasesynth.pd in Resources */ = {isa = PBXBuildFile; fileRef = 56E170F71991EAF400A36C74 /* phasesynth.pd */; };
+		5DC28BB2F97E78BCF8E9DE69 /* HvSignalTabwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = C3CCEA5DBF21BFFEF045729B /* HvSignalTabwrite.c */; };
+		60F3D226855D3E72D45C7D19 /* HvControlPack.c in Sources */ = {isa = PBXBuildFile; fileRef = B04F6D5D9901965CD7F18862 /* HvControlPack.c */; };
+		68C91319334E63970BFB5A45 /* HvControlDelay.c in Sources */ = {isa = PBXBuildFile; fileRef = B7857E69022BA81D9860068D /* HvControlDelay.c */; };
+		68E03B3AEE72DA5F7AF7B9F0 /* HeavyContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CB47BFCD97BB01316A1B74FD /* HeavyContext.cpp */; };
+		786584BE795A45144FB3E19F /* HvControlIf.c in Sources */ = {isa = PBXBuildFile; fileRef = 4E506A904CF4BDA70F3799EB /* HvControlIf.c */; };
 		7E06061100000000000000C0 /* ScaleMakerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E06061000000000000000C0 /* ScaleMakerTests.m */; };
 		7E06062100000000000000C0 /* SingingBowlSetupTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E06062000000000000000C0 /* SingingBowlSetupTests.m */; };
 		7E06063100000000000000C0 /* GenerativeSetupCompositionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E06063000000000000000C0 /* GenerativeSetupCompositionTests.m */; };
+		9A325A68BE124393A397FE68 /* Heavy_PhaseRing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DB36066A01B7BF6BD4A32644 /* Heavy_PhaseRing.cpp */; };
+		9B53B18EA760C92C184DDA7B /* HvSignalDel1.c in Sources */ = {isa = PBXBuildFile; fileRef = 98A9A59DD735353E7A5A1384 /* HvSignalDel1.c */; };
+		9F3ADE4FA37EFB78BD95D850 /* HvHeavy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F1C32E66E23A6C043A6B36D /* HvHeavy.cpp */; };
+		A71EE7382F9CC2FD60BEF94E /* HvMessage.c in Sources */ = {isa = PBXBuildFile; fileRef = 282D3EFA556C59C2BE792F5D /* HvMessage.c */; };
+		A8A606C6F52E300071E12999 /* HvSignalPhasor.c in Sources */ = {isa = PBXBuildFile; fileRef = 2139495472E7CF5E0A771860 /* HvSignalPhasor.c */; };
+		B619431F6E9CECBB47E3DC28 /* HvSignalLine.c in Sources */ = {isa = PBXBuildFile; fileRef = D3A48775EAC13E030D50276A /* HvSignalLine.c */; };
+		B64AFCD0BFD653DF26C2FFA5 /* Heavy_CircleStrings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75E06B474AA77C2172A32940 /* Heavy_CircleStrings.cpp */; };
+		B72E2953AC44DA4FF8F2F885 /* HvControlSystem.c in Sources */ = {isa = PBXBuildFile; fileRef = 4F7CBFE8537B143B0B647BFF /* HvControlSystem.c */; };
+		BE4DD8A6E2921605911A2367 /* HvTable.c in Sources */ = {isa = PBXBuildFile; fileRef = 3370501FE56BE9DD46FDDDAD /* HvTable.c */; };
+		CD04DF8ACAE16F95363EA4AB /* HvControlCast.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C5E3D1A4BCA4A913DA821E6 /* HvControlCast.c */; };
+		D1FCFF70E892A3B6D228636C /* HvSignalRPole.c in Sources */ = {isa = PBXBuildFile; fileRef = 4A0AFABF6CBEF995A4BD58FC /* HvSignalRPole.c */; };
+		D69A1CFA2CB84B4C730E71F3 /* HvSignalVar.c in Sources */ = {isa = PBXBuildFile; fileRef = 816061BA802C7FADF20EEED1 /* HvSignalVar.c */; };
+		E09E8A14938FDF6CC0259F62 /* HvControlBinop.c in Sources */ = {isa = PBXBuildFile; fileRef = 4EE0A8595186EF3F829D3A79 /* HvControlBinop.c */; };
+		EB621EC33F362365F77EA09E /* HvControlRandom.c in Sources */ = {isa = PBXBuildFile; fileRef = 1FCDBF88A6AD9B8BD862B503 /* HvControlRandom.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -113,8 +143,44 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		02AB25749648C8669C508D6B /* HvControlPrint.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlPrint.c; sourceTree = "<group>"; };
+		0446B299C36DB4811F73FFA2 /* Heavy_CircleStrings.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = Heavy_CircleStrings.h; sourceTree = "<group>"; };
+		048091CABBBD8C28541F8A1B /* HvMessage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvMessage.h; sourceTree = "<group>"; };
 		088119280FAFA6FADE7AE23E /* Pods-PhaseRings.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PhaseRings.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PhaseRings/Pods-PhaseRings.debug.xcconfig"; sourceTree = "<group>"; };
+		0887E89450C812CF409D192A /* HvHeavy.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvHeavy.h; sourceTree = "<group>"; };
+		0B1F4C4402CCFF28B9569F49 /* HvSignalCPole.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvSignalCPole.c; sourceTree = "<group>"; };
+		0CB52B3EE741B5F300ADEDD0 /* HeavyContext.hpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.h; path = HeavyContext.hpp; sourceTree = "<group>"; };
+		14B5013F951FE63C0260E867 /* HvSignalCPole.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvSignalCPole.h; sourceTree = "<group>"; };
+		1B280ED20174AE77D7F54616 /* HvControlPack.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlPack.h; sourceTree = "<group>"; };
+		1E3F8568607BF0626C545797 /* HvSignalLine.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvSignalLine.h; sourceTree = "<group>"; };
+		1F0140A2A017EBA901B04B0F /* HvSignalRPole.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvSignalRPole.h; sourceTree = "<group>"; };
+		1FCDBF88A6AD9B8BD862B503 /* HvControlRandom.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlRandom.c; sourceTree = "<group>"; };
+		2139495472E7CF5E0A771860 /* HvSignalPhasor.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvSignalPhasor.c; sourceTree = "<group>"; };
+		282D3EFA556C59C2BE792F5D /* HvMessage.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvMessage.c; sourceTree = "<group>"; };
+		29A82B16693B0A8707188A87 /* HvControlUnop.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlUnop.h; sourceTree = "<group>"; };
+		2B543A50F5D09CEE4BD63A05 /* HvMessageQueue.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvMessageQueue.h; sourceTree = "<group>"; };
+		2BDDC88F672BD18E5DF78F89 /* HvHeavyInternal.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvHeavyInternal.h; sourceTree = "<group>"; };
+		2EBC12C3220F0EA701C72D45 /* HvControlPrint.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlPrint.h; sourceTree = "<group>"; };
+		3370501FE56BE9DD46FDDDAD /* HvTable.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvTable.c; sourceTree = "<group>"; };
+		33A0AD1C72C50B8F3EDB5ADE /* HvControlRandom.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlRandom.h; sourceTree = "<group>"; };
+		3606A123380E9799457AC39A /* HvControlVar.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlVar.c; sourceTree = "<group>"; };
+		37E2F4438480629CC71F9F33 /* Heavy_PhaseRing.hpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.h; path = Heavy_PhaseRing.hpp; sourceTree = "<group>"; };
 		3A0114F5E08792A1FB4B70E9 /* Pods-PhaseRings.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PhaseRings.release.xcconfig"; path = "Pods/Target Support Files/Pods-PhaseRings/Pods-PhaseRings.release.xcconfig"; sourceTree = "<group>"; };
+		3A64E35C923E07DC3AD5F8E7 /* HvSignalPhasor.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvSignalPhasor.h; sourceTree = "<group>"; };
+		3AD82B57BDDBC8FB6494EA64 /* Heavy_PhaseRing.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = Heavy_PhaseRing.h; sourceTree = "<group>"; };
+		3F1C32E66E23A6C043A6B36D /* HvHeavy.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; path = HvHeavy.cpp; sourceTree = "<group>"; };
+		3FD5F3A322A9FF94299A2164 /* HvSignalSamphold.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvSignalSamphold.h; sourceTree = "<group>"; };
+		418473784779869314602620 /* HvMath.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvMath.h; sourceTree = "<group>"; };
+		49F3DCE86DC929611EC3532B /* HvSignalTabwrite.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvSignalTabwrite.h; sourceTree = "<group>"; };
+		4A0AFABF6CBEF995A4BD58FC /* HvSignalRPole.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvSignalRPole.c; sourceTree = "<group>"; };
+		4D37331DA35073B443E7AD34 /* HvControlIf.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlIf.h; sourceTree = "<group>"; };
+		4DF4D029497CB95C1DC30DFC /* HvUtils.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvUtils.c; sourceTree = "<group>"; };
+		4E506A904CF4BDA70F3799EB /* HvControlIf.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlIf.c; sourceTree = "<group>"; };
+		4EE0A8595186EF3F829D3A79 /* HvControlBinop.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlBinop.c; sourceTree = "<group>"; };
+		4F7CBFE8537B143B0B647BFF /* HvControlSystem.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlSystem.c; sourceTree = "<group>"; };
+		4FC5A6B87BB823939C1AA75B /* HvTable.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvTable.h; sourceTree = "<group>"; };
+		5106E4CC68BDC5B254B096EC /* HvControlSlice.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlSlice.c; sourceTree = "<group>"; };
+		55B8A3408B146EF1428A974A /* Heavy_SoundScraper.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; path = Heavy_SoundScraper.cpp; sourceTree = "<group>"; };
 		56157B5F1A958CFE00FBFF97 /* floatVolToDb.pd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = floatVolToDb.pd; sourceTree = "<group>"; };
 		5623758E19F7610F004F1281 /* iOSVersionDetection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iOSVersionDetection.h; sourceTree = "<group>"; };
 		5623758F19F7610F004F1281 /* MetatoneMidiManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetatoneMidiManager.h; sourceTree = "<group>"; };
@@ -216,8 +282,6 @@
 		568A0C6B18C96F41007E9A8C /* StudyInBowls1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StudyInBowls1.h; sourceTree = "<group>"; };
 		568A0C6C18C96F41007E9A8C /* StudyInBowls1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StudyInBowls1.m; sourceTree = "<group>"; };
 		568BDC0A1A03488B0056CF22 /* bellsynth.pd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bellsynth.pd; sourceTree = "<group>"; };
-		568BDC0B1A03488B0056CF22 /* s_loopsmooth.pd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = s_loopsmooth.pd; sourceTree = "<group>"; };
-		568BDC0C1A03488B0056CF22 /* s_playolap.pd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = s_playolap.pd; sourceTree = "<group>"; };
 		568BDC0D1A03488B0056CF22 /* s_playtable.pd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = s_playtable.pd; sourceTree = "<group>"; };
 		568BDC0E1A03488B0056CF22 /* SoundScraperSynthEnvironment.pd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SoundScraperSynthEnvironment.pd; sourceTree = "<group>"; };
 		568BDC0F1A03488B0056CF22 /* u_listdrip.pd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = u_listdrip.pd; sourceTree = "<group>"; };
@@ -237,11 +301,45 @@
 		56E170F61991EAF400A36C74 /* PhaseRingSynthEnvironment.pd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PhaseRingSynthEnvironment.pd; sourceTree = "<group>"; };
 		56E170F71991EAF400A36C74 /* phasesynth.pd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = phasesynth.pd; sourceTree = "<group>"; };
 		56FF15F71A8B03AE0061BCD7 /* PhaseRings.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PhaseRings.entitlements; sourceTree = "<group>"; };
+		59D86033F4CD7EBC34A0F029 /* HvControlCast.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlCast.h; sourceTree = "<group>"; };
+		5BB0081A822996ED9D64B548 /* HvMessagePool.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvMessagePool.c; sourceTree = "<group>"; };
+		5C3B363D7B9240D22D8DD0DA /* HvSignalTabread.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvSignalTabread.c; sourceTree = "<group>"; };
+		5C5E3D1A4BCA4A913DA821E6 /* HvControlCast.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlCast.c; sourceTree = "<group>"; };
+		5E2BF8EAA0BAF6C196E2799D /* HvSignalVar.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvSignalVar.h; sourceTree = "<group>"; };
+		611A0B5BA5F6978E7FA6017F /* HvControlSlice.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlSlice.h; sourceTree = "<group>"; };
+		74B9BEB580E6508A06A7D0C0 /* HvControlSystem.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlSystem.h; sourceTree = "<group>"; };
+		7554310C2FFCC4EDD6D705D8 /* HvSignalDel1.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvSignalDel1.h; sourceTree = "<group>"; };
+		75E06B474AA77C2172A32940 /* Heavy_CircleStrings.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; path = Heavy_CircleStrings.cpp; sourceTree = "<group>"; };
 		76616B931294942E675C36DB /* libPods-PhaseRings.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PhaseRings.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7E06060200000000000000C0 /* PhaseRingsTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PhaseRingsTests-Info.plist"; sourceTree = "<group>"; };
 		7E06061000000000000000C0 /* ScaleMakerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScaleMakerTests.m; sourceTree = "<group>"; };
 		7E06062000000000000000C0 /* SingingBowlSetupTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SingingBowlSetupTests.m; sourceTree = "<group>"; };
 		7E06063000000000000000C0 /* GenerativeSetupCompositionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GenerativeSetupCompositionTests.m; sourceTree = "<group>"; };
+		816061BA802C7FADF20EEED1 /* HvSignalVar.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvSignalVar.c; sourceTree = "<group>"; };
+		824D886EA8468C921D8E553A /* HvSignalSamphold.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvSignalSamphold.c; sourceTree = "<group>"; };
+		83F5187CD2385AF23749D8E1 /* HvLightPipe.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvLightPipe.h; sourceTree = "<group>"; };
+		8932E387CB03BE4F510F9B82 /* HvSignalTabread.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvSignalTabread.h; sourceTree = "<group>"; };
+		953DC7E0F3AFCD15B0960321 /* HvControlDelay.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlDelay.h; sourceTree = "<group>"; };
+		97D572723556F183E126B157 /* HvControlTabhead.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlTabhead.c; sourceTree = "<group>"; };
+		98A9A59DD735353E7A5A1384 /* HvSignalDel1.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvSignalDel1.c; sourceTree = "<group>"; };
+		A5FE6EC9169D0BF289604664 /* HvMessagePool.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvMessagePool.h; sourceTree = "<group>"; };
+		A988327CDEA942662CC75E9A /* Heavy_SoundScraper.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = Heavy_SoundScraper.h; sourceTree = "<group>"; };
+		B04F6D5D9901965CD7F18862 /* HvControlPack.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlPack.c; sourceTree = "<group>"; };
+		B69C969D2FCC12D9D8D69EF4 /* Heavy_CircleStrings.hpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.h; path = Heavy_CircleStrings.hpp; sourceTree = "<group>"; };
+		B7857E69022BA81D9860068D /* HvControlDelay.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlDelay.c; sourceTree = "<group>"; };
+		BE591BA2E84074EF5EC9319E /* HvUtils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvUtils.h; sourceTree = "<group>"; };
+		BF0B64C20AD75C811432CC26 /* HvControlTabhead.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlTabhead.h; sourceTree = "<group>"; };
+		BFE30BC3CA3963C5436A5552 /* HvMessageQueue.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvMessageQueue.c; sourceTree = "<group>"; };
+		C3CCEA5DBF21BFFEF045729B /* HvSignalTabwrite.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvSignalTabwrite.c; sourceTree = "<group>"; };
+		C6FA5A6227067C3354DF3CF7 /* HvControlBinop.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlBinop.h; sourceTree = "<group>"; };
+		CB47BFCD97BB01316A1B74FD /* HeavyContext.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; path = HeavyContext.cpp; sourceTree = "<group>"; };
+		CBDC5BAA7798490B44144E27 /* HvControlUnop.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlUnop.c; sourceTree = "<group>"; };
+		D3A48775EAC13E030D50276A /* HvSignalLine.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvSignalLine.c; sourceTree = "<group>"; };
+		D45087D742701D7517964E48 /* Heavy_SoundScraper.hpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.h; path = Heavy_SoundScraper.hpp; sourceTree = "<group>"; };
+		DB36066A01B7BF6BD4A32644 /* Heavy_PhaseRing.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; path = Heavy_PhaseRing.cpp; sourceTree = "<group>"; };
+		DF838CF89B8163EFDD74DFF1 /* HvLightPipe.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvLightPipe.c; sourceTree = "<group>"; };
+		F7D7674CF5D68B027373FD6C /* HvControlVar.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlVar.h; sourceTree = "<group>"; };
+		FD8BBFF6FEDF4234CA8C104F /* HeavyContextInterface.hpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.h; path = HeavyContextInterface.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -280,6 +378,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2C5597C4BE04CAE672C4AD15 /* Heavy_SoundScraper */ = {
+			isa = PBXGroup;
+			children = (
+				55B8A3408B146EF1428A974A /* Heavy_SoundScraper.cpp */,
+				A988327CDEA942662CC75E9A /* Heavy_SoundScraper.h */,
+				D45087D742701D7517964E48 /* Heavy_SoundScraper.hpp */,
+			);
+			name = Heavy_SoundScraper;
+			path = Heavy_SoundScraper;
+			sourceTree = "<group>";
+		};
 		5623758C19F7610F004F1281 /* MetatoneMIDI */ = {
 			isa = PBXGroup;
 			children = (
@@ -353,6 +462,7 @@
 				5623DB62188CDB3800AA6C14 /* Frameworks */,
 				5623DB61188CDB3800AA6C14 /* Products */,
 				A7860A3DAE3EC731FB516FD3 /* Pods */,
+				D07B01916F0A8004C618E1D1 /* Heavy */,
 			);
 			sourceTree = "<group>";
 		};
@@ -535,8 +645,6 @@
 				5630CFB119FE06ED00B3DC89 /* metaPdLibs */,
 				5630CFAD19FE06E700B3DC89 /* pluck~.pd */,
 				568BDC0A1A03488B0056CF22 /* bellsynth.pd */,
-				568BDC0B1A03488B0056CF22 /* s_loopsmooth.pd */,
-				568BDC0C1A03488B0056CF22 /* s_playolap.pd */,
 				568BDC0D1A03488B0056CF22 /* s_playtable.pd */,
 				568BDC0E1A03488B0056CF22 /* SoundScraperSynthEnvironment.pd */,
 				568BDC0F1A03488B0056CF22 /* u_listdrip.pd */,
@@ -561,6 +669,75 @@
 			path = PhaseRingsTests;
 			sourceTree = "<group>";
 		};
+		96977BFF59ABB989605CED5E /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				CB47BFCD97BB01316A1B74FD /* HeavyContext.cpp */,
+				0CB52B3EE741B5F300ADEDD0 /* HeavyContext.hpp */,
+				FD8BBFF6FEDF4234CA8C104F /* HeavyContextInterface.hpp */,
+				4EE0A8595186EF3F829D3A79 /* HvControlBinop.c */,
+				C6FA5A6227067C3354DF3CF7 /* HvControlBinop.h */,
+				5C5E3D1A4BCA4A913DA821E6 /* HvControlCast.c */,
+				59D86033F4CD7EBC34A0F029 /* HvControlCast.h */,
+				B7857E69022BA81D9860068D /* HvControlDelay.c */,
+				953DC7E0F3AFCD15B0960321 /* HvControlDelay.h */,
+				4E506A904CF4BDA70F3799EB /* HvControlIf.c */,
+				4D37331DA35073B443E7AD34 /* HvControlIf.h */,
+				B04F6D5D9901965CD7F18862 /* HvControlPack.c */,
+				1B280ED20174AE77D7F54616 /* HvControlPack.h */,
+				02AB25749648C8669C508D6B /* HvControlPrint.c */,
+				2EBC12C3220F0EA701C72D45 /* HvControlPrint.h */,
+				1FCDBF88A6AD9B8BD862B503 /* HvControlRandom.c */,
+				33A0AD1C72C50B8F3EDB5ADE /* HvControlRandom.h */,
+				5106E4CC68BDC5B254B096EC /* HvControlSlice.c */,
+				611A0B5BA5F6978E7FA6017F /* HvControlSlice.h */,
+				4F7CBFE8537B143B0B647BFF /* HvControlSystem.c */,
+				74B9BEB580E6508A06A7D0C0 /* HvControlSystem.h */,
+				97D572723556F183E126B157 /* HvControlTabhead.c */,
+				BF0B64C20AD75C811432CC26 /* HvControlTabhead.h */,
+				CBDC5BAA7798490B44144E27 /* HvControlUnop.c */,
+				29A82B16693B0A8707188A87 /* HvControlUnop.h */,
+				3606A123380E9799457AC39A /* HvControlVar.c */,
+				F7D7674CF5D68B027373FD6C /* HvControlVar.h */,
+				3F1C32E66E23A6C043A6B36D /* HvHeavy.cpp */,
+				0887E89450C812CF409D192A /* HvHeavy.h */,
+				2BDDC88F672BD18E5DF78F89 /* HvHeavyInternal.h */,
+				DF838CF89B8163EFDD74DFF1 /* HvLightPipe.c */,
+				83F5187CD2385AF23749D8E1 /* HvLightPipe.h */,
+				418473784779869314602620 /* HvMath.h */,
+				282D3EFA556C59C2BE792F5D /* HvMessage.c */,
+				048091CABBBD8C28541F8A1B /* HvMessage.h */,
+				5BB0081A822996ED9D64B548 /* HvMessagePool.c */,
+				A5FE6EC9169D0BF289604664 /* HvMessagePool.h */,
+				BFE30BC3CA3963C5436A5552 /* HvMessageQueue.c */,
+				2B543A50F5D09CEE4BD63A05 /* HvMessageQueue.h */,
+				0B1F4C4402CCFF28B9569F49 /* HvSignalCPole.c */,
+				14B5013F951FE63C0260E867 /* HvSignalCPole.h */,
+				98A9A59DD735353E7A5A1384 /* HvSignalDel1.c */,
+				7554310C2FFCC4EDD6D705D8 /* HvSignalDel1.h */,
+				D3A48775EAC13E030D50276A /* HvSignalLine.c */,
+				1E3F8568607BF0626C545797 /* HvSignalLine.h */,
+				2139495472E7CF5E0A771860 /* HvSignalPhasor.c */,
+				3A64E35C923E07DC3AD5F8E7 /* HvSignalPhasor.h */,
+				4A0AFABF6CBEF995A4BD58FC /* HvSignalRPole.c */,
+				1F0140A2A017EBA901B04B0F /* HvSignalRPole.h */,
+				824D886EA8468C921D8E553A /* HvSignalSamphold.c */,
+				3FD5F3A322A9FF94299A2164 /* HvSignalSamphold.h */,
+				5C3B363D7B9240D22D8DD0DA /* HvSignalTabread.c */,
+				8932E387CB03BE4F510F9B82 /* HvSignalTabread.h */,
+				C3CCEA5DBF21BFFEF045729B /* HvSignalTabwrite.c */,
+				49F3DCE86DC929611EC3532B /* HvSignalTabwrite.h */,
+				816061BA802C7FADF20EEED1 /* HvSignalVar.c */,
+				5E2BF8EAA0BAF6C196E2799D /* HvSignalVar.h */,
+				3370501FE56BE9DD46FDDDAD /* HvTable.c */,
+				4FC5A6B87BB823939C1AA75B /* HvTable.h */,
+				4DF4D029497CB95C1DC30DFC /* HvUtils.c */,
+				BE591BA2E84074EF5EC9319E /* HvUtils.h */,
+			);
+			name = shared;
+			path = shared;
+			sourceTree = "<group>";
+		};
 		A7860A3DAE3EC731FB516FD3 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -568,6 +745,40 @@
 				3A0114F5E08792A1FB4B70E9 /* Pods-PhaseRings.release.xcconfig */,
 			);
 			name = Pods;
+			sourceTree = "<group>";
+		};
+		B295CD8F94A3E4FAECA48CC7 /* Heavy_CircleStrings */ = {
+			isa = PBXGroup;
+			children = (
+				75E06B474AA77C2172A32940 /* Heavy_CircleStrings.cpp */,
+				0446B299C36DB4811F73FFA2 /* Heavy_CircleStrings.h */,
+				B69C969D2FCC12D9D8D69EF4 /* Heavy_CircleStrings.hpp */,
+			);
+			name = Heavy_CircleStrings;
+			path = Heavy_CircleStrings;
+			sourceTree = "<group>";
+		};
+		D07B01916F0A8004C618E1D1 /* Heavy */ = {
+			isa = PBXGroup;
+			children = (
+				96977BFF59ABB989605CED5E /* shared */,
+				E2D761A50AAE2D7BD6FD2441 /* Heavy_PhaseRing */,
+				B295CD8F94A3E4FAECA48CC7 /* Heavy_CircleStrings */,
+				2C5597C4BE04CAE672C4AD15 /* Heavy_SoundScraper */,
+			);
+			name = Heavy;
+			path = PhaseRings/Heavy;
+			sourceTree = "<group>";
+		};
+		E2D761A50AAE2D7BD6FD2441 /* Heavy_PhaseRing */ = {
+			isa = PBXGroup;
+			children = (
+				DB36066A01B7BF6BD4A32644 /* Heavy_PhaseRing.cpp */,
+				3AD82B57BDDBC8FB6494EA64 /* Heavy_PhaseRing.h */,
+				37E2F4438480629CC71F9F33 /* Heavy_PhaseRing.hpp */,
+			);
+			name = Heavy_PhaseRing;
+			path = Heavy_PhaseRing;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -703,7 +914,6 @@
 				56E172601991EAF500A36C74 /* PhaseRingSynthEnvironment.pd in Resources */,
 				5630CFB019FE06E700B3DC89 /* stringsynth.pd in Resources */,
 				568BDC251A0349300056CF22 /* xylo.wav in Resources */,
-				568BDC121A03488B0056CF22 /* s_loopsmooth.pd in Resources */,
 				568BDC171A03488B0056CF22 /* u_listmap.pd in Resources */,
 				568BDC221A0349300056CF22 /* crotale.wav in Resources */,
 				5630CFD419FE06ED00B3DC89 /* m_mixolydian.pd in Resources */,
@@ -722,7 +932,6 @@
 				568BDC241A0349300056CF22 /* marimba.wav in Resources */,
 				5630CFC919FE06ED00B3DC89 /* volumeRandomise.pd in Resources */,
 				5630CFD019FE06ED00B3DC89 /* slicesampler.pd in Resources */,
-				568BDC131A03488B0056CF22 /* s_playolap.pd in Resources */,
 				568BDC201A0349300056CF22 /* almglockenC.wav in Resources */,
 				5630CFCF19FE06ED00B3DC89 /* percsampler.pd in Resources */,
 				5630CFD519FE06ED00B3DC89 /* m_phrygian.pd in Resources */,
@@ -833,6 +1042,38 @@
 				562375CC19F764FC004F1281 /* GCDAsyncUdpSocket.m in Sources */,
 				562375CF19F764FC004F1281 /* NSData+F53OSCBlob.m in Sources */,
 				5623759D19F7610F004F1281 /* PGMidiFind.mm in Sources */,
+				68E03B3AEE72DA5F7AF7B9F0 /* HeavyContext.cpp in Sources */,
+				E09E8A14938FDF6CC0259F62 /* HvControlBinop.c in Sources */,
+				CD04DF8ACAE16F95363EA4AB /* HvControlCast.c in Sources */,
+				68C91319334E63970BFB5A45 /* HvControlDelay.c in Sources */,
+				786584BE795A45144FB3E19F /* HvControlIf.c in Sources */,
+				60F3D226855D3E72D45C7D19 /* HvControlPack.c in Sources */,
+				39DB624253FBAA3631D074D6 /* HvControlPrint.c in Sources */,
+				EB621EC33F362365F77EA09E /* HvControlRandom.c in Sources */,
+				118050F79C9769885D7B21E0 /* HvControlSlice.c in Sources */,
+				B72E2953AC44DA4FF8F2F885 /* HvControlSystem.c in Sources */,
+				3ABABA40FBF77FAD17EF367D /* HvControlTabhead.c in Sources */,
+				25B3D2E181EE7642BF6D9FAD /* HvControlUnop.c in Sources */,
+				50C43794DBA445838D051043 /* HvControlVar.c in Sources */,
+				9F3ADE4FA37EFB78BD95D850 /* HvHeavy.cpp in Sources */,
+				48F1F30D88C35CE1B3E3460C /* HvLightPipe.c in Sources */,
+				A71EE7382F9CC2FD60BEF94E /* HvMessage.c in Sources */,
+				302450C508EB19778DDE18FF /* HvMessagePool.c in Sources */,
+				51EF4B11341B92B8C1DE06F3 /* HvMessageQueue.c in Sources */,
+				041341603E368EC9FB16EB12 /* HvSignalCPole.c in Sources */,
+				9B53B18EA760C92C184DDA7B /* HvSignalDel1.c in Sources */,
+				B619431F6E9CECBB47E3DC28 /* HvSignalLine.c in Sources */,
+				A8A606C6F52E300071E12999 /* HvSignalPhasor.c in Sources */,
+				D1FCFF70E892A3B6D228636C /* HvSignalRPole.c in Sources */,
+				43BF9D35F164D6F4DCF04998 /* HvSignalSamphold.c in Sources */,
+				4FA1FE3F77FB29FD34DE8343 /* HvSignalTabread.c in Sources */,
+				5DC28BB2F97E78BCF8E9DE69 /* HvSignalTabwrite.c in Sources */,
+				D69A1CFA2CB84B4C730E71F3 /* HvSignalVar.c in Sources */,
+				BE4DD8A6E2921605911A2367 /* HvTable.c in Sources */,
+				3D3160774DE69AFB01B9C48E /* HvUtils.c in Sources */,
+				9A325A68BE124393A397FE68 /* Heavy_PhaseRing.cpp in Sources */,
+				B64AFCD0BFD653DF26C2FFA5 /* Heavy_CircleStrings.cpp in Sources */,
+				12A31FAD846741878F6D4BB1 /* Heavy_SoundScraper.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1009,6 +1250,10 @@
 				DEVELOPMENT_TEAM = EDH387FRHA;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PhaseRings/PhaseRings-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/PhaseRings/Heavy/shared",
+				);
 				INFOPLIST_FILE = "PhaseRings/PhaseRings-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -1032,6 +1277,10 @@
 				DEVELOPMENT_TEAM = EDH387FRHA;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PhaseRings/PhaseRings-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/PhaseRings/Heavy/shared",
+				);
 				INFOPLIST_FILE = "PhaseRings/PhaseRings-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;

@@ -79,22 +79,38 @@ reference / future libpd debugging).
 
 ### 1. Generate Heavy C++ into the iOS project tree (done)
 
-`scripts/build_hvcc.sh` generates C++ for all three patches into
-`PhaseRings/Heavy/Heavy_<Name>/` (one directory per synth: `Heavy_PhaseRing`,
-`Heavy_CircleStrings`, `Heavy_SoundScraper`). hvcc emits three subdirs per
-context:
+`scripts/build_hvcc.sh` generates C++ for all three patches and consolidates
+the output under `PhaseRings/Heavy/`:
 
-- `c/` — Heavy C/C++ sources (`Heavy_<Name>.cpp/.h/.hpp`, runtime support,
-  table enums like `HV_SOUNDSCRAPER_TABLE_BOWL`). Vendored — about 4MB total
-  across all three contexts.
-- `hv/` — Heavy IR JSON dump. Not vendored (gitignored); regenerable.
-- `ir/` — patch GUI JSON. Not vendored; regenerable.
+```
+PhaseRings/Heavy/
+  shared/                          61 files -- the Heavy runtime, compiled once
+  Heavy_PhaseRing/                  3 files -- Heavy_PhaseRing.{cpp,h,hpp}
+  Heavy_CircleStrings/              3 files -- Heavy_CircleStrings.{cpp,h,hpp}
+  Heavy_SoundScraper/               3 files -- Heavy_SoundScraper.{cpp,h,hpp}
+```
 
-Regenerate after any `.pd` change with `bash scripts/build_hvcc.sh`.
+Each `hvcc` invocation emits the full Heavy runtime alongside the
+patch-specific `Heavy_<Name>.cpp`. The runtime files are byte-identical
+between contexts (SoundScraper additionally needs `HvControlPrint.c` and
+`HvSignalSamphold.c`), so `build_hvcc.sh` moves them into a single
+`shared/` directory — linking all three full trees would produce hundreds
+of duplicate symbols.
 
-**Still TODO for this step:** wire the `c/` files into Xcode — add the three
-`c/` folder references to the `PhaseRings` target, set the C++ language
-dialect, and exclude the `*.heavy.ir.json` / `*.hv.json` from the bundle.
+`scripts/wire_heavy_into_xcode.rb` adds the resulting groups to the
+`PhaseRings` target, attaches the source files to the build phase, and adds
+`$(SRCROOT)/PhaseRings/Heavy/shared` to `HEADER_SEARCH_PATHS` so the
+per-context entry .cpp files can resolve `#include "HeavyContext.hpp"`. The
+script is idempotent (it removes any existing Heavy group before rebuilding),
+so the regeneration flow is:
+
+```
+bash scripts/build_hvcc.sh           # regenerate sources
+ruby scripts/wire_heavy_into_xcode.rb # re-sync Xcode project
+```
+
+Verified: the iPad Pro 11" simulator (iOS 26.5) Debug build succeeds with
+Heavy code linked in (no audio driving it yet — that's Step 2).
 
 ### 2. Replace libpd with Heavy's C++ API
 
@@ -162,8 +178,9 @@ After the Heavy integration is verified working:
 - `scripts/check_hvcc_compat.sh` — triage script, run anytime after patch edits
 - `scripts/install_hvcc.sh` — sets up `.venv-hvcc/`
 - `scripts/build_hvcc.sh` — generates Heavy C++ under `PhaseRings/Heavy/`
-- `PhaseRings/Heavy/Heavy_<Name>/c/` — vendored Heavy C++ output (the build
-  inputs); `hv/` and `ir/` are gitignored intermediates
+- `scripts/wire_heavy_into_xcode.rb` — re-syncs the generated tree into the
+  Xcode project (idempotent)
+- `PhaseRings/Heavy/{shared,Heavy_*}` — vendored Heavy output
 - `PhaseRingSynth/*.pd` — patches that get compiled
 - `PhaseRingSynth/load_sound_files.pd` — out-of-compile-path; original
   soundfiler scaffolding kept for reference
