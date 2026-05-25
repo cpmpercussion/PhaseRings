@@ -2,7 +2,7 @@
 #X obj 456 76 inlet;
 #X obj 36 36 inlet;
 #X obj 36 591 outlet~;
-#X obj 36 461 tabread4~;
+#X obj 36 461 tabread4~ crotale;
 #X obj 36 301 list prepend set;
 #X obj 36 331 list trim;
 #X obj 51 431 vline~;

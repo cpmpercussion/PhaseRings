@@ -15,7 +15,7 @@
 #X obj 195 108 r \$0-chunk-size-samples;
 #X text 253 47 read-pt;
 #X text 471 75 phase;
-#X obj 195 269 tabread4~;
+#X obj 195 269 tabread4~ crotale;
 #X obj 83 244 r \$0-set-table;
 #X connect 0 0 2 0;
 #X connect 1 0 11 0;
@@ -62,7 +62,7 @@
 #X obj 195 108 r \$0-chunk-size-samples;
 #X text 253 47 read-pt;
 #X text 471 75 phase;
-#X obj 195 269 tabread4~;
+#X obj 195 269 tabread4~ crotale;
 #X obj 83 244 r \$0-set-table;
 #X connect 0 0 2 0;
 #X connect 1 0 11 0;
