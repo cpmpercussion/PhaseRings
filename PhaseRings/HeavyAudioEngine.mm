@@ -72,12 +72,9 @@ static OSStatus HeavyRenderCallback(void *inRefCon,
     return noErr;
 }
 
-static void HeavyPrintHook(HeavyContextInterface *ctx,
-                           const char *receiverName,
-                           const char *message,
-                           const HvMessage *m) {
-    NSLog(@"Heavy[%s]: %s", receiverName ?: "?", message ?: "");
-}
+// Heavy's print hook fires on the audio render thread. Anything that takes
+// a lock, allocates, or hits Objective-C runtime will glitch audio. Leave
+// the hook unset so [print] objects in the patches discard silently.
 
 #pragma mark -
 
@@ -128,6 +125,13 @@ static void HeavyPrintHook(HeavyContextInterface *ctx,
     err = nil;
     if (![session setPreferredSampleRate:_sampleRate error:&err]) {
         NSLog(@"HeavyAudioEngine: setPreferredSampleRate failed: %@", err);
+    }
+    err = nil;
+    // ~5.3 ms buffer: 256 frames at 48 kHz. Leaves comfortable headroom for
+    // Heavy's per-block work without being so long that touch responsiveness
+    // suffers. iOS may still pick something nearby.
+    if (![session setPreferredIOBufferDuration:256.0/_sampleRate error:&err]) {
+        NSLog(@"HeavyAudioEngine: setPreferredIOBufferDuration failed: %@", err);
     }
     err = nil;
     if (![session setActive:YES error:&err]) {
@@ -288,21 +292,18 @@ static void HeavyPrintHook(HeavyContextInterface *ctx,
         case HeavySynthPhase:
             if (!_phase) {
                 _phase = new Heavy_PhaseRing(_sampleRate);
-                _phase->setPrintHook(HeavyPrintHook);
             }
             ctx = _phase;
             break;
         case HeavySynthCircleStrings:
             if (!_strings) {
                 _strings = new Heavy_CircleStrings(_sampleRate);
-                _strings->setPrintHook(HeavyPrintHook);
             }
             ctx = _strings;
             break;
         case HeavySynthSoundScraper:
             if (!_soundscraper) {
                 _soundscraper = new Heavy_SoundScraper(_sampleRate);
-                _soundscraper->setPrintHook(HeavyPrintHook);
                 [self loadSamplesIntoContext:_soundscraper];
             }
             ctx = _soundscraper;
