@@ -163,7 +163,7 @@
 #X obj 395 63 inlet;
 #X obj 46 46 inlet;
 #X obj 46 601 outlet~;
-#X obj 46 471 tabread4~;
+#X obj 46 471 tabread4~ crotale;
 #N canvas 183 86 1064 786 trigger-sample 0;
 #X text 20 165 Wait for the;
 #X text 18 179 cutoff to finish;
