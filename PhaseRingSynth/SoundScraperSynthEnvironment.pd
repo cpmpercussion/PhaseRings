@@ -1,4 +1,4 @@
-#N canvas 145 413 1440 842 10;
+#N canvas 196 30 1440 842 10;
 #X declare -path samples;
 #X declare -path metaPdLibs;
 #X declare -path metaPdLibs/control;
@@ -256,9 +256,9 @@
 #X connect 5 0 66 1;
 #X connect 8 0 39 0;
 #X connect 9 0 31 3;
+#X connect 9 0 34 3;
 #X connect 9 0 32 3;
 #X connect 9 0 33 3;
-#X connect 9 0 34 3;
 #X connect 10 0 39 0;
 #X connect 13 0 22 0;
 #X connect 14 0 67 1;
