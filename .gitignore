@@ -13,6 +13,11 @@
 build/
 DerivedData/
 
+## hvcc intermediates (regenerable via scripts/build_hvcc.sh).
+## The c/ subdirs are vendored; hv/ and ir/ are JSON dumps for debugging.
+PhaseRings/Heavy/*/hv/
+PhaseRings/Heavy/*/ir/
+
 ## Various settings
 *.pbxuser
 !default.pbxuser

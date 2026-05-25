@@ -76,6 +76,8 @@ Three top-level environment patches in `PhaseRingSynth/`:
 
 Sub-patches and shared libraries live in `PhaseRingSynth/metaPdLibs/`. Audio samples (`.wav`) are in `PhaseRingSynth/samples/`.
 
+On the `v3.0-hvcc-migration` branch the patches are also compiled ahead-of-time with hvcc into `PhaseRings/Heavy/Heavy_<Name>/c/` (vendored). Regenerate with `bash scripts/build_hvcc.sh` after any `.pd` change. See `hvcc-migration-plan.md`.
+
 ## CocoaPods dependencies
 
 | Pod | Purpose |

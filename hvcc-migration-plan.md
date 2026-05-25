@@ -77,19 +77,24 @@ reference / future libpd debugging).
 
 ## Next: iOS-side work (the actual v3.0 build)
 
-### 1. Generate Heavy C code into the iOS project tree
+### 1. Generate Heavy C++ into the iOS project tree (done)
 
-Currently `scripts/check_hvcc_compat.sh` discards the generated C into
-`build/hvcc/` for triage. Need a real generation step:
+`scripts/build_hvcc.sh` generates C++ for all three patches into
+`PhaseRings/Heavy/Heavy_<Name>/` (one directory per synth: `Heavy_PhaseRing`,
+`Heavy_CircleStrings`, `Heavy_SoundScraper`). hvcc emits three subdirs per
+context:
 
-- Decide where the generated C lives (suggest `PhaseRings/Heavy/` —
-  separate from app source for easy regeneration).
-- One Heavy context per synth: `Heavy_PhaseRing`, `Heavy_CircleStrings`,
-  `Heavy_SoundScraper`. Three sets of generated files.
-- Wire into Xcode: add the generated `.c`/`.cpp`/`.h` to the project, set
-  up a build phase (or pre-commit) that regenerates on patch change.
-- Optional: a Makefile target or `scripts/build_hvcc.sh` that runs
-  `hvcc <patch> -g cpp -n Heavy_<Name> -o PhaseRings/Heavy/<Name>`.
+- `c/` — Heavy C/C++ sources (`Heavy_<Name>.cpp/.h/.hpp`, runtime support,
+  table enums like `HV_SOUNDSCRAPER_TABLE_BOWL`). Vendored — about 4MB total
+  across all three contexts.
+- `hv/` — Heavy IR JSON dump. Not vendored (gitignored); regenerable.
+- `ir/` — patch GUI JSON. Not vendored; regenerable.
+
+Regenerate after any `.pd` change with `bash scripts/build_hvcc.sh`.
+
+**Still TODO for this step:** wire the `c/` files into Xcode — add the three
+`c/` folder references to the `PhaseRings` target, set the C++ language
+dialect, and exclude the `*.heavy.ir.json` / `*.hv.json` from the bundle.
 
 ### 2. Replace libpd with Heavy's C++ API
 
@@ -156,6 +161,9 @@ After the Heavy integration is verified working:
 
 - `scripts/check_hvcc_compat.sh` — triage script, run anytime after patch edits
 - `scripts/install_hvcc.sh` — sets up `.venv-hvcc/`
+- `scripts/build_hvcc.sh` — generates Heavy C++ under `PhaseRings/Heavy/`
+- `PhaseRings/Heavy/Heavy_<Name>/c/` — vendored Heavy C++ output (the build
+  inputs); `hv/` and `ir/` are gitignored intermediates
 - `PhaseRingSynth/*.pd` — patches that get compiled
 - `PhaseRingSynth/load_sound_files.pd` — out-of-compile-path; original
   soundfiler scaffolding kept for reference
