@@ -1,4 +1,4 @@
-#N canvas 1694 35 589 843 10;
+#N canvas 970 42 1325 834 10;
 #X declare -path samples;
 #X declare -path libs;
 #X obj -40 115 r pitch;
