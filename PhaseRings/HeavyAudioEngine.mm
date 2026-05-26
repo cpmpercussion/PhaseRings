@@ -23,7 +23,7 @@ static const HeavySampleMapping kSoundScraperSamples[] = {
     { HV_SOUNDSCRAPER_TABLE_BOWL,       @"bowl.wav" },
     { HV_SOUNDSCRAPER_TABLE_GONG,       @"gong.wav" },
     { HV_SOUNDSCRAPER_TABLE_CROTALE,    @"crotale.wav" },
-    { HV_SOUNDSCRAPER_TABLE_ALMGLOCKEN, @"almglockenC.wav" },
+    { HV_SOUNDSCRAPER_TABLE_ALMGLOCKEN, @"almglockenC-441.wav" },
     { HV_SOUNDSCRAPER_TABLE_MARIMBA,    @"marimba.wav" },
     { HV_SOUNDSCRAPER_TABLE_XYLO,       @"xylo.wav" },
 };
