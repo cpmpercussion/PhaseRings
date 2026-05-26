@@ -43,11 +43,7 @@ PATCHES=(
 
 SEARCH_PATHS=(
     "-p" "$SYNTH_DIR"
-    "-p" "$SYNTH_DIR/metaPdLibs"
-    "-p" "$SYNTH_DIR/metaPdLibs/control"
-    "-p" "$SYNTH_DIR/metaPdLibs/fx"
-    "-p" "$SYNTH_DIR/metaPdLibs/instruments"
-    "-p" "$SYNTH_DIR/metaPdLibs/scales"
+    "-p" "$SYNTH_DIR/libs"
 )
 
 # Wipe previous output. We rebuild from scratch every time so removed files
@@ -73,10 +69,17 @@ for entry in "${PATCHES[@]}"; do
         "${SEARCH_PATHS[@]}"
     rc=$?
 
-    if [ $rc -ne 0 ]; then
-        echo "  FAIL exit=$rc"
+    # hvcc exits nonzero when its pd2gui stage hits legacy Pd colors (the
+    # libs/ abstractions use negative-int colors that pydantic-extra-types
+    # rejects). The C++ output we actually consume is emitted before that
+    # stage runs, so trust the presence of the entry .cpp over the exit code.
+    if [ ! -f "$tmp/c/Heavy_$name.cpp" ]; then
+        echo "  FAIL exit=$rc (no Heavy_$name.cpp emitted)"
         OVERALL=1
         continue
+    fi
+    if [ $rc -ne 0 ]; then
+        echo "  (hvcc exit=$rc -- pd2gui warning, C++ output present)"
     fi
 
     ctx_out="$OUT_ROOT/Heavy_$name"

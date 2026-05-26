@@ -8,9 +8,8 @@
 #   build/hvcc/<patch-name>.log     -- stdout+stderr from the hvcc run
 #   build/hvcc/summary.txt          -- exit codes per patch
 #
-# Search paths: PhaseRingSynth/ itself (for sibling abstractions like
-# bellsynth.pd, phasesynth.pd, etc.) and PhaseRingSynth/metaPdLibs/ subdirs
-# (control, fx, instruments, scales).
+# Search paths: PhaseRingSynth/ itself (root environment patches) and
+# PhaseRingSynth/libs/ (every abstraction the roots reference).
 
 set -uo pipefail
 
@@ -33,11 +32,7 @@ PATCHES=(
 
 SEARCH_PATHS=(
     "-p" "$SYNTH_DIR"
-    "-p" "$SYNTH_DIR/metaPdLibs"
-    "-p" "$SYNTH_DIR/metaPdLibs/control"
-    "-p" "$SYNTH_DIR/metaPdLibs/fx"
-    "-p" "$SYNTH_DIR/metaPdLibs/instruments"
-    "-p" "$SYNTH_DIR/metaPdLibs/scales"
+    "-p" "$SYNTH_DIR/libs"
 )
 
 rm -rf "$OUT_DIR"
@@ -63,9 +58,17 @@ for patch in "${PATCHES[@]}"; do
         >"$log" 2>&1
     rc=$?
 
-    if [ $rc -eq 0 ]; then
-        echo "  OK  ($log)"
-        printf "%-40s OK\n"   "$patch" >> "$SUMMARY"
+    # See build_hvcc.sh for the same logic: pd2gui's legacy-color check trips
+    # hvcc's exit code even though pd2hv/hv2ir/ir2c succeeded. Treat the
+    # presence of a generated c/ directory as success.
+    if [ -d "$out/c" ] && [ "$(ls -A "$out/c" 2>/dev/null)" ]; then
+        if [ $rc -eq 0 ]; then
+            echo "  OK  ($log)"
+            printf "%-40s OK\n"   "$patch" >> "$SUMMARY"
+        else
+            echo "  OK  (pd2gui warning, $log)"
+            printf "%-40s OK (pd2gui warning)\n" "$patch" >> "$SUMMARY"
+        fi
     else
         echo "  FAIL exit=$rc  ($log)"
         printf "%-40s FAIL exit=%d\n" "$patch" "$rc" >> "$SUMMARY"
