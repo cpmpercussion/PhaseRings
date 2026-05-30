@@ -111,6 +111,16 @@ puts 'Added HeavyCore.h + PhaseRingsKit.h as public headers.'
 app.add_dependency(fw)
 app.frameworks_build_phase.add_file_reference(fw.product_reference)
 
+# This project's pods are static, so the app had no LD_RUNPATH and dyld can't
+# find an embedded @rpath framework on device ("no LC_RPATH's found"). Add the
+# standard app framework search path.
+app.build_configurations.each do |c|
+  paths = Array(c.build_settings['LD_RUNPATH_SEARCH_PATHS'])
+  paths = ['$(inherited)'] if paths.empty?
+  paths << '@executable_path/Frameworks' unless paths.include?('@executable_path/Frameworks')
+  c.build_settings['LD_RUNPATH_SEARCH_PATHS'] = paths
+end
+
 embed = app.copy_files_build_phases.find { |p| p.name == 'Embed Frameworks' }
 unless embed
   embed = app.new_copy_files_build_phase('Embed Frameworks')
