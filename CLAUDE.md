@@ -78,6 +78,8 @@ Sub-patches and shared libraries live in `PhaseRingSynth/metaPdLibs/`. Audio sam
 
 On the `v3.0-hvcc-migration` branch the patches are also compiled ahead-of-time with hvcc into `PhaseRings/Heavy/` (vendored — `shared/` holds the runtime, `Heavy_<Name>/` the per-patch entry). Regenerate with `bash scripts/build_hvcc.sh && ruby scripts/wire_heavy_into_xcode.rb` after any `.pd` change. See `hvcc-migration-plan.md`.
 
+The Heavy sources, the host-agnostic `HeavyCore`, and the WAV samples live in the embedded **`PhaseRingsKit.framework`** target (shared so the planned AUv3 extension can reuse them); `wire_heavy_into_xcode.rb` syncs into that target, not the app. `HeavyAudioEngine` is now just the standalone-app audio driver (AVAudioSession + RemoteIO) wrapping a `HeavyCore`. See `auv3-plan.md`.
+
 ## CocoaPods dependencies
 
 | Pod | Purpose |

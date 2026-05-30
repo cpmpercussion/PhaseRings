@@ -11,7 +11,7 @@
 
 #import <Foundation/Foundation.h>
 #import <AudioToolbox/AudioToolbox.h>
-#import "HeavyCore.h"   // HeavySynth enum + HeavyCore
+#import <PhaseRingsKit/HeavyCore.h>   // HeavySynth enum + HeavyCore (shared framework)
 
 NS_ASSUME_NONNULL_BEGIN
 

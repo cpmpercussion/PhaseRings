@@ -75,9 +75,16 @@ The standalone app instantiates the **same** `PhaseRingsAudioUnit` internally
 
 ## Phases
 
-### Phase A — Extract HeavyCore (no behaviour change)
+### Phase A — Extract HeavyCore (no behaviour change) — ✅ COMPLETE
 
-1. Create `PhaseRingsKit.framework` target. **(not yet — see below)**
+1. ✅ Created `PhaseRingsKit.framework` (embedded dynamic framework, iOS 14,
+   `DEFINES_MODULE`, umbrella `PhaseRingsKit.h`, public `HeavyCore.h`). The 34
+   Heavy sources + `HeavyCore.mm` + the 6 WAV samples now live in it; the app
+   links + embeds it. `scripts/create_framework.rb` builds the target;
+   `scripts/wire_heavy_into_xcode.rb` now targets `PhaseRingsKit`. Had to link
+   AVFoundation/AudioToolbox explicitly (autolink doesn't fire for the
+   framework). App builds & runs on the iPad Pro 11" (M5) simulator with the
+   framework embedded; samples resolve via `bundleForClass:`.
 2. ✅ Split `HeavyAudioEngine` → `HeavyCore` + standalone driver.
    `HeavyCore` (`PhaseRings/HeavyCore.{h,mm}`) holds the 3 contexts, the
    atomic `_current`, sample decode/load, `selectSynth:`, the message sends,
@@ -91,11 +98,15 @@ The standalone app instantiates the **same** `PhaseRingsAudioUnit` internally
 4. ✅ App builds on the iPad Pro 11" (M5) simulator, unchanged, via the new
    driver. (`scripts/add_heavycore.rb` wired the files in.)
 
-**Remaining for Phase A:** create `PhaseRingsKit.framework` and move
-`HeavyCore` + `PhaseRings/Heavy/*` + the 6 WAVs into it (separable Xcode
-surgery: new target, umbrella/public headers, embed in app, link). The code
-is already shaped for this — `HeavyCore` has no app/session/RemoteIO deps and
-loads samples via `bundleForClass:`.
+Regeneration flow after a `.pd` change is now:
+
+```
+bash scripts/build_hvcc.sh            # regenerate Heavy C++
+ruby scripts/wire_heavy_into_xcode.rb # re-sync into PhaseRingsKit (the framework)
+```
+
+`scripts/create_framework.rb` is a one-shot (creating the framework target);
+it bails if `PhaseRingsKit` already exists.
 
 ### Phase B — Lock-free event FIFO (correctness)
 

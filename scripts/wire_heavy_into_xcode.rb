@@ -1,8 +1,12 @@
 #!/usr/bin/env ruby
-# Add the Heavy C++ outputs under PhaseRings/Heavy/ to the PhaseRings target.
-# Layout produced by scripts/build_hvcc.sh:
+# Add the Heavy C++ outputs under PhaseRings/Heavy/ to the PhaseRingsKit
+# framework target. Layout produced by scripts/build_hvcc.sh:
 #   PhaseRings/Heavy/shared/                 (one copy of the Heavy runtime)
 #   PhaseRings/Heavy/Heavy_<Name>/           (Heavy_<Name>.{cpp,h,hpp} only)
+#
+# NOTE: as of the AUv3 work (auv3-plan.md, Phase A) the Heavy sources live in
+# the shared PhaseRingsKit framework, not the app target. Run this AFTER
+# scripts/create_framework.rb has created PhaseRingsKit.
 #
 # Idempotent: any pre-existing Heavy group is removed and rebuilt so adds and
 # removes between hvcc runs are picked up automatically. Also adds the
@@ -16,19 +20,22 @@ require 'xcodeproj'
 require 'pathname'
 
 PROJECT_PATH = 'PhaseRings.xcodeproj'
-TARGET_NAME  = 'PhaseRings'
+TARGET_NAME  = 'PhaseRingsKit'
 CONTEXTS = ['Heavy_PhaseRing', 'Heavy_CircleStrings', 'Heavy_SoundScraper']
 
 project = Xcodeproj::Project.open(PROJECT_PATH)
 target  = project.targets.find { |t| t.name == TARGET_NAME }
-raise "Target #{TARGET_NAME} not found" unless target
+raise "Target #{TARGET_NAME} not found (run scripts/create_framework.rb first)" unless target
 
 # Drop references to .pd patches that were deleted during the hvcc migration
-# but are still in the project (the build can't find them otherwise).
+# but are still in the project (the build can't find them otherwise). These
+# were app resources; scan every target's resource phase to be safe.
 stale_pd = ['s_loopsmooth.pd', 's_playolap.pd']
 project.files.select { |f| stale_pd.include?(f.display_name) }.each do |ref|
-  target.resources_build_phase.files.each do |bf|
-    bf.remove_from_project if bf.file_ref == ref
+  project.targets.each do |t|
+    t.resources_build_phase.files.each do |bf|
+      bf.remove_from_project if bf.file_ref == ref
+    end
   end
   ref.remove_from_project
 end
