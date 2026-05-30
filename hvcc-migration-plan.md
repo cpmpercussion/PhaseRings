@@ -44,6 +44,38 @@ Branch: `v3.0-hvcc-migration` (commits since `8f9291b`).
   tables are internal-only.
 - **`[block~]`, `[declare]` inside abstractions**: ignored (warning only,
   not an error). Move `[declare]` to root canvas for cleanliness.
+- **Control floats into the LEFT (signal) inlet of some `~` objects are
+  silently dropped.** Heavy docs: *"Many objects do not take control signals
+  on their left inlet. `[osc~]` for instance always requires the use of
+  `[sig~]` before connecting a value."* hvcc emits **no warning** — it just
+  generates an empty `cReceive_*_sendMessage` (for `[r]` sources) and leaves
+  the signal inlet on the constant-zero buffer, so the patch goes silent /
+  near-DC. **Confirmed dropped: `[samphold~]`** (the grain size / read-point
+  fed its left inlet went to zero → static read; fixed by inserting `[sig~]`,
+  see `sampler-overlap.pd`). The doc also names `[osc~]`.
+  *Not* dropped — Heavy auto-converts or has a control-rate setter:
+  `[phasor~]`/`[osc~]` frequency (compiles to a `sPhasor_k_onMessage` setter),
+  and filter/arith inlets like `[lop~]`/`[*~]` (implicit signal-var, `sVarf`).
+  Inconsistent by object, so when in doubt insert `[sig~]`.
+  Audit the whole patch set with
+  `tools/heavy_harness/check_control_to_signal_inlet.py PhaseRingSynth/**/*.pd`.
+
+#### Control→signal-left-inlet audit (2026-05-30)
+
+Ran the linter over all 33 `.pd` files. 12 candidates after excluding
+abstraction/subpatch signal sources and by-design message inlets
+(`set`→`[tabread4~]`, bang→`[snapshot~]`, msg→`[readsf~]`). Verdict — **no
+outstanding bugs in the compiled patches**:
+
+- `[osc~]`/`[phasor~]` freq (phasesynth, stringsynth, sampler-overlap,
+  PhaseRingEnv): OK — `_k` message setter.
+- `[lop~]` 1/0 gate (soundscrapersynth2): OK — implicit `sVarf`.
+- `[delread~]` (pluck~): OK — vanilla control delay-time, compiles.
+- `[samphold~]` ← `[r]` in **`soundscrapersynth.pd`**: the broken pattern, but
+  that file is the OLD scraper, no longer instantiated (env uses
+  `soundscrapersynth2` → fixed `sampler-overlap`). Dead code.
+- `[c_adsr]`→`[outlet~]` in `bellsynth.pd`: orphaned patch, not reachable from
+  any environment, and `c_adsr` doesn't resolve. Ignored.
 
 ## Architecture: how samples flow from disk to Heavy
 
