@@ -19,12 +19,13 @@
 #X obj 185 318 bng 19 250 50 0 empty empty empty 0 -10 0 12 #fcfcfc #000000 #000000;
 #X obj 185 342 f;
 #X obj 185 365 + 2;
-#X obj 216 342 + 1;
+#X obj 234 341 + 1;
 #X floatatom 210 318 5 0 0 0 - - - 0;
 #X obj 187 423 bng 19 250 50 0 empty empty empty 0 -10 0 12 #fcfcfc #000000 #000000;
 #X obj 187 447 s changesound;
 #X obj 111 641 vsl 40 162 -1 1 0 0 sinPanAngle empty wobble 0 -9 0 12 #fcfcfc #000000 #000000 0 1;
 #X obj 178 640 vsl 40 162 0 1 0 0 panTranslation empty panTranslation 0 -9 0 12 #fcfcfc #000000 #000000 0 1;
+#X obj 234 365 % 5;
 #X connect 0 0 8 0;
 #X connect 0 0 10 0;
 #X connect 1 0 4 0;
@@ -43,5 +44,6 @@
 #X connect 18 0 20 0;
 #X connect 19 0 16 0;
 #X connect 19 0 21 0;
-#X connect 20 0 18 1;
+#X connect 20 0 26 0;
 #X connect 22 0 23 0;
+#X connect 26 0 18 1;

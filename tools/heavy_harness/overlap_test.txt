@@ -1,0 +1,40 @@
+# Drive the [sampler-overlap] abstraction directly.
+#
+# Receivers (from sampler_overlap_test.pd):
+#   so_chunk  (float, ms)   grain/chunk size       inlet 1
+#   so_readpt (float, ms)   read point             inlet 2
+#   so_cents  (float)       transposition in cents inlet 3
+#   so_table  (symbol)      switch tabread4~ table  inlet 0
+#
+# Two tables are pre-loaded by overlap_main.cpp:
+#   default  = bowl.wav     in $0_default (10000-sample table, ~227ms)
+#   switched = crotale.wav  in testsample (300000-sample table) via so_table
+#
+# loop frequency = 2^(cents/1200) / (chunk_seconds), so chunk drives pitch of
+# the grain stream and cents shifts it. Read point picks where in the sample.
+
+# --- segment A (0.0-1.5s): default bowl table, baseline grain ----------
+0     float so_cents    0
+0     float so_chunk    80
+0     float so_readpt   0
+
+# --- segment B (1.5-3.0s): sweep read point through the bowl sample -----
+1500  float so_readpt   40
+2000  float so_readpt   100
+2500  float so_readpt   180
+
+# --- segment C (3.0-4.5s): sweep transposition (cents) ------------------
+3000  float so_readpt   20
+3000  float so_cents    1200      # +1 octave
+3500  float so_cents    -1200     # -1 octave
+4000  float so_cents    0
+
+# --- segment D (4.5-7.5s): switch to testsample (crotale), wider sweep --
+4500  sym   so_table    testsample
+4500  float so_chunk    120
+4500  float so_readpt   0
+5000  float so_readpt   500
+5500  float so_readpt   1500
+6000  float so_cents    700
+6500  float so_chunk    40
+7000  float so_readpt   3000

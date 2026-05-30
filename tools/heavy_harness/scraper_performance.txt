@@ -1,0 +1,96 @@
+# SoundScraper test performance: 5 tapped notes + 5 sing notes.
+#
+# selectsound mapping (from SoundScraperSynthEnvironment.pd / table_selection):
+#   2 = almglocken (262.6 Hz, ~MIDI 60)
+#   3 = gong       (179.88 Hz, ~MIDI 56)
+#   4 = crotale    (1058.4 Hz, ~MIDI 84)
+#   5 = bowl       (705.5  Hz, ~MIDI 77)
+#   6 = marimba    (264 Hz,    ~MIDI 60)
+#   7 = xylo       (2117 Hz,   ~MIDI 96)  -- taps only; doesn't sing well
+#
+# Transposition = singpitch - ftom(sample_Hz), so each sing-pitch is chosen
+# within ±5 semitones of the active sample's natural pitch to stay musical.
+#
+# Pd convention for r pitch / r velocity (via note_distribute_four):
+#   velocity is the cold inlet -- set it FIRST, then pitch triggers the note.
+# stripnote drops velocity 0, so we don't have to send explicit note-offs.
+#
+# selectsound is sent ~300ms BEFORE singpitch/sing so the sampleNameFreq
+# chain has time to update $0-sample-pitch before transposition is computed.
+
+# --- global setup -------------------------------------------------
+0     float mastervolume    1.0
+0     float reverbvolume    0.0
+0     float processeffects  0
+0     float selectsound     2          # almglocken (any default)
+
+# --- tap phase: 5 percussive notes, ~500ms apart ------------------
+500   float velocity        100
+500   float pitch           60         # tap 1, almglocken (unison)
+
+1000  float selectsound     3          # gong
+1100  float velocity        100
+1100  float pitch           55         # tap 2, near gong's nat. pitch
+
+1600  float selectsound     4          # crotale
+1700  float velocity        100
+1700  float pitch           84         # tap 3, near crotale's nat. pitch
+
+2200  float selectsound     5          # bowl
+2300  float velocity        100
+2300  float pitch           77         # tap 4, near bowl's nat. pitch
+
+2800  float selectsound     7          # xylo (taps only)
+2900  float velocity        100
+2900  float pitch           96         # tap 5, near xylo's nat. pitch
+
+# --- sing phase: 5 sustained notes (NO xylo) ----------------------
+# Each sing note: switch sample 300ms ahead, then set pitch/level/pan,
+# raise sing=1, hold 1s, drop sing=0, hold 1s.
+
+# sing 1: almglocken (~MIDI 60), singpitch 60 -> transposition  0
+3700  float selectsound     2
+4000  float singpitch       60
+4000  float singlevel       0.6
+4000  float sinPanAngle     0.5
+4000  float panTranslation  0.3
+4000  float sing            1
+5000  float sing            0
+
+# sing 2: gong (~MIDI 56), singpitch 53 -> transposition -3
+5700  float selectsound     3
+6000  float singpitch       53
+6000  float singlevel       0.6
+6000  float sinPanAngle     -0.3
+6000  float panTranslation  0.5
+6000  float sing            1
+7000  float sing            0
+
+# sing 3: crotale (~MIDI 84), singpitch 79 -> transposition -5
+7700  float selectsound     4
+8000  float singpitch       79
+8000  float singlevel       0.7
+8000  float sinPanAngle     0.7
+8000  float panTranslation  0.2
+8000  float sing            1
+9000  float sing            0
+
+# sing 4: bowl (~MIDI 77), singpitch 72 -> transposition -5
+9700  float selectsound     5
+10000 float singpitch       72
+10000 float singlevel       0.5
+10000 float sinPanAngle     0.0
+10000 float panTranslation  0.6
+10000 float sing            1
+11000 float sing            0
+
+# sing 5: marimba (~MIDI 60), singpitch 64 -> transposition +4
+11700 float selectsound     6
+12000 float singpitch       64
+12000 float singlevel       0.7
+12000 float sinPanAngle     -0.5
+12000 float panTranslation  0.4
+12000 float sing            1
+13000 float sing            0
+
+# tail to let reverb/release decay

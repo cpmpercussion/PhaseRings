@@ -85,3 +85,7 @@ screenshots/
 .venv-hvcc/
 
 .DS_Store
+
+# Heavy harness generated artifacts (regenerable / rendered audio)
+tools/heavy_harness/overlap_gen/
+tools/heavy_harness/*.wav
