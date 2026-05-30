@@ -184,29 +184,41 @@ Smoke-tested: `testMidiNoteDrivesAudio` feeds a note-on through the render
 event list (as a host would) and asserts audible output. Touch and MIDI now
 share the same `[notein]` path.
 
-### Phase E — Extension target + AUViewController
+### Phase E — Extension target + AUViewController — ✅ COMPLETE
 
-1. Create `PhaseRingsAUv3.appex`. Info.plist `NSExtension` →
-   `NSExtensionAttributes.AudioComponents` entry; `NSExtensionPrincipalClass`
-   = the `AUViewController`.
-2. `AUViewController` overrides `createAudioUnitWithComponentDescription:` to
-   make `PhaseRingsAudioUnit`, then embeds `InstrumentViewController` as its
-   child VC and wires touch → the AU's FIFO.
-3. Handle the resizable/auto-layout AU view so it works in narrow host frames.
+1. ✅ `PhaseRingsAUv3.appex` (`scripts/create_extension.rb`). `Info.plist`
+   `NSExtension`: point id `com.apple.AudioUnit-UI`, principal class
+   `PhaseRingsAUViewController`, `AudioComponents` = `aumu`/`phrg`/`CPMa`,
+   name "Charles Martin: PhaseRings", `sandboxSafe`. Links PhaseRingsKit;
+   embedded in the app under `PlugIns/` with rpath
+   `@executable_path/../../Frameworks` to the shared framework.
+2. ✅ `PhaseRingsAUViewController : AUViewController <AUAudioUnitFactory>`:
+   `createAudioUnitWithComponentDescription:error:` makes a
+   `PhaseRingsAudioUnit`; `viewDidLoad` embeds `InstrumentViewController` and
+   sets its `coreProvider` to pull `audioUnit.core` (tolerates lazy alloc).
+3. ✅ The instrument view is added with flexible autoresizing + preferred
+   content size, so it fills whatever frame the host gives it.
 
-### Phase F — Split ViewController
+Verified: app + extension build for the simulator; the embedded
+`PhaseRingsAUv3.appex` carries the correct `AudioComponents` registration and
+binary. `auval` / on-device host loading is Phase G/H (needs a device).
 
-`ViewController` becomes two things:
+### Phase F — Split ViewController — ✅ shareable instrument extracted; app retrofit deferred
 
-1. `InstrumentViewController` (framework): owns the ring view, touch gestures,
-   note generation, composition stepping, parameter UI. Talks only to
-   `HeavyCore`/the AU — no networking, no IAA, no session.
-2. Standalone app chrome (app target): settings popover (InAppSettingsKit),
-   `MetatoneNetworkManager` wiring, IAA publish, app lifecycle. Hosts the
-   instrument VC.
-
-Networking delegate callbacks (ensemble new-idea / composition-step) drive the
-instrument VC from the app side only.
+1. ✅ Reusable cluster (`SingingBowlView`, `NoteColours`,
+   `SingingBowlComposition`, `GenerativeSetupComposition`, `SingingBowlSetup`,
+   `ScaleMaker`) moved into PhaseRingsKit (one binary; quote-imports resolve
+   via headermap, so no app `#import` churn). `scripts/move_shared_to_framework.rb`.
+2. ✅ `InstrumentViewController` (framework): hosts a `SingingBowlView`, builds
+   a default generative composition, tap → note-on, pan → `sing`/`singpitch`/
+   `singlevel`/`sinPanAngle`/`panTranslation` (mirrors the standalone VC,
+   minus networking + MIDI-out). Sends to a `HeavyCore` via a `coreProvider`
+   block, so it works for both the AU and (eventually) the app.
+3. ⬜ **Deferred: retrofit the standalone app to host `InstrumentViewController`.**
+   The app still uses its storyboard `ViewController` + `HeavyAudioEngine`
+   driver and works unchanged. Pointing it at `InstrumentViewController` (and
+   leaving only networking/MIDI/IAA/settings chrome in the app) is a clean
+   follow-up — not required for the plugin to ship.
 
 ### Phase G — Registration, entitlements, packaging
 
