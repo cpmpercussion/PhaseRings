@@ -16,3 +16,4 @@ FOUNDATION_EXPORT double PhaseRingsKitVersionNumber;
 FOUNDATION_EXPORT const unsigned char PhaseRingsKitVersionString[];
 
 #import <PhaseRingsKit/HeavyCore.h>
+#import <PhaseRingsKit/PhaseRingsAudioUnit.h>

@@ -133,20 +133,38 @@ Implemented in `HeavyCore.mm`:
    than blocking. The render state (active context + queue) lives in one
    `HeavyRenderState` behind `HeavyCore.renderRefCon`.
 
-### Phase C — PhaseRingsAudioUnit : AUAudioUnit
+### Phase C — PhaseRingsAudioUnit : AUAudioUnit — ✅ COMPLETE
 
-1. Subclass `AUAudioUnit`. `AudioComponentDescription`: type `'aumu'`,
-   subtype + manufacturer (see "Identity" below).
-2. One stereo output `AUAudioUnitBusArray`; `allocateRenderResourcesAndReturnError:`
-   / `deallocateRenderResources`.
-3. `internalRenderBlock`: capture `HeavyCore` (raw ptr, no ObjC/alloc/locks),
-   drain FIFO, handle MIDI events from the `AURenderEvent` list, call
-   `process()`. Reuse the existing `HeavyRenderCallback` body.
-4. `AUParameterTree`: mastervolume, reverbvolume, distortlevel, processeffects
-   (bool), selectsound (indexed). Each param `address` → Heavy receiver;
-   handle host-ramped param events in the render block.
-5. `fullState` / `fullStateForDocument` for save/restore (wrap `StateSaver`).
-6. Factory presets — optional, low priority.
+`PhaseRings/PhaseRingsAudioUnit.{h,mm}` in the framework.
+
+1. ✅ `AUAudioUnit` subclass. Identity in one place: `'aumu'` / `'phrg'` /
+   `'CPMa'`. `+componentDescription` and `+registerAUComponent` (in-process
+   registration for the standalone app; the extension uses its Info.plist).
+2. ✅ One stereo (non-interleaved float32) output bus + bus array.
+   `allocateRenderResourcesAndReturnError:` builds a `HeavyCore` at the bus
+   sample rate, selects the synth param's value, pushes all params, then
+   publishes the refCon. `deallocateRenderResources` clears it.
+3. ✅ `internalRenderBlock` captures a stable heap `AURenderCtx`
+   (atomic `heavyRefCon` + scratch buffers). It repoints null host buffers at
+   scratch, then calls the existing `HeavyCoreRenderCallback` (FIFO drain +
+   `process()`). No ObjC/alloc/locks on the render path. MIDI-event walking is
+   stubbed with a comment for Phase D.
+4. ✅ `AUParameterTree`: masterVolume / reverbVolume / distortLevel /
+   processEffects (bool) / synth (indexed Phase|CircleStrings|SoundScraper).
+   `implementorValueObserver` maps float params to Heavy receivers (via the
+   FIFO) and `synth` to `selectSynth:`. Host-ramped sample-accurate parameter
+   events are NOT handled (the observer path is coarse-grained — fine for this
+   instrument; revisit if needed).
+5. ⬜ `fullState` — relying on the base class's parameter-tree snapshot for
+   now; custom state (wrapping `StateSaver`) deferred.
+6. ⬜ Factory presets — deferred (optional).
+
+Smoke-tested at runtime (`PhaseRingsTests/PhaseRingsAudioUnitTests.m`, all
+passing on the iPad Pro 11" (M5) sim): instantiate + allocate, render silence
+(finite + silent), null-output-buffer path fills scratch, and — the key one —
+FIFO-delivered `sing`/`singpitch`/`singlevel` events produce audible output
+through the render block. This is the first end-to-end exercise of the Phase B
+FIFO via a real render path.
 
 ### Phase D — MIDI input
 
