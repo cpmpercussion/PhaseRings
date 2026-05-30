@@ -21,6 +21,7 @@ static const CGFloat kScreenDiagonal = 1280.0;
 @property (nonatomic, strong) SingingBowlSetup *bowlSetup;
 @property (nonatomic, strong) GenerativeSetupComposition *composition;
 @property (nonatomic) UInt8 currentlyPanningPitch;
+@property (nonatomic) CGSize lastDrawnSize;
 @end
 
 @implementation InstrumentViewController
@@ -41,9 +42,18 @@ static const CGFloat kScreenDiagonal = 1280.0;
     [self reloadComposition];
 }
 
-- (void)viewWillLayoutSubviews {
-    [super viewWillLayoutSubviews];
+// drawSetup: lays the rings out for the view size at call time, so (re)draw
+// once the host has given us a real size, and again whenever it changes.
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
     self.bowlView.frame = self.view.bounds;
+    CGSize size = self.view.bounds.size;
+    if (self.bowlSetup && size.width > 0 && size.height > 0 &&
+        !CGSizeEqualToSize(size, self.lastDrawnSize)) {
+        [self.bowlView setSelectedColourScheme];
+        [self.bowlView drawSetup:self.bowlSetup];
+        self.lastDrawnSize = size;
+    }
 }
 
 - (void)reloadComposition {
@@ -54,8 +64,9 @@ static const CGFloat kScreenDiagonal = 1280.0;
     self.composition = [[GenerativeSetupComposition alloc] initWithRootNotes:notes andScales:scales];
     NSArray *pitches = [self.composition firstSetup];
     self.bowlSetup = [[SingingBowlSetup alloc] initWithPitches:[NSMutableArray arrayWithArray:pitches]];
-    [self.bowlView drawSetup:self.bowlSetup];
-    [self.bowlView setSelectedColourScheme];
+    // Force a redraw at the next layout pass (when the real size is known).
+    self.lastDrawnSize = CGSizeZero;
+    [self.view setNeedsLayout];
 }
 
 #pragma mark - Geometry
