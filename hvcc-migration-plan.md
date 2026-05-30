@@ -219,6 +219,12 @@ After the Heavy integration is verified working:
 - `PhaseRingSynth/SoundScraperSynthEnvironment-old.pd` — pre-migration
   backup of the SoundScraper patch (untracked); delete when confident
 
+## Next after the libpd→Heavy swap: AUv3 instrument
+
+The Heavy core (no libpd/RemoteIO assumptions) is the enabler for shipping
+PhaseRings as a proper AUv3 instrument (`kAudioUnitType_MusicDevice`) alongside
+the standalone app. That effort has its own plan: see **`auv3-plan.md`**.
+
 ## Definition of done for v3.0
 
 1. App builds and runs on iPad Pro 11" simulator without libpd

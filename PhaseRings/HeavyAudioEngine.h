@@ -2,19 +2,16 @@
 //  HeavyAudioEngine.h
 //  PhaseRings
 //
-//  Replaces PdAudioController. Owns the RemoteIO unit and three Heavy
-//  contexts (Phase, CircleStrings, SoundScraper); the active synth is
-//  selected at runtime. See hvcc-migration-plan.md.
+//  Standalone-app audio driver. Owns the AVAudioSession + RemoteIO output
+//  unit and drives a HeavyCore from its render callback. The host-agnostic
+//  DSP lives in HeavyCore; this class is the part that does NOT move into
+//  the AUv3 extension (the host owns the session and the output unit there).
+//  See auv3-plan.md (Phase A).
 //
 
 #import <Foundation/Foundation.h>
 #import <AudioToolbox/AudioToolbox.h>
-
-typedef NS_ENUM(NSInteger, HeavySynth) {
-    HeavySynthPhase = 0,
-    HeavySynthCircleStrings,
-    HeavySynthSoundScraper,
-};
+#import "HeavyCore.h"   // HeavySynth enum + HeavyCore
 
 NS_ASSUME_NONNULL_BEGIN
 

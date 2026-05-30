@@ -88,6 +88,7 @@
 		807A8872DBFEF41ABF5DC360 /* HvSignalRPole.c in Sources */ = {isa = PBXBuildFile; fileRef = 0F9D2A61945CCBD427232797 /* HvSignalRPole.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		89392BB21169E7EFA88F227B /* HvMessagePool.c in Sources */ = {isa = PBXBuildFile; fileRef = 784C69286474DE9E2F1FD647 /* HvMessagePool.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		94BA3A23188B65CD10B7EE54 /* Heavy_SoundScraper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE9BEA404E7EB05414E801FE /* Heavy_SoundScraper.cpp */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
+		96AE31ADC04BA2EBEDDBF7D6 /* HeavyCore.mm in Sources */ = {isa = PBXBuildFile; fileRef = F86F9A948783EFA0B850E403 /* HeavyCore.mm */; };
 		A2314649EABB3D54316896B4 /* HvMessage.c in Sources */ = {isa = PBXBuildFile; fileRef = B81CF6CC1BD01753F81C3994 /* HvMessage.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		A9F0513D4A01FEF52F03BAC1 /* HvSignalVar.c in Sources */ = {isa = PBXBuildFile; fileRef = BB44084D2A465E69A6F69233 /* HvSignalVar.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		AB102CAD8253A85186C189F1 /* HeavyAudioEngine.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8DABAA2BD4E2B6A6D7B75B7B /* HeavyAudioEngine.mm */; };
@@ -285,6 +286,7 @@
 		B52C15682211B825339F3D5E /* HvSignalSample.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvSignalSample.c; sourceTree = "<group>"; };
 		B81CF6CC1BD01753F81C3994 /* HvMessage.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvMessage.c; sourceTree = "<group>"; };
 		B908E2342DA6B89A6DF0E013 /* HvSignalLine.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvSignalLine.c; sourceTree = "<group>"; };
+		BACEAC6B28482E063E9DEB22 /* HeavyCore.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = HeavyCore.h; path = PhaseRings/HeavyCore.h; sourceTree = "<group>"; };
 		BB44084D2A465E69A6F69233 /* HvSignalVar.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvSignalVar.c; sourceTree = "<group>"; };
 		CE8C10AD809EF72DD1412569 /* HvSignalTabread.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvSignalTabread.c; sourceTree = "<group>"; };
 		D4F39841559427FB8815F160 /* HvControlTabhead.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlTabhead.c; sourceTree = "<group>"; };
@@ -298,6 +300,7 @@
 		EDD955AE2D3FC37E09050CFD /* HvHeavyInternal.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvHeavyInternal.h; sourceTree = "<group>"; };
 		EE88E14A2EC4BC4F6D078C4A /* HvMessage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvMessage.h; sourceTree = "<group>"; };
 		F1699809945C11171C5779D2 /* HvSignalTabread.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvSignalTabread.h; sourceTree = "<group>"; };
+		F86F9A948783EFA0B850E403 /* HeavyCore.mm */ = {isa = PBXFileReference; includeInIndex = 1; name = HeavyCore.mm; path = PhaseRings/HeavyCore.mm; sourceTree = "<group>"; };
 		FCD5032104499221471BDC9E /* HvControlPrint.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlPrint.c; sourceTree = "<group>"; };
 		FD0FDFFAD4BF84CB253B5E5E /* HeavyContext.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; path = HeavyContext.cpp; sourceTree = "<group>"; };
 		FE0C580D4E202C8470200EC5 /* HvSignalCPole.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvSignalCPole.h; sourceTree = "<group>"; };
@@ -591,6 +594,8 @@
 				5623DB79188CDB3800AA6C14 /* ViewController.m */,
 				DD2A9C78DBDD9730133C34DD /* HeavyAudioEngine.h */,
 				8DABAA2BD4E2B6A6D7B75B7B /* HeavyAudioEngine.mm */,
+				BACEAC6B28482E063E9DEB22 /* HeavyCore.h */,
+				F86F9A948783EFA0B850E403 /* HeavyCore.mm */,
 			);
 			name = controllers;
 			sourceTree = "<group>";
@@ -996,6 +1001,7 @@
 				28CBC137CFF31317AD3BB7D5 /* Heavy_PhaseRing.cpp in Sources */,
 				746BA5C5D0F3D2A2858CC3DC /* Heavy_CircleStrings.cpp in Sources */,
 				94BA3A23188B65CD10B7EE54 /* Heavy_SoundScraper.cpp in Sources */,
+				96AE31ADC04BA2EBEDDBF7D6 /* HeavyCore.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
