@@ -265,9 +265,25 @@ struct AURenderCtx {
             return noErr;
         }
 
-        // NOTE: Phase D will walk realtimeEventListHead for MIDI note events
-        // here and enqueue them ahead of the FIFO drain. For now only the
-        // FIFO (touch + parameters) drives the synth.
+        // Apply incoming MIDI note events to the active context, on this
+        // thread, before the FIFO drain + process() in HeavyCoreRenderCallback.
+        // Sub-block timing is ignored — fine for these decaying/sustained
+        // voices. Legacy AURenderEventMIDI (MIDI 1.0); MIDIEventList (UMP) is
+        // not handled.
+        for (const AURenderEvent *e = realtimeEventListHead; e != NULL; e = e->head.next) {
+            if (e->head.eventType != AURenderEventMIDI) continue;
+            const AUMIDIEvent *m = &e->MIDI;
+            if (m->length < 2) continue;
+            const uint8_t status = m->data[0] & 0xF0;
+            const int channel = (m->data[0] & 0x0F) + 1;  // 1-based, matches the app
+            if (status == 0x90) {  // note on (velocity 0 == note off)
+                const int vel = (m->length >= 3) ? m->data[2] : 0;
+                HeavyCoreSendMIDINote(refCon, m->data[1], vel, channel);
+            } else if (status == 0x80) {  // note off
+                HeavyCoreSendMIDINote(refCon, m->data[1], 0, channel);
+            }
+        }
+
         return HeavyCoreRenderCallback(refCon, actionFlags, timestamp,
                                        (UInt32)outputBusNumber, frameCount, outputData);
     };

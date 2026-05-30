@@ -166,14 +166,23 @@ FIFO-delivered `sing`/`singpitch`/`singlevel` events produce audible output
 through the render block. This is the first end-to-end exercise of the Phase B
 FIFO via a real render path.
 
-### Phase D — MIDI input
+### Phase D — MIDI input — ✅ COMPLETE
 
-1. In `internalRenderBlock`, walk `AURenderEventMIDI` /
-   `AURenderEventMIDIEventList` and map note-on/off → Heavy `__hv_notein`
-   (hash already known: `0x67E37CA3`). Map ring touch → the same path so MIDI
-   and touch are unified.
-2. Decide note-off behaviour (the synths are largely one-shot/decaying — map
-   note-off to whatever `sing`/`singlevel 0` does today).
+1. ✅ `internalRenderBlock` walks `realtimeEventListHead` for legacy
+   `AURenderEventMIDI` note-on/off and forwards to the new RT-safe
+   `HeavyCoreSendMIDINote(refCon, pitch, vel, channel)`, which sends
+   `__hv_notein` directly on the render thread (no lock, mirrors the FIFO
+   Note path). Channel is made 1-based to match the app's `sendNoteOn:1`.
+   `AURenderEventMIDIEventList` (UMP / MIDI 2.0) is NOT handled — most hosts
+   deliver legacy events unless the AU opts into the MIDI 2.0 protocol;
+   revisit if a target host needs it.
+2. ✅ Note-off (status 0x80, or note-on with velocity 0) forwards velocity 0
+   to `[notein]`. The decaying/one-shot voices largely ignore it, which is the
+   intended behaviour.
+
+Smoke-tested: `testMidiNoteDrivesAudio` feeds a note-on through the render
+event list (as a host would) and asserts audible output. Touch and MIDI now
+share the same `[notein]` path.
 
 ### Phase E — Extension target + AUViewController
 

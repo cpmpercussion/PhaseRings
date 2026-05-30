@@ -177,6 +177,14 @@ OSStatus HeavyCoreRenderCallback(void *inRefCon,
     return noErr;
 }
 
+void HeavyCoreSendMIDINote(void *inRefCon, int pitch, int velocity, int channel) {
+    auto *state = (HeavyRenderState *)inRefCon;
+    HeavyContextInterface *ctx = state->current.load(std::memory_order_acquire);
+    if (!ctx) return;
+    ctx->sendMessageToReceiverV(kNoteinHash, 0.0, "fff",
+                                (float)pitch, (float)velocity, (float)channel);
+}
+
 // Heavy's print hook fires on the audio render thread. Anything that takes
 // a lock, allocates, or hits Objective-C runtime will glitch audio. Leave
 // the hook unset so [print] objects in the patches discard silently.

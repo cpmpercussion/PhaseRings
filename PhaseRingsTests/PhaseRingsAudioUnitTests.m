@@ -128,4 +128,36 @@
                          @"FIFO-delivered events should produce audible output");
 }
 
+- (void)testMidiNoteDrivesAudio {
+    PhaseRingsAudioUnit *au = [self makeAllocatedUnit];
+    AUInternalRenderBlock block = au.internalRenderBlock;
+
+    // A single MIDI note-on, delivered via the render event list on block 0
+    // (the same way a host feeds an instrument).
+    AURenderEvent ev;
+    memset(&ev, 0, sizeof(ev));
+    ev.head.eventType = AURenderEventMIDI;
+    ev.head.next = NULL;
+    ev.MIDI.eventSampleTime = 0;
+    ev.MIDI.length = 3;
+    ev.MIDI.data[0] = 0x90;  // note on, channel 0
+    ev.MIDI.data[1] = 60;    // middle C
+    ev.MIDI.data[2] = 100;   // velocity
+
+    float peak = 0;
+    for (int b = 0; b < 200; ++b) {
+        for (int i = 0; i < 2; ++i) {
+            _abl->mBuffers[i].mData = _ch[i];
+            _abl->mBuffers[i].mDataByteSize = _frames * sizeof(float);
+        }
+        AudioUnitRenderActionFlags flags = 0;
+        const AURenderEvent *head = (b == 0) ? &ev : NULL;
+        XCTAssertEqual(block(&flags, &_ts, _frames, 0, _abl, head, NULL), noErr);
+        _ts.mSampleTime += _frames;
+        peak = fmaxf(peak, [self peak]);
+    }
+    XCTAssertGreaterThan(peak, 1e-4f,
+                         @"a host MIDI note-on should produce audible output");
+}
+
 @end

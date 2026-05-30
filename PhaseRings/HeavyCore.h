@@ -64,6 +64,13 @@ OSStatus HeavyCoreRenderCallback(void *inRefCon,
                                  UInt32 inBusNumber,
                                  UInt32 inNumberFrames,
                                  AudioBufferList *ioData);
+
+/// Send a MIDI note to the active context's [notein] (note-off = velocity 0).
+/// Realtime-safe: loads the context and enqueues into Heavy's message queue
+/// with no lock or allocation of our own. Call ONLY from the render thread,
+/// before HeavyCoreRenderCallback. `inRefCon` must be a HeavyCore's
+/// `renderRefCon`.
+void HeavyCoreSendMIDINote(void *inRefCon, int pitch, int velocity, int channel);
 #ifdef __cplusplus
 }
 #endif
