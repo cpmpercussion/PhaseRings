@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Charles Martin. All rights reserved.
 //
 
+#import <UIKit/UIKit.h>
 #import "SingingBowlComposition.h"
 
 @interface NoteColours : SingingBowlComposition

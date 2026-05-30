@@ -11,7 +11,10 @@
 		0C5199CFCF77389E3B869266 /* HvSignalTabread.c in Sources */ = {isa = PBXBuildFile; fileRef = A19AB1FC8B92BC9AD6FC4DA8 /* HvSignalTabread.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		0D3B62E8C9BDD12DAA08DD2A /* HvControlPack.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E5359B31CEC423B51BAA182 /* HvControlPack.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		0DF933EDF7DEC75BC952FC5C /* Heavy_SoundScraper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 751818BB69001020785AE3AF /* Heavy_SoundScraper.cpp */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
+		0F636C10838E2DAFEA76697A /* SingingBowlSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = 565A2327188F94CA00093B32 /* SingingBowlSetup.m */; };
+		12B2386F39C74E5EF4F0BA07 /* SingingBowlComposition.m in Sources */ = {isa = PBXBuildFile; fileRef = 56B7898E1897327D00B6AE22 /* SingingBowlComposition.m */; };
 		1308910E1736DA7E020B78BF /* PhaseRingsAudioUnitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 965447B173741E68533AE789 /* PhaseRingsAudioUnitTests.m */; };
+		165FB661EDED743E2FF023D6 /* NoteColours.m in Sources */ = {isa = PBXBuildFile; fileRef = 56C28DB5194A968400E015BB /* NoteColours.m */; };
 		1824EBD48734C1BAAD76A766 /* PhaseRingsKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FE08C08C2919251994F67C0 /* PhaseRingsKit.framework */; };
 		1B058142A68305734A1E2A74 /* HvControlSlice.c in Sources */ = {isa = PBXBuildFile; fileRef = BAC6DEE4582393C5B10B6EB1 /* HvControlSlice.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		1BAEEFC44E1B6CE8F23D6D47 /* HvControlVar.c in Sources */ = {isa = PBXBuildFile; fileRef = 24D2D316267E0C66C285A7FC /* HvControlVar.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
@@ -64,20 +67,16 @@
 		5623DE82188CDD2B00AA6C14 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5623DE81188CDD2B00AA6C14 /* QuartzCore.framework */; };
 		5630CFAC19FE06DE00B3DC89 /* CircleStringsSynthEnvironment.pd in Resources */ = {isa = PBXBuildFile; fileRef = 5630CFAB19FE06DE00B3DC89 /* CircleStringsSynthEnvironment.pd */; };
 		564807E71F2EF8B100E01FB2 /* PhaseRingsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 564807E61F2EF8B100E01FB2 /* PhaseRingsUITests.swift */; };
-		564C44B31952B05500FD0E8B /* GenerativeSetupComposition.m in Sources */ = {isa = PBXBuildFile; fileRef = 564C44B21952B05500FD0E8B /* GenerativeSetupComposition.m */; };
-		564C44B71952BE7500FD0E8B /* ScaleMaker.m in Sources */ = {isa = PBXBuildFile; fileRef = 564C44B61952BE7500FD0E8B /* ScaleMaker.m */; };
 		5658053618C82C44003F3394 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 5658053518C82C44003F3394 /* Settings.bundle */; };
-		565A2324188F94AE00093B32 /* SingingBowlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 565A2323188F94AE00093B32 /* SingingBowlView.m */; };
-		565A2328188F94CA00093B32 /* SingingBowlSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = 565A2327188F94CA00093B32 /* SingingBowlSetup.m */; };
 		5674AF24195011370052121E /* MetatoneEnsembleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5674AF23195011370052121E /* MetatoneEnsembleView.m */; };
 		568A0C6D18C96F41007E9A8C /* StudyInBowls1.m in Sources */ = {isa = PBXBuildFile; fileRef = 568A0C6C18C96F41007E9A8C /* StudyInBowls1.m */; };
 		568BDC151A03488B0056CF22 /* SoundScraperSynthEnvironment.pd in Resources */ = {isa = PBXBuildFile; fileRef = 568BDC0E1A03488B0056CF22 /* SoundScraperSynthEnvironment.pd */; };
 		56B02B091DA2961F00274E5C /* StateSaver.m in Sources */ = {isa = PBXBuildFile; fileRef = 56B02B081DA2961F00274E5C /* StateSaver.m */; };
-		56B7898F1897327D00B6AE22 /* SingingBowlComposition.m in Sources */ = {isa = PBXBuildFile; fileRef = 56B7898E1897327D00B6AE22 /* SingingBowlComposition.m */; };
-		56C28DB6194A968400E015BB /* NoteColours.m in Sources */ = {isa = PBXBuildFile; fileRef = 56C28DB5194A968400E015BB /* NoteColours.m */; };
 		56E172601991EAF500A36C74 /* PhaseRingSynthEnvironment.pd in Resources */ = {isa = PBXBuildFile; fileRef = 56E170F61991EAF400A36C74 /* PhaseRingSynthEnvironment.pd */; };
 		574954270C3229547739C826 /* Heavy_PhaseRing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 936EFAFD6A5E031DE019B8A2 /* Heavy_PhaseRing.cpp */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
+		5D828F93851BCE01C7E66FF6 /* GenerativeSetupComposition.m in Sources */ = {isa = PBXBuildFile; fileRef = 564C44B21952B05500FD0E8B /* GenerativeSetupComposition.m */; };
 		65FE414BEDAAEBA5C91E2A2F /* HvControlSystem.c in Sources */ = {isa = PBXBuildFile; fileRef = EBCAD8691E8C53B8357E1468 /* HvControlSystem.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
+		6FE34876A8184B50C98CD9BE /* SingingBowlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 565A2323188F94AE00093B32 /* SingingBowlView.m */; };
 		74106E56078FE3ECE195B7E3 /* HvTable.c in Sources */ = {isa = PBXBuildFile; fileRef = A64F5531C188D2344F18942A /* HvTable.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		74DA207062F8BABDF6BB212E /* HvSignalLine.c in Sources */ = {isa = PBXBuildFile; fileRef = CF52B2B841860F7C719A26DB /* HvSignalLine.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		7C1C91B160D9548E1482F4EC /* HvHeavy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C25E95BCA3560D45D816994A /* HvHeavy.cpp */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
@@ -107,11 +106,13 @@
 		D139C85085236C066D59037A /* xylo.wav in Resources */ = {isa = PBXBuildFile; fileRef = 568BDC1F1A0349300056CF22 /* xylo.wav */; };
 		D4BE557F70B581313A447950 /* HvSignalSamphold.c in Sources */ = {isa = PBXBuildFile; fileRef = 714A1194F1A179C98BD2D677 /* HvSignalSamphold.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		D5046D8312DB8B33D1F2E8DC /* HvMessagePool.c in Sources */ = {isa = PBXBuildFile; fileRef = 1423E0756818CA9812B19F63 /* HvMessagePool.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
+		DEBEB2E2FE4C904B51B9837D /* ScaleMaker.m in Sources */ = {isa = PBXBuildFile; fileRef = 564C44B61952BE7500FD0E8B /* ScaleMaker.m */; };
 		E3824B8C7AC533B4F45B2E74 /* almglockenC-441.wav in Resources */ = {isa = PBXBuildFile; fileRef = 568BDC1A1A0349300056CF22 /* almglockenC-441.wav */; };
 		E54A9F4671BE39EFAC5DC2B2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2B747B8EB5FAFADA11A2B48 /* AVFoundation.framework */; };
 		EBA106E6CC90C9847C4DA586 /* HeavyCore.mm in Sources */ = {isa = PBXBuildFile; fileRef = F86F9A948783EFA0B850E403 /* HeavyCore.mm */; };
 		F742BE5C2FC6A0452DEDA304 /* HvSignalRPole.c in Sources */ = {isa = PBXBuildFile; fileRef = 369F582658F496A2B37FBCF9 /* HvSignalRPole.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		FA0C807880A753A39574EE64 /* HvSignalDel1.c in Sources */ = {isa = PBXBuildFile; fileRef = 127F253A7DB2514DB13EB424 /* HvSignalDel1.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
+		FBB7C9F4D40ADA3AB25BAF43 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F30EBB0404A92871DD903C55 /* UIKit.framework */; };
 		FD9C50A0DCAFD905B6B56E65 /* marimba.wav in Resources */ = {isa = PBXBuildFile; fileRef = 568BDC1E1A0349300056CF22 /* marimba.wav */; };
 /* End PBXBuildFile section */
 
@@ -338,6 +339,7 @@
 		E37615165292392089B12557 /* PhaseRingsAudioUnit.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = PhaseRingsAudioUnit.h; path = PhaseRings/PhaseRingsAudioUnit.h; sourceTree = "<group>"; };
 		EB4F67596B8F196CDF24706E /* HvLightPipe.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvLightPipe.h; sourceTree = "<group>"; };
 		EBCAD8691E8C53B8357E1468 /* HvControlSystem.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlSystem.c; sourceTree = "<group>"; };
+		F30EBB0404A92871DD903C55 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		F3B4773062766A7B145C5404 /* HvControlRandom.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlRandom.c; sourceTree = "<group>"; };
 		F7EC8D7468ECD073FEA16275 /* HvControlExpr.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlExpr.c; sourceTree = "<group>"; };
 		F841592971D76460030D39A6 /* HvSignalRPole.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvSignalRPole.h; sourceTree = "<group>"; };
@@ -353,6 +355,7 @@
 				8F0DE3D5EB11BC991032781F /* Foundation.framework in Frameworks */,
 				E54A9F4671BE39EFAC5DC2B2 /* AVFoundation.framework in Frameworks */,
 				930216EC6F45AE5626733767 /* AudioToolbox.framework in Frameworks */,
+				FBB7C9F4D40ADA3AB25BAF43 /* UIKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -652,6 +655,7 @@
 				CC548177C9F0DCB865719B41 /* Foundation.framework */,
 				B2B747B8EB5FAFADA11A2B48 /* AVFoundation.framework */,
 				538D3207BA55517D124D41B0 /* AudioToolbox.framework */,
+				F30EBB0404A92871DD903C55 /* UIKit.framework */,
 			);
 			name = iOS;
 			sourceTree = "<group>";
@@ -1050,22 +1054,16 @@
 				562375C419F764FC004F1281 /* F53OSCClient.m in Sources */,
 				562375C619F764FC004F1281 /* F53OSCPacket.m in Sources */,
 				562375CB19F764FC004F1281 /* GCDAsyncSocket.m in Sources */,
-				565A2328188F94CA00093B32 /* SingingBowlSetup.m in Sources */,
 				56B02B091DA2961F00274E5C /* StateSaver.m in Sources */,
-				56C28DB6194A968400E015BB /* NoteColours.m in Sources */,
 				562375D119F764FC004F1281 /* NSNumber+F53OSCNumber.m in Sources */,
 				5623759B19F7610F004F1281 /* PGMidi.mm in Sources */,
-				564C44B31952B05500FD0E8B /* GenerativeSetupComposition.m in Sources */,
 				562375C519F764FC004F1281 /* F53OSCMessage.m in Sources */,
 				5623759C19F7610F004F1281 /* PGMidiAllSources.mm in Sources */,
 				562375D019F764FC004F1281 /* NSDate+F53OSCTimeTag.m in Sources */,
-				565A2324188F94AE00093B32 /* SingingBowlView.m in Sources */,
-				56B7898F1897327D00B6AE22 /* SingingBowlComposition.m in Sources */,
 				562375C719F764FC004F1281 /* F53OSCParser.m in Sources */,
 				562375C319F764FC004F1281 /* F53OSCBundle.m in Sources */,
 				5623DB74188CDB3800AA6C14 /* AppDelegate.m in Sources */,
 				562375C819F764FC004F1281 /* F53OSCServer.m in Sources */,
-				564C44B71952BE7500FD0E8B /* ScaleMaker.m in Sources */,
 				5674AF24195011370052121E /* MetatoneEnsembleView.m in Sources */,
 				562375C919F764FC004F1281 /* F53OSCSocket.m in Sources */,
 				562375CE19F764FC004F1281 /* MetatoneNetworkManager.m in Sources */,
@@ -1136,6 +1134,12 @@
 				848D61EA8BA2C3F12635544A /* Heavy_CircleStrings.cpp in Sources */,
 				0DF933EDF7DEC75BC952FC5C /* Heavy_SoundScraper.cpp in Sources */,
 				3F1B5293FCDA898268CF2604 /* PhaseRingsAudioUnit.mm in Sources */,
+				6FE34876A8184B50C98CD9BE /* SingingBowlView.m in Sources */,
+				165FB661EDED743E2FF023D6 /* NoteColours.m in Sources */,
+				12B2386F39C74E5EF4F0BA07 /* SingingBowlComposition.m in Sources */,
+				5D828F93851BCE01C7E66FF6 /* GenerativeSetupComposition.m in Sources */,
+				0F636C10838E2DAFEA76697A /* SingingBowlSetup.m in Sources */,
+				DEBEB2E2FE4C904B51B9837D /* ScaleMaker.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
