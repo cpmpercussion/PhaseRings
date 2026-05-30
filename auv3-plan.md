@@ -108,21 +108,30 @@ ruby scripts/wire_heavy_into_xcode.rb # re-sync into PhaseRingsKit (the framewor
 `scripts/create_framework.rb` is a one-shot (creating the framework target);
 it bails if `PhaseRingsKit` already exists.
 
-### Phase B — Lock-free event FIFO (correctness)
+### Phase B — Lock-free event FIFO (correctness) — ✅ COMPLETE
 
-The most important RT-safety work. Today `sendFloat:toReceiver:` calls Heavy
-from the UI thread while `process()` runs on the audio thread — a latent data
-race that happens to work standalone but is not RT-correct and *will* bite
-under a host's render thread.
+The most important RT-safety work. Previously `sendFloat:toReceiver:` called
+Heavy from the UI thread while `process()` ran on the audio thread — a latent
+data race that happened to work standalone but is not RT-correct and would
+bite under a host's render thread.
 
-1. Add a single-producer / single-consumer lock-free ring buffer of events
-   (`{kind: float|bang|note, receiverHash, values[3]}`).
-2. UI thread / MIDI enqueues; the render block drains the FIFO and calls
-   `ctx->sendFloatToReceiver` / `sendMessageToReceiverV` *before*
-   `ctx->process()`.
-3. Re-point `HeavyCore`'s `sendFloat:`/`sendBang:`/`sendNoteOn:` to enqueue.
-4. Size the FIFO for worst-case touch+MIDI burst per block; drop-and-log on
-   overflow rather than block.
+Implemented in `HeavyCore.mm`:
+
+1. ✅ `HeavyEventQueue` — ring buffer (1024) of POD `HeavyEvent`
+   `{kind: Float|Bang|Note, hash, a,b,c}`. **Wait-free consumer** (render
+   thread: relaxed read idx, acquire write idx, release on advance — no lock,
+   no alloc). Producers serialise enqueue with `os_unfair_lock` (cheap, never
+   contended on the render thread), so it's safe for the main thread *and*
+   network-callback threads, not just a single producer.
+2. ✅ `HeavyCoreRenderCallback` drains the queue into the active context
+   (`sendFloatToReceiver`/`sendBangToReceiver`/`sendMessageToReceiverV`)
+   immediately before `ctx->process()` — same thread, no race. Heavy's own
+   message-queue mutation now only ever happens on the render thread.
+3. ✅ `sendFloat:`/`sendBangToReceiver:`/`sendNoteOn:` only enqueue.
+   Receiver-name hashing (`hv_stringToHash`) happens producer-side.
+4. ✅ Overflow drops the event and bumps an atomic `_dropped` counter rather
+   than blocking. The render state (active context + queue) lives in one
+   `HeavyRenderState` behind `HeavyCore.renderRefCon`.
 
 ### Phase C — PhaseRingsAudioUnit : AUAudioUnit
 

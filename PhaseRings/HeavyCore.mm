@@ -9,7 +9,9 @@
 
 #import "HeavyCore.h"
 #import <AVFoundation/AVFoundation.h>
+#import <os/lock.h>
 #import <atomic>
+#import <cstdint>
 
 #import "Heavy_PhaseRing.hpp"
 #import "Heavy_CircleStrings.hpp"
@@ -35,14 +37,96 @@ static const HeavySampleMapping kSoundScraperSamples[] = {
 static const int kNumSoundScraperSamples =
     sizeof(kSoundScraperSamples) / sizeof(kSoundScraperSamples[0]);
 
+// Heavy routes [notein] through the __hv_notein receiver, expecting
+// (pitch, velocity, channel) as a 3-float message.
+static const hv_uint32_t kNoteinHash = 0x67E37CA3;
+
+#pragma mark - Lock-free control-event queue
+
+// Control messages (touch, MIDI, parameter changes) must reach Heavy on the
+// SAME thread that runs ctx->process(), otherwise Heavy's message queue is
+// mutated concurrently with the render — a data race. So the UI/MIDI side
+// only ever *enqueues* small POD events here; the render callback drains them
+// into Heavy immediately before process().
+//
+// The consumer (audio render thread) is wait-free: it never locks or
+// allocates. Producers (main thread, network callbacks, …) serialise their
+// enqueue with an os_unfair_lock — cheap, and only ever contended off the
+// render thread. Receiver-name hashing happens producer-side so the render
+// thread only does the hash-keyed send.
+
+namespace {
+
+struct HeavyEvent {
+    enum Kind : uint8_t { Float, Bang, Note } kind;
+    hv_uint32_t hash;
+    float a, b, c;   // Float: a. Note: a=pitch, b=velocity, c=channel.
+};
+
+class HeavyEventQueue {
+public:
+    // Producer side. Safe from multiple threads (serialised by the lock).
+    // Returns false (and counts a drop) if the queue is full.
+    bool push(const HeavyEvent &e) {
+        os_unfair_lock_lock(&_producerLock);
+        const uint32_t w = _write.load(std::memory_order_relaxed);
+        const uint32_t next = (w + 1) & kMask;
+        if (next == _read.load(std::memory_order_acquire)) {
+            _dropped.fetch_add(1, std::memory_order_relaxed);
+            os_unfair_lock_unlock(&_producerLock);
+            return false;
+        }
+        _buf[w] = e;
+        _write.store(next, std::memory_order_release);
+        os_unfair_lock_unlock(&_producerLock);
+        return true;
+    }
+
+    // Consumer side. Call ONLY from the render thread. Wait-free.
+    template <typename Fn>
+    void drain(Fn &&fn) {
+        uint32_t r = _read.load(std::memory_order_relaxed);
+        const uint32_t w = _write.load(std::memory_order_acquire);
+        while (r != w) {
+            fn(_buf[r]);
+            r = (r + 1) & kMask;
+        }
+        _read.store(r, std::memory_order_release);
+    }
+
+    uint32_t droppedCount() const { return _dropped.load(std::memory_order_relaxed); }
+
+private:
+    // ~5 ms of dense touch+MIDI bursts fit comfortably; 1024 * sizeof(event)
+    // is a few tens of KB.
+    static constexpr uint32_t kCapacity = 1024;  // power of two
+    static constexpr uint32_t kMask = kCapacity - 1;
+
+    HeavyEvent _buf[kCapacity];
+    std::atomic<uint32_t> _write{0};
+    std::atomic<uint32_t> _read{0};
+    std::atomic<uint32_t> _dropped{0};
+    os_unfair_lock _producerLock = OS_UNFAIR_LOCK_INIT;
+};
+
+// Everything the render callback touches, behind one stable pointer
+// (HeavyCore.renderRefCon). The active context is published through an atomic
+// so a synth switch never tears down an in-flight render.
+struct HeavyRenderState {
+    std::atomic<HeavyContextInterface *> current{nullptr};
+    HeavyEventQueue queue;
+};
+
+}  // namespace
+
 @interface HeavyCore () {
-    // Three preconstructed contexts; the render callback consults the atomic
-    // pointer below. We keep them all live so synth switches never tear down
-    // an in-flight render block.
+    // Three preconstructed contexts; we keep them all live so synth switches
+    // never tear down an in-flight render block.
     HeavyContextInterface *_phase;
     HeavyContextInterface *_strings;
     HeavyContextInterface *_soundscraper;
-    std::atomic<HeavyContextInterface *> _current;
+
+    HeavyRenderState _render;  // current context + the control-event queue
 
     int _channels;
 
@@ -59,14 +143,31 @@ OSStatus HeavyCoreRenderCallback(void *inRefCon,
                                  UInt32 inBusNumber,
                                  UInt32 inNumberFrames,
                                  AudioBufferList *ioData) {
-    auto *slot = (std::atomic<HeavyContextInterface *> *)inRefCon;
-    HeavyContextInterface *ctx = slot->load(std::memory_order_acquire);
+    auto *state = (HeavyRenderState *)inRefCon;
+    HeavyContextInterface *ctx = state->current.load(std::memory_order_acquire);
     if (!ctx || !ioData || ioData->mNumberBuffers == 0) {
         for (UInt32 i = 0; i < (ioData ? ioData->mNumberBuffers : 0); ++i) {
             memset(ioData->mBuffers[i].mData, 0, ioData->mBuffers[i].mDataByteSize);
         }
         return noErr;
     }
+
+    // Apply queued control events to the active context, on this thread,
+    // before processing this block.
+    state->queue.drain([ctx](const HeavyEvent &e) {
+        switch (e.kind) {
+            case HeavyEvent::Float:
+                ctx->sendFloatToReceiver(e.hash, e.a);
+                break;
+            case HeavyEvent::Bang:
+                ctx->sendBangToReceiver(e.hash);
+                break;
+            case HeavyEvent::Note:
+                ctx->sendMessageToReceiverV(e.hash, 0.0, "fff", e.a, e.b, e.c);
+                break;
+        }
+    });
+
     // Non-interleaved float32, one buffer per channel.
     float *outs[2] = { nullptr, nullptr };
     for (UInt32 i = 0; i < ioData->mNumberBuffers && i < 2; ++i) {
@@ -91,7 +192,6 @@ OSStatus HeavyCoreRenderCallback(void *inRefCon,
     _sampleRate = sampleRate;
     _channels = channels;
     _activeSynth = (HeavySynth)-1;  // forces a real switch on first selectSynth:
-    _current.store(nullptr, std::memory_order_release);
     _sampleCache = [NSMutableDictionary dictionary];
 
     [self decodeSoundScraperSamples];
@@ -106,7 +206,7 @@ OSStatus HeavyCoreRenderCallback(void *inRefCon,
 }
 
 - (void *)renderRefCon {
-    return &_current;
+    return &_render;
 }
 
 #pragma mark - Sample decoding (SoundScraper)
@@ -125,8 +225,8 @@ OSStatus HeavyCoreRenderCallback(void *inRefCon,
 
 - (NSData *)decodeWavToMonoFloat32:(NSString *)filename {
     // bundleForClass: resolves the resource in whatever bundle HeavyCore
-    // ships in — the app bundle today, the framework/extension bundle once
-    // the AUv3 work lands. mainBundle would be wrong inside an extension.
+    // ships in — the framework bundle today, the extension bundle once the
+    // AUv3 work lands. mainBundle would be wrong inside an extension.
     NSBundle *bundle = [NSBundle bundleForClass:[HeavyCore class]];
     NSURL *url = [bundle URLForResource:[filename stringByDeletingPathExtension]
                           withExtension:[filename pathExtension]];
@@ -214,7 +314,10 @@ OSStatus HeavyCoreRenderCallback(void *inRefCon,
 #pragma mark - Synth selection
 
 - (void)selectSynth:(HeavySynth)synth {
-    if (synth == _activeSynth && _current.load(std::memory_order_relaxed) != nullptr) return;
+    if (synth == _activeSynth &&
+        _render.current.load(std::memory_order_relaxed) != nullptr) {
+        return;
+    }
 
     HeavyContextInterface *ctx = nullptr;
     switch (synth) {
@@ -241,35 +344,25 @@ OSStatus HeavyCoreRenderCallback(void *inRefCon,
     if (!ctx) return;
 
     _activeSynth = synth;
-    _current.store(ctx, std::memory_order_release);
+    _render.current.store(ctx, std::memory_order_release);
 }
 
-#pragma mark - Message sends
-
-- (HeavyContextInterface *)currentForSend {
-    return _current.load(std::memory_order_acquire);
-}
+#pragma mark - Message sends (producer side — enqueue only)
 
 - (void)sendFloat:(float)value toReceiver:(NSString *)receiver {
-    HeavyContextInterface *ctx = [self currentForSend];
-    if (!ctx) return;
-    ctx->sendFloatToReceiver(hv_stringToHash(receiver.UTF8String), value);
+    HeavyEvent e{ HeavyEvent::Float, hv_stringToHash(receiver.UTF8String), value, 0, 0 };
+    _render.queue.push(e);
 }
 
 - (void)sendBangToReceiver:(NSString *)receiver {
-    HeavyContextInterface *ctx = [self currentForSend];
-    if (!ctx) return;
-    ctx->sendBangToReceiver(hv_stringToHash(receiver.UTF8String));
+    HeavyEvent e{ HeavyEvent::Bang, hv_stringToHash(receiver.UTF8String), 0, 0, 0 };
+    _render.queue.push(e);
 }
 
 - (void)sendNoteOn:(int)channel pitch:(int)pitch velocity:(int)velocity {
-    HeavyContextInterface *ctx = [self currentForSend];
-    if (!ctx) return;
-    // Heavy routes [notein] through the __hv_notein receiver, expecting
-    // (pitch, velocity, channel) as a 3-float message.
-    static const hv_uint32_t kNoteinHash = 0x67E37CA3;
-    ctx->sendMessageToReceiverV(kNoteinHash, 0.0, "fff",
-                                (float)pitch, (float)velocity, (float)channel);
+    HeavyEvent e{ HeavyEvent::Note, kNoteinHash,
+                  (float)pitch, (float)velocity, (float)channel };
+    _render.queue.push(e);
 }
 
 @end
