@@ -19,8 +19,17 @@ typedef NS_ENUM(AUParameterAddress, PhaseRingsParam) {
     PhaseRingsParamReverbVolume,
     PhaseRingsParamDistortLevel,
     PhaseRingsParamProcessEffects,
-    PhaseRingsParamSynth,
+    PhaseRingsParamSound,
 };
+
+// Sound schemes 0..6 (matches the standalone app's Settings `sound`): 0/1 are
+// the Phase / String synths, 2..6 are SoundScraper samples picked via the
+// `selectsound` receiver.
+static HeavySynth SynthForScheme(NSInteger scheme) {
+    if (scheme <= 0) return HeavySynthPhase;
+    if (scheme == 1) return HeavySynthCircleStrings;
+    return HeavySynthSoundScraper;
+}
 
 // Receiver names for the float params (indexed by address; synth is handled
 // separately).
@@ -144,15 +153,16 @@ struct AURenderCtx {
         valueStrings:nil dependentParameters:nil];
     effects.value = 0.0;
 
-    AUParameter *synth = [AUParameterTree createParameterWithIdentifier:@"synth"
-        name:@"Synth" address:PhaseRingsParamSynth
-        min:0.0 max:2.0 unit:kAudioUnitParameterUnit_Indexed unitName:nil
+    AUParameter *sound = [AUParameterTree createParameterWithIdentifier:@"sound"
+        name:@"Sound" address:PhaseRingsParamSound
+        min:0.0 max:6.0 unit:kAudioUnitParameterUnit_Indexed unitName:nil
         flags:(kAudioUnitParameterFlag_IsReadable | kAudioUnitParameterFlag_IsWritable)
-        valueStrings:@[@"Phase", @"Circle Strings", @"Sound Scraper"]
+        valueStrings:@[@"Phase Synthesis", @"String Synthesis", @"Singing Bowls",
+                       @"Gongs", @"Crotales", @"Terracotta Pots", @"Marimba"]
         dependentParameters:nil];
-    synth.value = 0.0;
+    sound.value = 0.0;
 
-    self.parameterTree = [AUParameterTree createTreeWithChildren:@[master, reverb, distort, effects, synth]];
+    self.parameterTree = [AUParameterTree createTreeWithChildren:@[master, reverb, distort, effects, sound]];
 
     // Apply parameter changes to the core. Called off the render thread (the
     // setter side); HeavyCore's send paths just enqueue, so this is safe.
@@ -165,11 +175,12 @@ struct AURenderCtx {
 - (void)applyParameter:(AUParameterAddress)address value:(AUValue)value {
     HeavyCore *core = self.core;
     if (!core) return;  // re-applied in full on allocateRenderResources
-    if (address == PhaseRingsParamSynth) {
-        int idx = (int)lroundf(value);
-        if (idx < 0) idx = 0;
-        if (idx > 2) idx = 2;
-        [core selectSynth:(HeavySynth)idx];
+    if (address == PhaseRingsParamSound) {
+        NSInteger scheme = lroundf(value);
+        if (scheme < 0) scheme = 0;
+        if (scheme > 6) scheme = 6;
+        [core selectSynth:SynthForScheme(scheme)];
+        [core sendFloat:(float)scheme toReceiver:@"selectsound"];
         return;
     }
     NSString *receiver = ReceiverForParam(address);
@@ -210,11 +221,11 @@ struct AURenderCtx {
     _rc->scratch[0] = (float *)calloc(frames, sizeof(float));
     _rc->scratch[1] = (float *)calloc(frames, sizeof(float));
 
-    // Select the synth chosen by the param, then push all current param
-    // values, before publishing the refCon to the render block.
-    AUParameter *synthParam = [self.parameterTree parameterWithAddress:PhaseRingsParamSynth];
-    int synthIdx = synthParam ? (int)lroundf(synthParam.value) : 0;
-    [self.core selectSynth:(HeavySynth)synthIdx];
+    // Select the synth for the chosen sound scheme, then push all current
+    // param values, before publishing the refCon to the render block.
+    AUParameter *soundParam = [self.parameterTree parameterWithAddress:PhaseRingsParamSound];
+    NSInteger scheme = soundParam ? lroundf(soundParam.value) : 0;
+    [self.core selectSynth:SynthForScheme(scheme)];
     [self pushAllParametersToCore];
 
     _rc->heavyRefCon.store(self.core.renderRefCon, std::memory_order_release);

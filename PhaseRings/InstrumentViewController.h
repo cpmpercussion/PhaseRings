@@ -21,6 +21,16 @@ NS_ASSUME_NONNULL_BEGIN
 /// host (AU view controller / standalone app) sets this.
 @property (nonatomic, copy, nullable) HeavyCore * _Nullable (^coreProvider)(void);
 
+/// Called when the user picks a sound scheme (0..6) from the on-screen
+/// control bar. The host wires this to the AU's `sound` parameter so the
+/// choice is saved with the AU and applied to the core. If unset, the view
+/// controller falls back to driving the core directly.
+@property (nonatomic, copy, nullable) void (^soundSchemeHandler)(NSInteger scheme);
+
+/// Reflect the current sound scheme (0..6) in the control bar without firing
+/// the handler — e.g. after the host restores AU state.
+- (void)setDisplayedSoundScheme:(NSInteger)scheme;
+
 /// Rebuild the ring layout from a default generative composition.
 - (void)reloadComposition;
 

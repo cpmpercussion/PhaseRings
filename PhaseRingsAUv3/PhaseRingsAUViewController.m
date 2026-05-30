@@ -34,6 +34,12 @@
     instrument.coreProvider = ^HeavyCore * _Nullable {
         return weakSelf.audioUnit.core;
     };
+    // Route sound-scheme changes through the AU's `sound` parameter so the
+    // choice is saved with the AU session and applied to the core.
+    instrument.soundSchemeHandler = ^(NSInteger scheme) {
+        AUParameter *p = [weakSelf.audioUnit.parameterTree parameterWithAddress:4 /* sound */];
+        p.value = (AUValue)scheme;
+    };
     self.instrument = instrument;
 
     [self addChildViewController:instrument];
@@ -41,6 +47,16 @@
     instrument.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.view addSubview:instrument.view];
     [instrument didMoveToParentViewController:self];
+
+    [self syncDisplayedSound];
+}
+
+// The AU and the view can be created in either order; reflect the AU's
+// current `sound` value in the control bar once both exist.
+- (void)syncDisplayedSound {
+    if (!self.instrument || !self.audioUnit) return;
+    AUParameter *p = [self.audioUnit.parameterTree parameterWithAddress:4 /* sound */];
+    [self.instrument setDisplayedSoundScheme:(NSInteger)(p.value + 0.5f)];
 }
 
 #pragma mark - AUAudioUnitFactory
@@ -50,6 +66,7 @@
     self.audioUnit = [[PhaseRingsAudioUnit alloc] initWithComponentDescription:desc
                                                                        options:0
                                                                          error:error];
+    dispatch_async(dispatch_get_main_queue(), ^{ [self syncDisplayedSound]; });
     return self.audioUnit;
 }
 

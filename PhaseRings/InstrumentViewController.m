@@ -16,12 +16,22 @@
 // matching the standalone app.
 static const CGFloat kScreenDiagonal = 1280.0;
 
+// Sound schemes, matching the standalone app's Settings (Root.plist `sound`).
+// 0..1 are the Phase / String synths; 2..6 are SoundScraper samples.
+static NSArray<NSString *> *SoundSchemeNames(void) {
+    return @[@"Phase Synthesis", @"String Synthesis", @"Singing Bowls",
+             @"Gongs", @"Crotales", @"Terracotta Pots", @"Marimba"];
+}
+
 @interface InstrumentViewController ()
 @property (nonatomic, strong) SingingBowlView *bowlView;
 @property (nonatomic, strong) SingingBowlSetup *bowlSetup;
 @property (nonatomic, strong) GenerativeSetupComposition *composition;
 @property (nonatomic) UInt8 currentlyPanningPitch;
 @property (nonatomic) CGSize lastDrawnSize;
+@property (nonatomic, strong) UIButton *soundButton;
+@property (nonatomic) NSInteger soundScheme;
+@property (nonatomic) BOOL showNoteLabels;
 @end
 
 @implementation InstrumentViewController
@@ -29,6 +39,7 @@ static const CGFloat kScreenDiagonal = 1280.0;
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.multipleTouchEnabled = YES;
+    self.showNoteLabels = YES;
 
     self.bowlView = [[SingingBowlView alloc] initWithFrame:self.view.bounds];
     self.bowlView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -39,7 +50,100 @@ static const CGFloat kScreenDiagonal = 1280.0;
         [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureRecognized:)];
     [self.view addGestureRecognizer:pan];
 
+    [self buildControlBar];
     [self reloadComposition];
+}
+
+#pragma mark - Control bar
+
+- (UIButton *)pillButtonWithTitle:(NSString *)title {
+    UIButton *b = [UIButton buttonWithType:UIButtonTypeSystem];
+    [b setTitle:title forState:UIControlStateNormal];
+    [b setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    b.titleLabel.font = [UIFont systemFontOfSize:15 weight:UIFontWeightMedium];
+    b.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.12];
+    b.contentEdgeInsets = UIEdgeInsetsMake(6, 12, 6, 12);
+    b.layer.cornerRadius = 14;
+    b.translatesAutoresizingMaskIntoConstraints = NO;
+    return b;
+}
+
+- (void)buildControlBar {
+    // Sound scheme picker — a menu so all seven schemes are reachable without
+    // crowding the bar; performance stays on the rings.
+    self.soundButton = [self pillButtonWithTitle:SoundSchemeNames()[0]];
+    self.soundButton.showsMenuAsPrimaryAction = YES;
+    [self rebuildSoundMenu];
+
+    UIButton *setupButton = [self pillButtonWithTitle:@"New Setup"];
+    [setupButton addTarget:self action:@selector(newSetupTapped) forControlEvents:UIControlEventTouchUpInside];
+
+    UIButton *labelsButton = [self pillButtonWithTitle:@"Labels"];
+    [labelsButton addTarget:self action:@selector(toggleLabelsTapped) forControlEvents:UIControlEventTouchUpInside];
+
+    UIStackView *bar = [[UIStackView alloc] initWithArrangedSubviews:@[self.soundButton, setupButton, labelsButton]];
+    bar.axis = UILayoutConstraintAxisHorizontal;
+    bar.spacing = 8;
+    bar.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:bar];
+
+    UILayoutGuide *safe = self.view.safeAreaLayoutGuide;
+    [NSLayoutConstraint activateConstraints:@[
+        [bar.topAnchor constraintEqualToAnchor:safe.topAnchor constant:8],
+        [bar.leadingAnchor constraintEqualToAnchor:safe.leadingAnchor constant:12],
+    ]];
+}
+
+- (void)rebuildSoundMenu {
+    NSArray<NSString *> *names = SoundSchemeNames();
+    NSMutableArray<UIAction *> *actions = [NSMutableArray array];
+    for (NSInteger i = 0; i < (NSInteger)names.count; i++) {
+        NSInteger scheme = i;
+        UIAction *a = [UIAction actionWithTitle:names[i] image:nil identifier:nil
+                                        handler:^(__kindof UIAction *action) {
+            [self selectSoundScheme:scheme];
+        }];
+        a.state = (i == self.soundScheme) ? UIMenuElementStateOn : UIMenuElementStateOff;
+        [actions addObject:a];
+    }
+    self.soundButton.menu = [UIMenu menuWithTitle:@"Sound" children:actions];
+}
+
+- (void)selectSoundScheme:(NSInteger)scheme {
+    [self setDisplayedSoundScheme:scheme];
+    if (self.soundSchemeHandler) {
+        self.soundSchemeHandler(scheme);
+    } else {
+        // No host wiring: drive the core directly.
+        HeavyCore *core = [self core];
+        HeavySynth synth = (scheme == 0) ? HeavySynthPhase
+                         : (scheme == 1) ? HeavySynthCircleStrings
+                                         : HeavySynthSoundScraper;
+        [core selectSynth:synth];
+        [core sendFloat:(float)scheme toReceiver:@"selectsound"];
+    }
+}
+
+- (void)setDisplayedSoundScheme:(NSInteger)scheme {
+    if (scheme < 0) scheme = 0;
+    if (scheme > 6) scheme = 6;
+    self.soundScheme = scheme;
+    [self.soundButton setTitle:SoundSchemeNames()[scheme] forState:UIControlStateNormal];
+    [self rebuildSoundMenu];
+}
+
+- (void)newSetupTapped {
+    NSArray *pitches = [self.composition nextSetup];
+    if (pitches.count == 0) return;
+    self.bowlSetup = [[SingingBowlSetup alloc] initWithPitches:[NSMutableArray arrayWithArray:pitches]];
+    self.lastDrawnSize = CGSizeZero;  // force redraw at current size
+    [self.view setNeedsLayout];
+}
+
+- (void)toggleLabelsTapped {
+    self.showNoteLabels = !self.showNoteLabels;
+    self.lastDrawnSize = CGSizeZero;
+    [self.view setNeedsLayout];
 }
 
 // drawSetup: lays the rings out for the view size at call time, so (re)draw
@@ -50,6 +154,9 @@ static const CGFloat kScreenDiagonal = 1280.0;
     CGSize size = self.view.bounds.size;
     if (self.bowlSetup && size.width > 0 && size.height > 0 &&
         !CGSizeEqualToSize(size, self.lastDrawnSize)) {
+        // drawSetup: reads note_labels from NSUserDefaults; drive it from our
+        // toggle (the extension has its own defaults domain).
+        [[NSUserDefaults standardUserDefaults] setBool:self.showNoteLabels forKey:@"note_labels"];
         [self.bowlView setSelectedColourScheme];
         [self.bowlView drawSetup:self.bowlSetup];
         self.lastDrawnSize = size;
@@ -102,7 +209,9 @@ static const CGFloat kScreenDiagonal = 1280.0;
         if (velocity > 127) velocity = 127;
         if (velocity < 0) velocity = 0;
         [core sendNoteOn:1 pitch:[self noteFromPosition:point] velocity:velocity];
-        [self.bowlView animateBowlAtRadius:[self distanceFromCenter:point]];
+        // SingingBowlView animates the tapped ring in its own touchesBegan; we
+        // only send the note. (Calling animate here too double-triggered the
+        // CATransaction and made the tap flash/disappear.)
     }
 }
 
