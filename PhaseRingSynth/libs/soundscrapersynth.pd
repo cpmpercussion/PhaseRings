@@ -1,4 +1,4 @@
-#N canvas 1151 112 1409 910 12;
+#N canvas 708 101 1409 910 12;
 #X obj 56 680 *~;
 #X obj 74 655 line~;
 #X obj 56 704 outlet~;
@@ -190,7 +190,7 @@
 #X obj 38 207 unpack s f;
 #X obj 118 231 s \$0-sample-pitch;
 #X obj 108 385 line~;
-#N canvas 296 178 854 788 playsamp 0;
+#N canvas 1850 195 854 788 playsamp 0;
 #X obj 195 215 +~ 1;
 #X obj 195 293 *~;
 #X obj 195 244 +~;
