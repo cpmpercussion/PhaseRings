@@ -34,6 +34,10 @@ fw = project.new_target(:framework, FW_NAME, :ios, '14.0')
 fw.build_configurations.each do |c|
   s = c.build_settings
   s['PRODUCT_BUNDLE_IDENTIFIER'] = 'au.com.charlesmartin.PhaseRingsKit'
+  # Required for distribution: exportArchive re-signs the embedded framework
+  # per-target and can't resolve a signing identity without a team, which fails
+  # every export method with exit 70. Match the app/extension team.
+  s['DEVELOPMENT_TEAM'] = 'EDH387FRHA'
   s['DEFINES_MODULE'] = 'YES'
   s['DYLIB_INSTALL_NAME_BASE'] = '@rpath'
   s['SKIP_INSTALL'] = 'YES'
