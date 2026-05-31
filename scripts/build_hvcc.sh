@@ -46,6 +46,9 @@ SEARCH_PATHS=(
     "-p" "$SYNTH_DIR/libs"
 )
 
+# Copyright line
+COPYRIGHT="Copyright (c) 2026 Charles Martin. Generated from Pure Data by hvcc (https://github.com/Wasted-Audio/hvcc)."
+
 # Wipe previous output. We rebuild from scratch every time so removed files
 # don't linger.
 rm -rf "$OUT_ROOT"
@@ -66,6 +69,7 @@ for entry in "${PATCHES[@]}"; do
         -n "$name" \
         -g cpp \
         -o "$tmp" \
+        --copyright "$COPYRIGHT" \
         "${SEARCH_PATHS[@]}"
     rc=$?
 
