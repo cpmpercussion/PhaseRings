@@ -97,7 +97,7 @@
 		8F0DE3D5EB11BC991032781F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC548177C9F0DCB865719B41 /* Foundation.framework */; };
 		8F62F8157E2F351360B762BB /* PhaseRingsKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2FE08C08C2919251994F67C0 /* PhaseRingsKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		930216EC6F45AE5626733767 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 538D3207BA55517D124D41B0 /* AudioToolbox.framework */; };
-		9EC2B128CDB543EF40E22DAF /* PhaseRingsAUv3.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 77551EC3321C963F7AB732B2 /* PhaseRingsAUv3.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		9EC2B128CDB543EF40E22DAF /* PhaseRingsAUv3.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 77551EC3321C963F7AB732B2 /* PhaseRingsAUv3.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A2F2F47F68D85A492C2F0ADB /* HvSignalCPole.c in Sources */ = {isa = PBXBuildFile; fileRef = 2F65F711BE867C9CBBBBE90E /* HvSignalCPole.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		A5E492F877F4BF40AB965EEE /* HvControlDelay.c in Sources */ = {isa = PBXBuildFile; fileRef = AFE38C0BF3CBBEC07653C487 /* HvControlDelay.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		A99127A136780ACB887A9F43 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 538D3207BA55517D124D41B0 /* AudioToolbox.framework */; };
