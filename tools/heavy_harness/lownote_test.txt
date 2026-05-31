@@ -1,0 +1,24 @@
+# Low-note regression test for percsampler int32 overflow (issue #22).
+# Each sample gets a CONTROL tap near its natural pitch (always worked)
+# and a LOW tap >2.3 octaves down (transposition < 0.205 -> old overflow).
+#
+# velocity is the cold inlet: set it FIRST, then pitch triggers the note.
+# selectsound sent ~300ms ahead so the sample-pitch chain settles.
+
+0     float mastervolume    1.0
+0     float reverbvolume    0.0
+0     float processeffects  0
+
+# crotale (1058 Hz). control MIDI 84 (T~0.99); low MIDI 48 (T~0.124, was BROKEN)
+0     float selectsound     4
+500   float velocity        100
+500   float pitch           84
+2000  float velocity        100
+2000  float pitch           48
+
+# xylo (2117 Hz). control MIDI 96 (T~0.99); low MIDI 48 (T~0.062, was BROKEN)
+3500  float selectsound     7
+4000  float velocity        100
+4000  float pitch           96
+5500  float velocity        100
+5500  float pitch           48
