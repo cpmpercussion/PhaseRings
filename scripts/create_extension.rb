@@ -62,7 +62,10 @@ unless embed
   embed.symbol_dst_subfolder_spec = :plug_ins
 end
 bf = embed.add_file_reference(ext.product_reference)
-bf.settings = { 'ATTRIBUTES' => ['RemoveHeadersOnCopy'] }
+# CodeSignOnCopy is required: exportArchive re-signs the app wrapper with the
+# distribution identity and must re-sign the nested .appex too. Without it the
+# appex keeps its stale build-time signature and export fails with exit 70.
+bf.settings = { 'ATTRIBUTES' => ['CodeSignOnCopy', 'RemoveHeadersOnCopy'] }
 
 project.save
 puts "Created #{EXT}, linked PhaseRingsKit, embedded in app."
