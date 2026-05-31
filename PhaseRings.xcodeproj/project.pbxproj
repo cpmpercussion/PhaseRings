@@ -196,26 +196,26 @@
 		07DC0C177A5ABEA74F9A633F /* Heavy_CircleStrings.hpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.h; path = Heavy_CircleStrings.hpp; sourceTree = "<group>"; };
 		088119280FAFA6FADE7AE23E /* Pods-PhaseRings.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PhaseRings.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PhaseRings/Pods-PhaseRings.debug.xcconfig"; sourceTree = "<group>"; };
 		0E9F60CDEC59A10C4F362449 /* HvSignalSample.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvSignalSample.h; sourceTree = "<group>"; };
-		10D1DD1CB76630EEC76A35A3 /* HvMessage.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvMessage.c; sourceTree = "<group>"; };
-		127F253A7DB2514DB13EB424 /* HvSignalDel1.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvSignalDel1.c; sourceTree = "<group>"; };
-		1423E0756818CA9812B19F63 /* HvMessagePool.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvMessagePool.c; sourceTree = "<group>"; };
-		147C37106EC9C65690C9DBF9 /* HvControlCast.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlCast.c; sourceTree = "<group>"; };
-		18A3738353398EAB52F1BB36 /* HvSignalSample.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvSignalSample.c; sourceTree = "<group>"; };
-		1E5359B31CEC423B51BAA182 /* HvControlPack.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlPack.c; sourceTree = "<group>"; };
+		10D1DD1CB76630EEC76A35A3 /* HvMessage.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvMessage.c; sourceTree = "<group>"; };
+		127F253A7DB2514DB13EB424 /* HvSignalDel1.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvSignalDel1.c; sourceTree = "<group>"; };
+		1423E0756818CA9812B19F63 /* HvMessagePool.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvMessagePool.c; sourceTree = "<group>"; };
+		147C37106EC9C65690C9DBF9 /* HvControlCast.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvControlCast.c; sourceTree = "<group>"; };
+		18A3738353398EAB52F1BB36 /* HvSignalSample.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvSignalSample.c; sourceTree = "<group>"; };
+		1E5359B31CEC423B51BAA182 /* HvControlPack.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvControlPack.c; sourceTree = "<group>"; };
 		20D6FD51122E27FAC3CDFF69 /* HvControlDelay.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlDelay.h; sourceTree = "<group>"; };
 		21A1BC249A64DC6D332E7548 /* HvHeavyInternal.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvHeavyInternal.h; sourceTree = "<group>"; };
 		235C7B16AA44E4219051A1D3 /* HvSignalCPole.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvSignalCPole.h; sourceTree = "<group>"; };
-		24D2D316267E0C66C285A7FC /* HvControlVar.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlVar.c; sourceTree = "<group>"; };
-		2CAA5E1BB73D1F00301FECDD /* HvSignalVar.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvSignalVar.c; sourceTree = "<group>"; };
+		24D2D316267E0C66C285A7FC /* HvControlVar.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvControlVar.c; sourceTree = "<group>"; };
+		2CAA5E1BB73D1F00301FECDD /* HvSignalVar.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvSignalVar.c; sourceTree = "<group>"; };
 		2DCFAACE14E7EBE680383AF2 /* HvControlCast.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlCast.h; sourceTree = "<group>"; };
-		2F65F711BE867C9CBBBBE90E /* HvSignalCPole.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvSignalCPole.c; sourceTree = "<group>"; };
+		2F65F711BE867C9CBBBBE90E /* HvSignalCPole.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvSignalCPole.c; sourceTree = "<group>"; };
 		2FE08C08C2919251994F67C0 /* PhaseRingsKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PhaseRingsKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		359CD30545E865D4413DECD7 /* HvMessageQueue.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvMessageQueue.c; sourceTree = "<group>"; };
-		369F582658F496A2B37FBCF9 /* HvSignalRPole.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvSignalRPole.c; sourceTree = "<group>"; };
-		382CFC75F9CDB06C7FE08A63 /* HvControlUnop.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlUnop.c; sourceTree = "<group>"; };
+		359CD30545E865D4413DECD7 /* HvMessageQueue.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvMessageQueue.c; sourceTree = "<group>"; };
+		369F582658F496A2B37FBCF9 /* HvSignalRPole.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvSignalRPole.c; sourceTree = "<group>"; };
+		382CFC75F9CDB06C7FE08A63 /* HvControlUnop.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvControlUnop.c; sourceTree = "<group>"; };
 		38A0DC8FFBF8A6F2463C839C /* HvControlSlice.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlSlice.h; sourceTree = "<group>"; };
 		3A0114F5E08792A1FB4B70E9 /* Pods-PhaseRings.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PhaseRings.release.xcconfig"; path = "Pods/Target Support Files/Pods-PhaseRings/Pods-PhaseRings.release.xcconfig"; sourceTree = "<group>"; };
-		3FEFAEB8754C7116B036F486 /* HvControlIf.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlIf.c; sourceTree = "<group>"; };
+		3FEFAEB8754C7116B036F486 /* HvControlIf.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvControlIf.c; sourceTree = "<group>"; };
 		4135EF20A1888CD1520E6496 /* Heavy_CircleStrings.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; path = Heavy_CircleStrings.cpp; sourceTree = "<group>"; };
 		424F72B8E127802F32DDB135 /* HvSignalVar.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvSignalVar.h; sourceTree = "<group>"; };
 		45B4C7777EF68BAB7824108E /* HvSignalTabread.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvSignalTabread.h; sourceTree = "<group>"; };
@@ -325,11 +325,11 @@
 		5F7F93F6A8029C57D40E3D17 /* HvSignalLine.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvSignalLine.h; sourceTree = "<group>"; };
 		604E0DF0A75B36B66156D528 /* HvControlExpr.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlExpr.h; sourceTree = "<group>"; };
 		62E2A4607BD82F4CE0445F1F /* HvSignalSamphold.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvSignalSamphold.h; sourceTree = "<group>"; };
-		63353DAD7D02FEFC0624EDB5 /* HvControlTabhead.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlTabhead.c; sourceTree = "<group>"; };
+		63353DAD7D02FEFC0624EDB5 /* HvControlTabhead.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvControlTabhead.c; sourceTree = "<group>"; };
 		638DF12F6EE30DBF3574EBFD /* HvControlIf.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlIf.h; sourceTree = "<group>"; };
 		6AAE8E902A8BB52B32DE9265 /* HvSignalDel1.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvSignalDel1.h; sourceTree = "<group>"; };
 		6E260B2CD108227975106ABF /* HvControlUnop.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlUnop.h; sourceTree = "<group>"; };
-		714A1194F1A179C98BD2D677 /* HvSignalSamphold.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvSignalSamphold.c; sourceTree = "<group>"; };
+		714A1194F1A179C98BD2D677 /* HvSignalSamphold.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvSignalSamphold.c; sourceTree = "<group>"; };
 		751818BB69001020785AE3AF /* Heavy_SoundScraper.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; path = Heavy_SoundScraper.cpp; sourceTree = "<group>"; };
 		76616B931294942E675C36DB /* libPods-PhaseRings.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PhaseRings.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		77551EC3321C963F7AB732B2 /* PhaseRingsAUv3.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PhaseRingsAUv3.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -346,20 +346,20 @@
 		936EFAFD6A5E031DE019B8A2 /* Heavy_PhaseRing.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; path = Heavy_PhaseRing.cpp; sourceTree = "<group>"; };
 		965447B173741E68533AE789 /* PhaseRingsAudioUnitTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = PhaseRingsAudioUnitTests.m; sourceTree = "<group>"; };
 		9922CD0BBFD47953DAC34529 /* HvSignalTabwrite.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvSignalTabwrite.h; sourceTree = "<group>"; };
-		9E4EA33D8A3C7BC3E0F498D9 /* HvSignalPhasor.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvSignalPhasor.c; sourceTree = "<group>"; };
-		A19AB1FC8B92BC9AD6FC4DA8 /* HvSignalTabread.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvSignalTabread.c; sourceTree = "<group>"; };
+		9E4EA33D8A3C7BC3E0F498D9 /* HvSignalPhasor.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvSignalPhasor.c; sourceTree = "<group>"; };
+		A19AB1FC8B92BC9AD6FC4DA8 /* HvSignalTabread.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvSignalTabread.c; sourceTree = "<group>"; };
 		A5D9C80E2B1A2A5EBDDFD851 /* HvMath.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvMath.h; sourceTree = "<group>"; };
-		A64F5531C188D2344F18942A /* HvTable.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvTable.c; sourceTree = "<group>"; };
+		A64F5531C188D2344F18942A /* HvTable.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvTable.c; sourceTree = "<group>"; };
 		A917B3D7071C1447AC037494 /* HeavyContextInterface.hpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.h; path = HeavyContextInterface.hpp; sourceTree = "<group>"; };
-		A9A936A81E31EF6FCF23772A /* HvControlBinop.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlBinop.c; sourceTree = "<group>"; };
+		A9A936A81E31EF6FCF23772A /* HvControlBinop.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvControlBinop.c; sourceTree = "<group>"; };
 		AEFF4CDC16657000B292817A /* InstrumentViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = InstrumentViewController.h; path = PhaseRings/InstrumentViewController.h; sourceTree = "<group>"; };
 		AF04646253FE7DCCBEA9BB7D /* HvControlSystem.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlSystem.h; sourceTree = "<group>"; };
-		AFE38C0BF3CBBEC07653C487 /* HvControlDelay.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlDelay.c; sourceTree = "<group>"; };
+		AFE38C0BF3CBBEC07653C487 /* HvControlDelay.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvControlDelay.c; sourceTree = "<group>"; };
 		B2B747B8EB5FAFADA11A2B48 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/AVFoundation.framework; sourceTree = DEVELOPER_DIR; };
-		B7703060F50CD18366F26B3E /* HvLightPipe.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvLightPipe.c; sourceTree = "<group>"; };
-		BAC6DEE4582393C5B10B6EB1 /* HvControlSlice.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlSlice.c; sourceTree = "<group>"; };
+		B7703060F50CD18366F26B3E /* HvLightPipe.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvLightPipe.c; sourceTree = "<group>"; };
+		BAC6DEE4582393C5B10B6EB1 /* HvControlSlice.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvControlSlice.c; sourceTree = "<group>"; };
 		BACEAC6B28482E063E9DEB22 /* HeavyCore.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = HeavyCore.h; path = PhaseRings/HeavyCore.h; sourceTree = "<group>"; };
-		BD77ECC22489789D20D75F8D /* HvUtils.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvUtils.c; sourceTree = "<group>"; };
+		BD77ECC22489789D20D75F8D /* HvUtils.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvUtils.c; sourceTree = "<group>"; };
 		BD859E2780D577727D4C043B /* Heavy_SoundScraper.hpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.h; path = Heavy_SoundScraper.hpp; sourceTree = "<group>"; };
 		C25E95BCA3560D45D816994A /* HvHeavy.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; path = HvHeavy.cpp; sourceTree = "<group>"; };
 		C321EC63A0C8650EC09EF32B /* HvControlPack.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlPack.h; sourceTree = "<group>"; };
@@ -367,24 +367,24 @@
 		C9FE1ADD7D0640B7DBAAFAC1 /* HvControlPrint.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlPrint.h; sourceTree = "<group>"; };
 		CC548177C9F0DCB865719B41 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		CCF57B606195DC82B3DBE5B8 /* HvControlBinop.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlBinop.h; sourceTree = "<group>"; };
-		CF52B2B841860F7C719A26DB /* HvSignalLine.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvSignalLine.c; sourceTree = "<group>"; };
+		CF52B2B841860F7C719A26DB /* HvSignalLine.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvSignalLine.c; sourceTree = "<group>"; };
 		D299B6AB6006E8D78B451066 /* CoreAudioKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudioKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/CoreAudioKit.framework; sourceTree = DEVELOPER_DIR; };
 		D36C77C8DCD91F790CB6470D /* Heavy_PhaseRing.hpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.h; path = Heavy_PhaseRing.hpp; sourceTree = "<group>"; };
 		D3D2C13F402527670F450D15 /* HvMessagePool.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvMessagePool.h; sourceTree = "<group>"; };
-		D619E253BC2D884EDAAF3AA8 /* PhaseRingsAudioUnit.mm */ = {isa = PBXFileReference; includeInIndex = 1; name = PhaseRingsAudioUnit.mm; path = PhaseRings/PhaseRingsAudioUnit.mm; sourceTree = "<group>"; };
+		D619E253BC2D884EDAAF3AA8 /* PhaseRingsAudioUnit.mm */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.objcpp; name = PhaseRingsAudioUnit.mm; path = PhaseRings/PhaseRingsAudioUnit.mm; sourceTree = "<group>"; };
 		D6A2A7A8390C588047827FAE /* HvControlVar.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlVar.h; sourceTree = "<group>"; };
-		D7FE30F03D472885059F753B /* HvSignalTabwrite.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvSignalTabwrite.c; sourceTree = "<group>"; };
+		D7FE30F03D472885059F753B /* HvSignalTabwrite.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvSignalTabwrite.c; sourceTree = "<group>"; };
 		DD2A9C78DBDD9730133C34DD /* HeavyAudioEngine.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = HeavyAudioEngine.h; path = PhaseRings/HeavyAudioEngine.h; sourceTree = "<group>"; };
 		E225F4F61F13CB4F68E7FA3D /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		E2C313F09B8C7810093C07FB /* HvControlPrint.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlPrint.c; sourceTree = "<group>"; };
+		E2C313F09B8C7810093C07FB /* HvControlPrint.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvControlPrint.c; sourceTree = "<group>"; };
 		E37615165292392089B12557 /* PhaseRingsAudioUnit.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = PhaseRingsAudioUnit.h; path = PhaseRings/PhaseRingsAudioUnit.h; sourceTree = "<group>"; };
 		EB4F67596B8F196CDF24706E /* HvLightPipe.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvLightPipe.h; sourceTree = "<group>"; };
-		EBCAD8691E8C53B8357E1468 /* HvControlSystem.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlSystem.c; sourceTree = "<group>"; };
+		EBCAD8691E8C53B8357E1468 /* HvControlSystem.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvControlSystem.c; sourceTree = "<group>"; };
 		F30EBB0404A92871DD903C55 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
-		F3B4773062766A7B145C5404 /* HvControlRandom.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlRandom.c; sourceTree = "<group>"; };
-		F7EC8D7468ECD073FEA16275 /* HvControlExpr.c */ = {isa = PBXFileReference; includeInIndex = 1; path = HvControlExpr.c; sourceTree = "<group>"; };
+		F3B4773062766A7B145C5404 /* HvControlRandom.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvControlRandom.c; sourceTree = "<group>"; };
+		F7EC8D7468ECD073FEA16275 /* HvControlExpr.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvControlExpr.c; sourceTree = "<group>"; };
 		F841592971D76460030D39A6 /* HvSignalRPole.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvSignalRPole.h; sourceTree = "<group>"; };
-		F86F9A948783EFA0B850E403 /* HeavyCore.mm */ = {isa = PBXFileReference; includeInIndex = 1; name = HeavyCore.mm; path = PhaseRings/HeavyCore.mm; sourceTree = "<group>"; };
+		F86F9A948783EFA0B850E403 /* HeavyCore.mm */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.objcpp; name = HeavyCore.mm; path = PhaseRings/HeavyCore.mm; sourceTree = "<group>"; };
 		FCCFB89B486B5BC30E343E80 /* HvTable.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvTable.h; sourceTree = "<group>"; };
 		FFE32122497440293798A147 /* InstrumentViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = InstrumentViewController.m; path = PhaseRings/InstrumentViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -727,7 +727,6 @@
 				02103B250A9A3139FE80473B /* Heavy_CircleStrings.h */,
 				07DC0C177A5ABEA74F9A633F /* Heavy_CircleStrings.hpp */,
 			);
-			name = Heavy_CircleStrings;
 			path = Heavy_CircleStrings;
 			sourceTree = "<group>";
 		};
@@ -771,7 +770,6 @@
 				5CE7FA6E847817DC3E9E1E18 /* PhaseRingsAUViewController.h */,
 				E225F4F61F13CB4F68E7FA3D /* Info.plist */,
 			);
-			name = PhaseRingsAUv3;
 			path = PhaseRingsAUv3;
 			sourceTree = SOURCE_ROOT;
 		};
@@ -844,7 +842,6 @@
 				BD77ECC22489789D20D75F8D /* HvUtils.c */,
 				031EFDE7BC5FE675B5F6091F /* HvUtils.h */,
 			);
-			name = shared;
 			path = shared;
 			sourceTree = "<group>";
 		};
@@ -855,7 +852,6 @@
 				7E3E3DED2EA69B7EA6BB21CE /* Heavy_SoundScraper.h */,
 				BD859E2780D577727D4C043B /* Heavy_SoundScraper.hpp */,
 			);
-			name = Heavy_SoundScraper;
 			path = Heavy_SoundScraper;
 			sourceTree = "<group>";
 		};
@@ -866,7 +862,6 @@
 				05764EEE4B1A30EF9AC319AA /* Heavy_PhaseRing.h */,
 				D36C77C8DCD91F790CB6470D /* Heavy_PhaseRing.hpp */,
 			);
-			name = Heavy_PhaseRing;
 			path = Heavy_PhaseRing;
 			sourceTree = "<group>";
 		};
@@ -992,6 +987,9 @@
 				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = "Charles Martin";
 				TargetAttributes = {
+					5371A735E731A81A9E9DA2F3 = {
+						DevelopmentTeam = EDH387FRHA;
+					};
 					5623DB5F188CDB3800AA6C14 = {
 						DevelopmentTeam = EDH387FRHA;
 						SystemCapabilities = {
@@ -1004,6 +1002,7 @@
 						};
 					};
 					5623DB80188CDB3800AA6C14 = {
+						DevelopmentTeam = EDH387FRHA;
 						TestTargetID = 5623DB5F188CDB3800AA6C14;
 					};
 					564807E31F2EF8B100E01FB2 = {
@@ -1323,7 +1322,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MARKETING_VERSION = 2.0;
+				MARKETING_VERSION = 3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = au.com.charlesmartin.PhaseRingsKit;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = iphoneos;
@@ -1503,6 +1502,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = EDH387FRHA;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -1529,6 +1529,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = EDH387FRHA;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -1609,7 +1610,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MARKETING_VERSION = 2.0;
+				MARKETING_VERSION = 3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = au.com.charlesmartin.PhaseRingsKit;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = iphoneos;
@@ -1632,7 +1633,7 @@
 				INFOPLIST_FILE = PhaseRingsAUv3/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 2.0;
+				MARKETING_VERSION = 3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = au.com.charlesmartin.PhaseRings.AUv3;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -1652,7 +1653,7 @@
 				INFOPLIST_FILE = PhaseRingsAUv3/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 2.0;
+				MARKETING_VERSION = 3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = au.com.charlesmartin.PhaseRings.AUv3;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
