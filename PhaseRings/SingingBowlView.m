@@ -45,14 +45,30 @@
 {
     self = [super initWithCoder:aDecoder];
     if (self) {
-        // Initialization code
-        self.rimSubLayer = [[CALayer alloc] init];
-        [self.layer addSublayer:self.rimSubLayer];
-        self.multipleTouchEnabled = YES;
-        [self setSelectedColourScheme];
-        self.displayNoteNames = DISPLAYNOTENAME;
+        [self commonInit];
     }
     return self;
+}
+
+// Programmatic path (used by InstrumentViewController in the AUv3 extension).
+// Without this, initWithFrame: bypasses commonInit, rimSubLayer stays nil and
+// drawSetup: silently adds every ring layer to nothing.
+- (instancetype)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (self) {
+        [self commonInit];
+    }
+    return self;
+}
+
+- (void)commonInit
+{
+    self.rimSubLayer = [[CALayer alloc] init];
+    [self.layer addSublayer:self.rimSubLayer];
+    self.multipleTouchEnabled = YES;
+    [self setSelectedColourScheme];
+    self.displayNoteNames = DISPLAYNOTENAME;
 }
 
 #pragma mark - Colour Scheme Internal

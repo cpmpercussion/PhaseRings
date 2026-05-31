@@ -1,0 +1,15 @@
+#N canvas 60 60 720 460 12;
+#X text 30 20 Heavy harness wrapper for [sampler-overlap]. Clean (no-\$0) receivers forward into the abstraction's four inlets so the C++ harness can drive it directly. so_table switches the internal tabread4~ to a named top-level table (testsample) via the abstraction's \$0-table path \; leaving so_table alone reads the abstraction's own \$0_default table.;
+#X obj 60 200 sampler-overlap;
+#X obj 60 320 dac~;
+#X obj 60 110 r so_table;
+#X obj 180 110 r so_chunk;
+#X obj 300 110 r so_readpt;
+#X obj 420 110 r so_cents;
+#X obj 500 200 table testsample 300000 @hv_table;
+#X connect 1 0 2 0;
+#X connect 1 0 2 1;
+#X connect 3 0 1 0;
+#X connect 4 0 1 1;
+#X connect 5 0 1 2;
+#X connect 6 0 1 3;

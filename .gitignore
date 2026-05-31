@@ -13,6 +13,9 @@
 build/
 DerivedData/
 
+## hvcc intermediate work dir (regenerable via scripts/build_hvcc.sh).
+PhaseRings/Heavy/.tmp/
+
 ## Various settings
 *.pbxuser
 !default.pbxuser
@@ -78,4 +81,11 @@ PhaseRings.xcworkspace/xcuserdata
 # Generated App Store screenshots (see scripts/make_screenshots.sh)
 screenshots/
 
+# hvcc compatibility-check venv (see scripts/install_hvcc.sh)
+.venv-hvcc/
+
 .DS_Store
+
+# Heavy harness generated artifacts (regenerable / rendered audio)
+tools/heavy_harness/overlap_gen/
+tools/heavy_harness/*.wav

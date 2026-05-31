@@ -7,9 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "PdAudioController.h"
-#import "PdBase.h"
-#import "PdFile.h"
 #import "MetatoneNetworkManager.h"
 #import "MetatoneMidiManager.h"
 #import "StateSaver.h"
@@ -17,7 +14,7 @@
 #import "IASKAppSettingsViewController.h"
 #import "IASKSettingsReader.h"
 
-@interface ViewController : UIViewController <PdReceiverDelegate,MetatoneNetworkManagerDelegate,IASKSettingsDelegate,UIAdaptivePresentationControllerDelegate>
+@interface ViewController : UIViewController <MetatoneNetworkManagerDelegate,IASKSettingsDelegate,UIAdaptivePresentationControllerDelegate>
 @property (strong, nonatomic) MetatoneMidiManager* midiManager;
 @property (strong, nonatomic) IASKAppSettingsViewController *appSettingsViewController;
 

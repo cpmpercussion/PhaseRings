@@ -1,0 +1,24 @@
+# Drive the SoundScraper through one note attempt.
+# soundScheme 2 picks the bowl in selectsound's lookup; tweak to test others.
+# Receivers used here match ViewController.m: selectsound, mastervolume,
+# reverbvolume, processeffects, singlevel, sing, singpitch.
+
+0     float selectsound     2
+0     float mastervolume    1.0
+0     float reverbvolume    0.0
+0     float processeffects  0
+
+# Sing the held tone (mirrors panBowlSing flow in ViewController.m).
+100   float singlevel       0.5
+100   float sing            1
+100   float singpitch       60
+
+# Sweep up to verify pitch tracking and "do low notes disappear" hypothesis.
+600   float singpitch       48
+1100  float singpitch       36
+1600  float singpitch       30
+2100  float singpitch       72
+
+# Release.
+2600  float singlevel       0
+2600  float sing            0

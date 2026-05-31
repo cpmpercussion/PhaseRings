@@ -59,8 +59,8 @@
     const MIDIPacket *packet = &packetList->packet[0];
     for (int i = 0; i < packetList->numPackets; ++i) {
         if ((packet->length == 3) && ((packet->data[0] & 0xf0) == 0x90) && (packet->data[2] != 0)) {
-            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"midi_in"]) {
-                [PdBase sendNoteOn:1 pitch:packet->data[1] velocity:packet->data[2]];
+            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"midi_in"] && self.noteOnHandler) {
+                self.noteOnHandler(packet->data[1], packet->data[2]);
             }
         }
         packet = MIDIPacketNext(packet);

@@ -38,12 +38,14 @@
 
 #import "ViewController.h"
 #import <AudioToolbox/AudioToolbox.h>
+#import <AVFoundation/AVFoundation.h>
 #import "ScaleMaker.h"
 #import "SingingBowlSetup.h"
 #import "SingingBowlView.h"
 #import "MetatoneEnsembleView.h"
 #import "SingingBowlComposition.h"
 #import "GenerativeSetupComposition.h"
+#import "HeavyAudioEngine.h"
 
 #define CLOUD_SERVER_TESTING_MODE YES
 
@@ -57,8 +59,7 @@
 
 @interface ViewController ()
 // Audio
-@property (strong,nonatomic) PdAudioController *audioController;
-@property (strong,nonatomic) PdFile *openFile;
+@property (strong,nonatomic) HeavyAudioEngine *audioEngine;
 @property (strong, nonatomic) SingingBowlSetup *bowlSetup;
 @property (nonatomic) UInt8 currentlyPanningPitch;
 @property (nonatomic) int playbackPanGestureState;
@@ -92,10 +93,13 @@ static void IAAConnectionChangedCallback(void *inRefCon,
 
 @implementation ViewController
 #pragma mark - Setup
-- (PdAudioController *) audioController
+- (HeavyAudioEngine *)audioEngine
 {
-    if (!_audioController) _audioController = [[PdAudioController alloc] init];
-    return _audioController;
+    if (!_audioEngine) {
+        _audioEngine = [[HeavyAudioEngine alloc] initWithSampleRate:SAMPLE_RATE
+                                                            channels:SOUND_OUTPUT_CHANNELS];
+    }
+    return _audioEngine;
 }
 
 - (void)viewDidLoad
@@ -111,9 +115,12 @@ static void IAAConnectionChangedCallback(void *inRefCon,
     [self setupAudioSession];
     [self startAudioEngine];
     [self publishAsNode];
-    
-    [PdBase setDelegate:self];
+
     self.midiManager = [[MetatoneMidiManager alloc] init];
+    __weak typeof(self) weakSelf = self;
+    self.midiManager.noteOnHandler = ^(int pitch, int velocity) {
+        [weakSelf.audioEngine sendNoteOn:1 pitch:pitch velocity:velocity];
+    };
     
     // Setup composition
     [self openComposition];
@@ -139,11 +146,8 @@ static void IAAConnectionChangedCallback(void *inRefCon,
 
 #pragma mark - Audio Setup Methods.
 -(void) setupAudioSession {
-    // PdAudioController configurePlayback... with mixingEnabled:YES already
-    // sets Playback + MixWithOthers (which IAA requires). Doing it again here
-    // races with whatever has already touched the session on device (PencilKit,
-    // UIScene) and fails with paramErr (-50), silently dropping MixWithOthers.
-    // Just register for interruptions; let libpd own the category.
+    // HeavyAudioEngine sets the session category (Playback + MixWithOthers)
+    // when it builds the AudioUnit. We just listen for interruptions here.
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleAudioSessionInterruption:)
                                                  name:AVAudioSessionInterruptionNotification
@@ -157,7 +161,7 @@ static void IAAConnectionChangedCallback(void *inRefCon,
         .componentSubType      = 'synt',
         .componentManufacturer = 'cmpc'
     };
-    AudioUnit unit = self.audioController.audioUnit.audioUnit;
+    AudioUnit unit = self.audioEngine.audioUnit;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     OSStatus err = AudioOutputUnitPublish(&iaaDesc, CFSTR("PhaseRings"), 2, unit);
@@ -181,7 +185,7 @@ static void IAAConnectionChangedCallback(void *inRefCon,
 }
 
 - (void) handleIAAConnectionChange {
-    AudioUnit unit = self.audioController.audioUnit.audioUnit;
+    AudioUnit unit = self.audioEngine.audioUnit;
     UInt32 connected = 0;
     UInt32 size = sizeof(connected);
 #pragma clang diagnostic push
@@ -199,14 +203,12 @@ static void IAAConnectionChangedCallback(void *inRefCon,
     }
     NSLog(@"IAA: connection state changed -> %@", connected ? @"CONNECTED" : @"DISCONNECTED");
     if (connected) {
-        // Even if isActive is YES, the underlying RemoteIO needs a full
-        // Stop/Uninit/Init/Start cycle for the IAA host bridge to start
-        // pulling. Apple's InterAppAudioSampler and briomusic's libpd-based
-        // interAppPDAudio both do this on every CONNECT. Without it the host
-        // never invokes our render callback.
+        // Even if the unit is running, the IAA host bridge often needs us to
+        // cycle Start/Stop on connect before it begins pulling. Apple's
+        // InterAppAudioSampler and briomusic's interAppPDAudio both do this.
         NSLog(@"IAA: cycling audio engine to bind to host bridge.");
-        [self.audioController setActive:NO];
-        [self.audioController setActive:YES];
+        [self.audioEngine setActive:NO];
+        [self.audioEngine setActive:YES];
 
         // Query the host callbacks struct. Some hosts use this exchange as a
         // "generator is ready" signal before they begin pulling.
@@ -245,17 +247,13 @@ static void IAAConnectionChangedCallback(void *inRefCon,
 }
 
 - (void) startAudioEngine {
-    [self.audioController configurePlaybackWithSampleRate:SAMPLE_RATE numberChannels:SOUND_OUTPUT_CHANNELS inputEnabled:NO mixingEnabled:YES];
-//    [self.audioController configureTicksPerBuffer:TICKS_PER_BUFFER];
     [self openPdPatch];
-    [self.audioController setActive:YES];
-    [self.audioController print];
-    NSLog(@"Ticks Per Buffer: %d",self.audioController.ticksPerBuffer);
+    [self.audioEngine setActive:YES];
 }
 
 - (void) shutdownSoundProcessing {
     if (!BACKGROUND_SOUND_ALWAYS_ON) {
-        [self.audioController setActive:NO];
+        [self.audioEngine setActive:NO];
     }
 }
 
@@ -263,7 +261,7 @@ static void IAAConnectionChangedCallback(void *inRefCon,
     NSUInteger type = [notification.userInfo[AVAudioSessionInterruptionTypeKey] unsignedIntegerValue];
     if (type == AVAudioSessionInterruptionTypeBegan) {
         NSLog(@"Audio session interrupted, stopping audio.");
-        [self.audioController setActive:NO];
+        [self.audioEngine setActive:NO];
     } else if (type == AVAudioSessionInterruptionTypeEnded) {
         NSUInteger options = [notification.userInfo[AVAudioSessionInterruptionOptionKey] unsignedIntegerValue];
         if (options & AVAudioSessionInterruptionOptionShouldResume) {
@@ -274,17 +272,12 @@ static void IAAConnectionChangedCallback(void *inRefCon,
 }
 
 - (void) restartSoundProcessing {
-    if (!self.audioController.isActive) {
+    if (!self.audioEngine.isActive) {
         [self openPdPatch];
-        [self.audioController setActive:YES];
+        [self.audioEngine setActive:YES];
     }
 }
 
-
-#pragma mark - Pd Send/Receive Methods
--(void) receivePrint:(NSString *)message {
-    NSLog(@"Pd: %@",message);
-}
 
 - (void) openComposition {
     #pragma mark TODO - add some more interesting way to specify octave for each base note.
@@ -366,35 +359,26 @@ static void IAAConnectionChangedCallback(void *inRefCon,
     [self.bowlView setSelectedColourScheme];
 }
 
-// Checks settings to which sound scheme is selected. If it's different from what
-// is currently open or nothing is open, the new scheme's Pd patch is opened.
+// Selects the Heavy synth context for the current sound scheme and pushes the
+// initial setting messages. Sound schemes 0/1 map to Phase / CircleStrings;
+// 2..6 all use SoundScraper and pick a sample via `selectsound`.
 - (void) openPdPatch {
     [[NSUserDefaults standardUserDefaults] synchronize];
     NSInteger soundScheme = [[NSUserDefaults standardUserDefaults] integerForKey:@"sound"];
-    NSLog(@"PATCH OPENING: Sound Scheme value: %ld", (long) soundScheme);
-    NSString *patchName = [SOUND_SCHEMES objectAtIndex:soundScheme];
-    if (patchName) {
-        NSLog(@"PATCH OPENING: Patch found: %@",patchName);
-    } else {
-        patchName = PHASE_SYNTH_PATCH;
-        NSLog(@"PATCH OPENING: Patch not found, defaulting to %@",PHASE_SYNTH_PATCH);
+    HeavySynth synth;
+    switch (soundScheme) {
+        case 0:  synth = HeavySynthPhase;         break;
+        case 1:  synth = HeavySynthCircleStrings; break;
+        default: synth = HeavySynthSoundScraper;  break;
     }
-    
-    if (![self.openFile.baseName isEqualToString:patchName]) {
-        NSLog(@"PATCH OPENING: Patch not open, opening now.");
-        [self.openFile closeFile];
-        self.openFile = [PdFile openFileNamed:patchName path:[[NSBundle mainBundle] bundlePath]];
-    } else {
-        NSLog(@"PATCH OPENING: Patch already open, doing nothing.");
-    }
-    [PdBase sendFloat:[[NSUserDefaults standardUserDefaults] integerForKey:@"sound"] toReceiver:@"selectsound"];
-    [PdBase sendFloat:[[NSUserDefaults standardUserDefaults] floatForKey:@"master_volume"] toReceiver:@"mastervolume"];
-    [PdBase sendFloat:[[NSUserDefaults standardUserDefaults] floatForKey:@"reverb_volume"] toReceiver:@"reverbvolume"];
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"process_effects"]) {
-        [PdBase sendFloat:1 toReceiver:@"processeffects"];
-    } else {
-        [PdBase sendFloat:0 toReceiver:@"processeffects"];
-    }
+    NSLog(@"PATCH OPENING: sound=%ld -> synth=%ld", (long)soundScheme, (long)synth);
+    [self.audioEngine selectSynth:synth];
+
+    [self.audioEngine sendFloat:soundScheme toReceiver:@"selectsound"];
+    [self.audioEngine sendFloat:[[NSUserDefaults standardUserDefaults] floatForKey:@"master_volume"] toReceiver:@"mastervolume"];
+    [self.audioEngine sendFloat:[[NSUserDefaults standardUserDefaults] floatForKey:@"reverb_volume"] toReceiver:@"reverbvolume"];
+    [self.audioEngine sendFloat:[[NSUserDefaults standardUserDefaults] boolForKey:@"process_effects"] ? 1 : 0
+                     toReceiver:@"processeffects"];
 }
 
 
@@ -426,7 +410,7 @@ static void IAAConnectionChangedCallback(void *inRefCon,
     // Screenshot mode re-lights the rings after every layout pass because
     // drawSetup wipes the layer dictionaries.
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"screenshotMode"]) {
-        [PdBase sendFloat:0.0 toReceiver:@"mastervolume"];
+        [self.audioEngine sendFloat:0.0 toReceiver:@"mastervolume"];
         [self.bowlView lightAlternateRingsForScreenshot];
     }
 }
@@ -440,7 +424,7 @@ static void IAAConnectionChangedCallback(void *inRefCon,
         int velocity = floorf(15 + (110*((touch.majorRadius)/125)));
         if (velocity > 127) velocity = 127;
         if (velocity < 0) velocity = 0;
-        [PdBase sendNoteOn:1 pitch:[self noteFromPosition:point] velocity:velocity];
+        [self.audioEngine sendNoteOn:1 pitch:[self noteFromPosition:point] velocity:velocity];
         
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"midi_out"]) {
             [self.networkManager sendMessageWithTouch:point Velocity:0.0];
@@ -481,12 +465,12 @@ static void IAAConnectionChangedCallback(void *inRefCon,
     CGFloat velocity = log(velHyp)/10;
     if (velocity < 0) velocity = 0;
     if (velocity > 1) velocity = 1;
-    [PdBase sendFloat:velocity toReceiver:@"singlevel" ];
+    [self.audioEngine sendFloat:velocity toReceiver:@"singlevel" ];
     [self.bowlView changeBowlVolumeTo:velocity];
     
     if ([sender state] == UIGestureRecognizerStateBegan) { // pan began
-        [PdBase sendFloat:1 toReceiver:@"sing"];
-        [PdBase sendFloat:(float) [self noteFromPosition:[sender locationInView:self.view]] toReceiver:@"singpitch"];
+        [self.audioEngine sendFloat:1 toReceiver:@"sing"];
+        [self.audioEngine sendFloat:(float) [self noteFromPosition:[sender locationInView:self.view]] toReceiver:@"singpitch"];
         self.currentlyPanningPitch = (UInt8) [self noteFromPosition:[sender locationInView:self.view]];
         
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"midi_out"]) {
@@ -497,10 +481,10 @@ static void IAAConnectionChangedCallback(void *inRefCon,
         [self.bowlView continuouslyAnimateBowlAtRadius:[self calculateDistanceFromCenter:[sender locationInView:self.view]]];
         
     } else if ([sender state] == UIGestureRecognizerStateChanged) { // pan changed
-        [PdBase sendFloat:velocity toReceiver:@"singlevel" ]; // Send Velocity
+        [self.audioEngine sendFloat:velocity toReceiver:@"singlevel" ]; // Send Velocity
         // send angle message to PD.
         CGFloat angle = [sender velocityInView:self.view].y/velHyp;
-        [PdBase sendFloat:angle toReceiver:@"sinPanAngle"];
+        [self.audioEngine sendFloat:angle toReceiver:@"sinPanAngle"];
         [self.bowlView changeContinuousColour:angle forRadius:[self calculateDistanceFromCenter:[sender locationInView:self.view]]];
         //NSLog(@"%f",[sender velocityInView:self.view].y/velHyp);
         // send distance var to PD.
@@ -508,7 +492,7 @@ static void IAAConnectionChangedCallback(void *inRefCon,
         CGFloat yTrans = [sender translationInView:self.view].y;
         CGFloat trans = sqrt((xTrans * xTrans) + (yTrans * yTrans)) / IPAD_SCREEN_DIAGONAL_LENGTH;
         //NSLog(@"%f",trans);
-        [PdBase sendFloat:trans toReceiver:@"panTranslation"];
+        [self.audioEngine sendFloat:trans toReceiver:@"panTranslation"];
         [self.bowlView changeContinuousAnimationSpeed:(3*trans) + 0.1];
         // Send Translation as MIDI CC
         // UInt8 translation[] = {0x00,(UInt8) (trans * 127)};
@@ -520,8 +504,8 @@ static void IAAConnectionChangedCallback(void *inRefCon,
         }
         
     } else if (([sender state] == UIGestureRecognizerStateEnded) || ([sender state] == UIGestureRecognizerStateCancelled)) { // panended
-        [PdBase sendFloat:0 toReceiver:@"singlevel"];
-        [PdBase sendFloat:0 toReceiver:@"sing"];
+        [self.audioEngine sendFloat:0 toReceiver:@"singlevel"];
+        [self.audioEngine sendFloat:0 toReceiver:@"sing"];
         [self.bowlView stopAnimatingBowl];
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"midi_out"]) {
             const UInt8 noteOff[] = {0x80,self.currentlyPanningPitch,(UInt8) (velocity * 127)};
@@ -535,7 +519,7 @@ static void IAAConnectionChangedCallback(void *inRefCon,
 /*! Playback a single tapped note */
 -(void)playbackTappedNote:(CGPoint) point {
     int velocity = 110;
-    [PdBase sendNoteOn:1 pitch:[self noteFromPosition:point] velocity:velocity];
+    [self.audioEngine sendNoteOn:1 pitch:[self noteFromPosition:point] velocity:velocity];
     [self.bowlView animateBowlAtRadius:[self calculateDistanceFromCenter:point]];
 }
 
@@ -551,14 +535,14 @@ static void IAAConnectionChangedCallback(void *inRefCon,
     if (velocity > 1) velocity = 1;
     CGFloat trans = velocity / IPAD_SCREEN_DIAGONAL_LENGTH;
     // Always do these:
-    [PdBase sendFloat:velocity toReceiver:@"singlevel" ];
+    [self.audioEngine sendFloat:velocity toReceiver:@"singlevel" ];
     [self.bowlView changeBowlVolumeTo:velocity];
     
     if (self.playbackPanGestureState == PAN_STATE_NOTHING) {
         // Starting a Pan Gesture
         // TODO some kind of check to start the pan.
-        [PdBase sendFloat:1 toReceiver:@"sing"];
-        [PdBase sendFloat:(float) [self noteFromPosition:point] toReceiver:@"singpitch"];
+        [self.audioEngine sendFloat:1 toReceiver:@"sing"];
+        [self.audioEngine sendFloat:(float) [self noteFromPosition:point] toReceiver:@"singpitch"];
         self.currentlyPanningPitch = (UInt8) [self noteFromPosition:point];
         [self.bowlView continuouslyAnimateBowlAtRadius:[self calculateDistanceFromCenter:point]];
         self.playbackPanGestureState = PAN_STATE_MOVING;
@@ -566,11 +550,11 @@ static void IAAConnectionChangedCallback(void *inRefCon,
         self.playbackPanGestureTimeout = [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(playbackStopContinuousNotes) userInfo:nil repeats:NO];
     } else {
         // Continuing a Pan Gesture
-        [PdBase sendFloat:velocity toReceiver:@"singlevel" ]; // Send Velocity
-        [PdBase sendFloat:angle toReceiver:@"sinPanAngle"];
+        [self.audioEngine sendFloat:velocity toReceiver:@"singlevel" ]; // Send Velocity
+        [self.audioEngine sendFloat:angle toReceiver:@"sinPanAngle"];
         [self.bowlView changeContinuousColour:angle forRadius:[self calculateDistanceFromCenter:point]];
         [self.bowlView changeContinuousAnimationSpeed:(3*trans) + 0.1];
-        [PdBase sendFloat:trans toReceiver:@"panTranslation"];
+        [self.audioEngine sendFloat:trans toReceiver:@"panTranslation"];
         [self.playbackPanGestureTimeout invalidate];
         self.playbackPanGestureTimeout = [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(playbackStopContinuousNotes) userInfo:nil repeats:NO];
         // extend timer
@@ -580,8 +564,8 @@ static void IAAConnectionChangedCallback(void *inRefCon,
 /*! Stop continuous notes in playback mode */
 -(void)playbackStopContinuousNotes {
     // Stopping a pan gesture
-    [PdBase sendFloat:0 toReceiver:@"singlevel"];
-    [PdBase sendFloat:0 toReceiver:@"sing"];
+    [self.audioEngine sendFloat:0 toReceiver:@"singlevel"];
+    [self.audioEngine sendFloat:0 toReceiver:@"sing"];
     [self.bowlView stopAnimatingBowl];
     self.playbackPanGestureState = PAN_STATE_NOTHING;
     [self.playbackPanGestureTimeout invalidate];
@@ -612,7 +596,7 @@ static void IAAConnectionChangedCallback(void *inRefCon,
     [self setDistortion:[sender value]];
 }
 -(void)setDistortion:(float)level {
-    [PdBase sendFloat:level toReceiver:@"distortlevel"];
+    [self.audioEngine sendFloat:level toReceiver:@"distortlevel"];
 }
 
 // New Setup Button just for Experiment Mode!
@@ -651,8 +635,8 @@ static void IAAConnectionChangedCallback(void *inRefCon,
 }
 
 - (void) setVolumeReverbToDefault {
-    [PdBase sendFloat:1.0 toReceiver:@"mastervolume"];
-    [PdBase sendFloat:0.5 toReceiver:@"reverbvolume"];
+    [self.audioEngine sendFloat:1.0 toReceiver:@"mastervolume"];
+    [self.audioEngine sendFloat:0.5 toReceiver:@"reverbvolume"];
 }
 
 - (void) randomiseSound {
