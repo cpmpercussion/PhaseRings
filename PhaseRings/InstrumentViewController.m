@@ -53,6 +53,18 @@ static const int kPlaybackStateMoving  = 1;
     self.view.multipleTouchEnabled = YES;
     self.showNoteLabels = YES;
 
+    // SingingBowlView is transparent in light mode (and paints the solarized
+    // teal itself in dark mode), so it relies on a backdrop behind it. Provide
+    // it here — light grey in light mode (matching the old storyboard root
+    // view), the solarized teal in dark mode — so both the app and the AUv3
+    // host show the instrument on the right background instead of black.
+    self.view.backgroundColor = [UIColor colorWithDynamicProvider:^UIColor *(UITraitCollection *tc) {
+        if (tc.userInterfaceStyle == UIUserInterfaceStyleDark) {
+            return [UIColor colorWithRed:0.00 green:0.17 blue:0.21 alpha:1.0];  // solarized base
+        }
+        return [UIColor colorWithWhite:0.8 alpha:1.0];
+    }];
+
     self.bowlView = [[SingingBowlView alloc] initWithFrame:self.view.bounds];
     self.bowlView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.bowlView.backgroundColor = [UIColor clearColor];
