@@ -112,10 +112,10 @@ reference / future libpd debugging).
 ### 1. Generate Heavy C++ into the iOS project tree (done)
 
 `scripts/build_hvcc.sh` generates C++ for all three patches and consolidates
-the output under `PhaseRings/Heavy/`:
+the output under `PhaseRingsKit/Heavy/`:
 
 ```
-PhaseRings/Heavy/
+PhaseRingsKit/Heavy/
   shared/                          61 files -- the Heavy runtime, compiled once
   Heavy_PhaseRing/                  3 files -- Heavy_PhaseRing.{cpp,h,hpp}
   Heavy_CircleStrings/              3 files -- Heavy_CircleStrings.{cpp,h,hpp}
@@ -129,17 +129,20 @@ between contexts (SoundScraper additionally needs `HvControlPrint.c` and
 `shared/` directory — linking all three full trees would produce hundreds
 of duplicate symbols.
 
-`scripts/wire_heavy_into_xcode.rb` adds the resulting groups to the
-`PhaseRings` target, attaches the source files to the build phase, and adds
-`$(SRCROOT)/PhaseRings/Heavy/shared` to `HEADER_SEARCH_PATHS` so the
-per-context entry .cpp files can resolve `#include "HeavyContext.hpp"`. The
-script is idempotent (it removes any existing Heavy group before rebuilding),
-so the regeneration flow is:
+The project is generated from `project.yml` by XcodeGen, which globs
+`PhaseRingsKit/Heavy/` into the `PhaseRingsKit` framework target (compiled with
+`-DNDEBUG=1`) and sets `$(SRCROOT)/PhaseRingsKit/Heavy/shared` on
+`HEADER_SEARCH_PATHS` so the per-context entry .cpp files can resolve
+`#include "HeavyContext.hpp"`. So the regeneration flow is just:
 
 ```
-bash scripts/build_hvcc.sh           # regenerate sources
-ruby scripts/wire_heavy_into_xcode.rb # re-sync Xcode project
+bash scripts/build_hvcc.sh   # regenerate sources under PhaseRingsKit/Heavy/
+xcodegen generate            # re-glob into the project (no wiring script)
 ```
+
+> Historical note: this used to require `scripts/wire_heavy_into_xcode.rb` to
+> hand-patch the `.pbxproj`. That script was retired when the project moved to
+> XcodeGen (the `.xcodeproj` is now generated, not committed).
 
 Verified: the iPad Pro 11" simulator (iOS 26.5) Debug build succeeds with
 Heavy code linked in (no audio driving it yet — that's Step 2).
@@ -208,10 +211,10 @@ After the Heavy integration is verified working:
 
 - `scripts/check_hvcc_compat.sh` — triage script, run anytime after patch edits
 - `scripts/install_hvcc.sh` — sets up `.venv-hvcc/`
-- `scripts/build_hvcc.sh` — generates Heavy C++ under `PhaseRings/Heavy/`
-- `scripts/wire_heavy_into_xcode.rb` — re-syncs the generated tree into the
-  Xcode project (idempotent)
-- `PhaseRings/Heavy/{shared,Heavy_*}` — vendored Heavy output
+- `scripts/build_hvcc.sh` — generates Heavy C++ under `PhaseRingsKit/Heavy/`
+- `project.yml` — XcodeGen spec; globs `PhaseRingsKit/Heavy/` into the framework
+  target (run `xcodegen generate` to re-sync after `build_hvcc.sh`)
+- `PhaseRingsKit/Heavy/{shared,Heavy_*}` — vendored Heavy output
 - `PhaseRingSynth/*.pd` — patches that get compiled
 - `PhaseRingSynth/load_sound_files.pd` — out-of-compile-path; original
   soundfiler scaffolding kept for reference

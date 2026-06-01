@@ -8,23 +8,33 @@ PhaseRings is an iOS music instrument app (Objective-C) that generates concentri
 
 ## Build & Run
 
-Dependencies are managed with CocoaPods. Always open the workspace, not the `.xcodeproj`:
+The Xcode project is **generated from `project.yml` by [XcodeGen]** and is *not*
+committed (`PhaseRings.xcodeproj/` is gitignored). There are no third-party
+package managers — all source is vendored in-tree. Generate the project, then
+open it:
 
 ```
-pod install          # install/update CocoaPods dependencies
-open PhaseRings.xcworkspace
+brew install xcodegen   # one-time, if not already installed
+xcodegen generate       # writes PhaseRings.xcodeproj from project.yml
+open PhaseRings.xcodeproj
 ```
 
-Build and run from Xcode (Cmd+R). Target a connected iOS device or simulator. There are no command-line build or test scripts; everything runs through Xcode.
+Re-run `xcodegen generate` after adding/removing source files or changing
+targets/settings — edit `project.yml`, never the generated `.xcodeproj`.
 
-UI tests live in `PhaseRingsUITests/` and can be run via Xcode's test navigator (Cmd+U). The test suite is a mostly-empty template.
+Build and run from Xcode (Cmd+R) against a connected iOS device or simulator.
+
+UI tests live in `PhaseRingsUITests/`, unit tests in `PhaseRingsTests/`; run via
+Xcode's test navigator (Cmd+U) or from the command line (see the M1 note below).
+
+[XcodeGen]: https://github.com/yonaskolb/XcodeGen
 
 ## Xcode Cloud
 
 The repo is wired into Xcode Cloud; builds on push to `main` and uploads to TestFlight in App Store Connect.
 
-- **Shared scheme**: `PhaseRings.xcodeproj/xcshareddata/xcschemes/PhaseRings.xcscheme` is the one Xcode Cloud uses. Don't demote it to `xcuserdata/` — CI won't find it.
-- **`ci_scripts/ci_post_clone.sh`**: runs `pod install --no-repo-update` after the clone. Pods are committed, but this is a safety net if Podfile.lock drifts.
+- **Project generation**: the `.xcodeproj` is not committed, so `ci_scripts/ci_post_clone.sh` installs XcodeGen (via Homebrew) and runs `xcodegen generate` after the clone, before the build phase. If a CI build fails at the very start, check that step first.
+- **Shared scheme**: the `PhaseRings` shared scheme is declared in `project.yml` (`schemes:`) and emitted into `PhaseRings.xcodeproj/xcshareddata/xcschemes/` on generation — that's the one Xcode Cloud uses. Change it in `project.yml`, not by editing the generated scheme.
 - **Build numbers**: "Use Xcode Cloud build number" is enabled on the workflow, which overrides `CFBundleVersion` from `Chorale/PhaseRings-Info.plist` (still `200` for local archives only). Build numbers are scoped per `CFBundleShortVersionString`; current marketing version is `2.0`, so the CI counter starts fresh from 1 for v2.0 — that's expected and fine.
 - **Command-line builds on M1**: `xcodebuild test` for the iOS simulator needs `ONLY_ACTIVE_ARCH=YES ARCHS=arm64` overrides (target Debug has `ONLY_ACTIVE_ARCH=NO`). Xcode Cloud picks one arch per destination so it's not affected.
 
@@ -32,10 +42,15 @@ The repo is wired into Xcode Cloud; builds on push to `main` and uploads to Test
 
 ### Source layout
 
-- `PhaseRings/` — all main app Objective-C source
-- `PhaseRingSynth/` — Pure Data patches (`.pd`) and audio samples used by libpd
-- `MetatoneOSC/` — OSC networking library (F53OSC + GCDAsyncSocket) and `MetatoneNetworkManager`
-- `MetatoneMIDI/` — Core MIDI wrapper (PGMidi) and `MetatoneMidiManager`
+Each directory maps to exactly one target (XcodeGen globs them directly):
+
+- `PhaseRings/` — standalone-app source (app shell, `ViewController`, networking glue, `HeavyAudioEngine`)
+- `PhaseRingsKit/` — the **PhaseRingsKit.framework** source: shared instrument surface, compositions, `HeavyCore`, the AUAudioUnit, and the generated `Heavy/` DSP
+- `PhaseRingsAUv3/` — the AUv3 app-extension wrapper
+- `PhaseRingsTests/`, `PhaseRingsUITests/` — test targets
+- `PhaseRingSynth/` — Pure Data patches (`.pd`) and audio samples (hvcc inputs; the 3 env patches + 6 sample WAVs are also bundled as resources)
+- `MetatoneOSC/` — OSC networking library (F53OSC + GCDAsyncSocket) and `MetatoneNetworkManager` (compiled into the app)
+- `MetatoneMIDI/` — Core MIDI wrapper (PGMidi) and `MetatoneMidiManager` (compiled into the app)
 
 ### Key classes and data flow
 
@@ -76,15 +91,22 @@ Three top-level environment patches in `PhaseRingSynth/`:
 
 Sub-patches and shared libraries live in `PhaseRingSynth/metaPdLibs/`. Audio samples (`.wav`) are in `PhaseRingSynth/samples/`.
 
-On the `v3.0-hvcc-migration` branch the patches are also compiled ahead-of-time with hvcc into `PhaseRings/Heavy/` (vendored — `shared/` holds the runtime, `Heavy_<Name>/` the per-patch entry). Regenerate with `bash scripts/build_hvcc.sh && ruby scripts/wire_heavy_into_xcode.rb` after any `.pd` change. See `hvcc-migration-plan.md`.
+The patches are compiled ahead-of-time with hvcc into `PhaseRingsKit/Heavy/` (vendored — `shared/` holds the runtime, `Heavy_<Name>/` the per-patch entry). Regenerate after any `.pd` change with:
 
-The Heavy sources, the host-agnostic `HeavyCore`, and the WAV samples live in the embedded **`PhaseRingsKit.framework`** target (shared so the planned AUv3 extension can reuse them); `wire_heavy_into_xcode.rb` syncs into that target, not the app. `HeavyAudioEngine` is now just the standalone-app audio driver (AVAudioSession + RemoteIO) wrapping a `HeavyCore`. See `auv3-plan.md`.
+```
+bash scripts/build_hvcc.sh && xcodegen generate
+```
 
-## CocoaPods dependencies
+`build_hvcc.sh` rewrites `PhaseRingsKit/Heavy/`; `xcodegen generate` re-globs that directory into the framework target — no wiring script needed. See `hvcc-migration-plan.md`.
 
-| Pod | Purpose |
-|-----|---------|
-| `libpd` | Pure Data audio engine |
-| `InAppSettingsKit` | Settings UI presented as a popover/modal |
-| `Audiobus` (~2.1) | Inter-app audio / Audiobus 2 integration |
-| `SocketRocket` (~0.5) | WebSocket client for Metatone Classifier |
+The Heavy sources, the host-agnostic `HeavyCore`, and the WAV samples live in the embedded **`PhaseRingsKit.framework`** target (shared so the AUv3 extension can reuse them). `HeavyAudioEngine` is just the standalone-app audio driver (AVAudioSession + RemoteIO) wrapping a `HeavyCore`. See `auv3-plan.md`.
+
+## Dependencies
+
+There are no third-party package managers. CocoaPods was removed once its last
+pod (InAppSettingsKit) was retired — the audio engine is now compiled Heavy
+(hvcc), not libpd, and Audiobus/IAA are gone. All remaining libraries (F53OSC +
+GCDAsyncSocket under `MetatoneOSC/`, PGMidi under `MetatoneMIDI/`) are vendored
+directly in-tree and compiled into the app target.
+
+The only build-time tool is **XcodeGen** (`project.yml` → `.xcodeproj`).

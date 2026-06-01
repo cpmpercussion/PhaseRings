@@ -101,12 +101,15 @@ The standalone app instantiates the **same** `PhaseRingsAudioUnit` internally
 Regeneration flow after a `.pd` change is now:
 
 ```
-bash scripts/build_hvcc.sh            # regenerate Heavy C++
-ruby scripts/wire_heavy_into_xcode.rb # re-sync into PhaseRingsKit (the framework)
+bash scripts/build_hvcc.sh   # regenerate Heavy C++ under PhaseRingsKit/Heavy/
+xcodegen generate            # re-glob into PhaseRingsKit (the framework)
 ```
 
-`scripts/create_framework.rb` is a one-shot (creating the framework target);
-it bails if `PhaseRingsKit` already exists.
+> The project is generated from `project.yml` by XcodeGen. The earlier
+> scaffolding/wiring Ruby scripts (`create_framework.rb`, `create_extension.rb`,
+> `wire_heavy_into_xcode.rb`, `wire_f*.rb`, …) were retired once `project.yml`
+> became the source of truth; the target/file structure they built is now
+> declared there.
 
 ### Phase B — Lock-free event FIFO (correctness) — ✅ COMPLETE
 

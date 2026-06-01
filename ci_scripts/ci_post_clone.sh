@@ -1,21 +1,32 @@
 #!/bin/sh
 # ci_post_clone.sh — runs immediately after Xcode Cloud clones the repo.
-# Ensures the Pods/ tree matches Podfile.lock before the build phase begins.
-# Pods/ is tracked in this repo, but this is a safety net for cases where the
-# committed Pods drift from the lockfile.
+#
+# The Xcode project is generated from project.yml by XcodeGen and is NOT
+# committed (see .gitignore). This script installs XcodeGen if needed and
+# generates PhaseRings.xcodeproj before Xcode Cloud's build phase begins.
 
 set -e
 
-# Xcode Cloud runs this script with CI_PRIMARY_REPOSITORY_PATH set to the
-# cloned repo root.
-cd "$CI_PRIMARY_REPOSITORY_PATH"
+# Xcode Cloud sets CI_PRIMARY_REPOSITORY_PATH to the cloned repo root. Fall
+# back to the directory above this script when running outside Xcode Cloud.
+cd "${CI_PRIMARY_REPOSITORY_PATH:-"$(dirname "$0")/.."}"
 
-# CocoaPods ships with the Xcode Cloud image but may need the spec repo cache
-# warmed for the first run. --no-repo-update keeps things fast in CI when the
-# committed Podfile.lock already points at resolved versions.
-if command -v pod >/dev/null 2>&1; then
-    pod install --no-repo-update
-else
-    echo "CocoaPods not found on the Xcode Cloud image; cannot run pod install." >&2
+if ! command -v xcodegen >/dev/null 2>&1; then
+    echo "XcodeGen not found — installing via Homebrew…"
+    if command -v brew >/dev/null 2>&1; then
+        # HOMEBREW_NO_AUTO_UPDATE keeps the install fast and deterministic in CI.
+        HOMEBREW_NO_AUTO_UPDATE=1 brew install xcodegen
+    else
+        echo "error: Homebrew is unavailable; cannot install XcodeGen." >&2
+        exit 1
+    fi
+fi
+
+echo "Generating PhaseRings.xcodeproj with $(xcodegen --version)…"
+xcodegen generate
+
+if [ ! -d "PhaseRings.xcodeproj" ]; then
+    echo "error: xcodegen generate did not produce PhaseRings.xcodeproj." >&2
     exit 1
 fi
+echo "PhaseRings.xcodeproj generated successfully."
