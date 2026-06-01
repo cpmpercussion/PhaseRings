@@ -317,7 +317,9 @@ velocity, channel 1) lives in `InstrumentViewController`; each host provides a
   a straight lift.
 - **No settings switch:** drop the `midi_out` user-default gate and the MIDI-out
   toggle F.5a added to `PRSettingsView`; MIDI-out is always on. (`midi_in` —
-  MIDI *input* feeding the synth — is unaffected and stays as-is.)
+  MIDI *input* feeding the synth — is unaffected here and stays as-is; its
+  clean-up + sharing + ring-light feedback is the **#29** follow-up, building on
+  the playback/remote-trigger seam this issue moves into the Kit.)
 
 #### B4. View hierarchy — kill the storyboard
 - Today `bowlView` is a storyboard `IBOutlet` with a pan recognizer;
