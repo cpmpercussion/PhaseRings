@@ -8,9 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		083075066FD58DE91A94B76C /* HvMessage.c in Sources */ = {isa = PBXBuildFile; fileRef = 10D1DD1CB76630EEC76A35A3 /* HvMessage.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
+		090DC4550EFCF6D580500EF1 /* PRSettingsStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 2319EA61B6638AEA1EDCDCB4 /* PRSettingsStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		0A688F9D0AC9E4656802B1FD /* PRSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = 78DCDC29E9C8E3AE1049DC98 /* PRSettings.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0C5199CFCF77389E3B869266 /* HvSignalTabread.c in Sources */ = {isa = PBXBuildFile; fileRef = A19AB1FC8B92BC9AD6FC4DA8 /* HvSignalTabread.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		0D3B62E8C9BDD12DAA08DD2A /* HvControlPack.c in Sources */ = {isa = PBXBuildFile; fileRef = 1E5359B31CEC423B51BAA182 /* HvControlPack.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		0DF933EDF7DEC75BC952FC5C /* Heavy_SoundScraper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 751818BB69001020785AE3AF /* Heavy_SoundScraper.cpp */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
+		0EB8783B1D0D31182A97BC34 /* PRCompositionFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 5278758CCE0412185C8D9313 /* PRCompositionFactory.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0F636C10838E2DAFEA76697A /* SingingBowlSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = 565A2327188F94CA00093B32 /* SingingBowlSetup.m */; };
 		1050224A441706112B2ED3B2 /* PhaseRingsKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FE08C08C2919251994F67C0 /* PhaseRingsKit.framework */; };
 		12B2386F39C74E5EF4F0BA07 /* SingingBowlComposition.m in Sources */ = {isa = PBXBuildFile; fileRef = 56B7898E1897327D00B6AE22 /* SingingBowlComposition.m */; };
@@ -84,6 +87,7 @@
 		6FE34876A8184B50C98CD9BE /* SingingBowlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 565A2323188F94AE00093B32 /* SingingBowlView.m */; };
 		74106E56078FE3ECE195B7E3 /* HvTable.c in Sources */ = {isa = PBXBuildFile; fileRef = A64F5531C188D2344F18942A /* HvTable.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		74DA207062F8BABDF6BB212E /* HvSignalLine.c in Sources */ = {isa = PBXBuildFile; fileRef = CF52B2B841860F7C719A26DB /* HvSignalLine.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
+		78A5E7F67A4BBA713234C84B /* PRUserDefaultsStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 2BE3F991A7939CB1395D77D0 /* PRUserDefaultsStore.m */; };
 		7C1C91B160D9548E1482F4EC /* HvHeavy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C25E95BCA3560D45D816994A /* HvHeavy.cpp */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		7E06061100000000000000C0 /* ScaleMakerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E06061000000000000000C0 /* ScaleMakerTests.m */; };
 		7E06062100000000000000C0 /* SingingBowlSetupTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E06062000000000000000C0 /* SingingBowlSetupTests.m */; };
@@ -94,12 +98,15 @@
 		8B279F2AF626503653DEFE06 /* HvControlExpr.c in Sources */ = {isa = PBXBuildFile; fileRef = F7EC8D7468ECD073FEA16275 /* HvControlExpr.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		8DFAF893AA9C26DDD69A95CE /* HvControlBinop.c in Sources */ = {isa = PBXBuildFile; fileRef = A9A936A81E31EF6FCF23772A /* HvControlBinop.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		8E0A2F3EE5887548A6BD6540 /* HvSignalTabwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = D7FE30F03D472885059F753B /* HvSignalTabwrite.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
+		8E0ECA269C8B8A6A254A32A3 /* PRSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D8C05165FEA4EB25AF0A8DC /* PRSettings.m */; };
 		8F0DE3D5EB11BC991032781F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC548177C9F0DCB865719B41 /* Foundation.framework */; };
 		8F62F8157E2F351360B762BB /* PhaseRingsKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2FE08C08C2919251994F67C0 /* PhaseRingsKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		930216EC6F45AE5626733767 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 538D3207BA55517D124D41B0 /* AudioToolbox.framework */; };
+		938AA48867A9BFE774BB20C4 /* PRSettingsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FCFD7686990226EAA3708361 /* PRSettingsTests.m */; };
 		9EC2B128CDB543EF40E22DAF /* PhaseRingsAUv3.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 77551EC3321C963F7AB732B2 /* PhaseRingsAUv3.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A2F2F47F68D85A492C2F0ADB /* HvSignalCPole.c in Sources */ = {isa = PBXBuildFile; fileRef = 2F65F711BE867C9CBBBBE90E /* HvSignalCPole.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		A5E492F877F4BF40AB965EEE /* HvControlDelay.c in Sources */ = {isa = PBXBuildFile; fileRef = AFE38C0BF3CBBEC07653C487 /* HvControlDelay.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
+		A719C6CF1E43C7E055DBC755 /* PRCompositionFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = D7099BE481A26E45FEEBCEC4 /* PRCompositionFactory.m */; };
 		A99127A136780ACB887A9F43 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 538D3207BA55517D124D41B0 /* AudioToolbox.framework */; };
 		AB102CAD8253A85186C189F1 /* HeavyAudioEngine.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8DABAA2BD4E2B6A6D7B75B7B /* HeavyAudioEngine.mm */; };
 		B78F1FCD9A91BB65363C9103 /* HvMessageQueue.c in Sources */ = {isa = PBXBuildFile; fileRef = 359CD30545E865D4413DECD7 /* HvMessageQueue.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
@@ -118,6 +125,7 @@
 		E3824B8C7AC533B4F45B2E74 /* almglockenC-441.wav in Resources */ = {isa = PBXBuildFile; fileRef = 568BDC1A1A0349300056CF22 /* almglockenC-441.wav */; };
 		E54A9F4671BE39EFAC5DC2B2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2B747B8EB5FAFADA11A2B48 /* AVFoundation.framework */; };
 		E56D41D4667656E6D9403F4E /* InstrumentViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = AEFF4CDC16657000B292817A /* InstrumentViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EA39E0A3B84A1CBE6F0AB7D5 /* PRSettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87C2283932AFF5AB2A220D26 /* PRSettingsModel.swift */; };
 		EBA106E6CC90C9847C4DA586 /* HeavyCore.mm in Sources */ = {isa = PBXBuildFile; fileRef = F86F9A948783EFA0B850E403 /* HeavyCore.mm */; };
 		F170830076459FD0B2652B7F /* CoreAudioKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D299B6AB6006E8D78B451066 /* CoreAudioKit.framework */; };
 		F742BE5C2FC6A0452DEDA304 /* HvSignalRPole.c in Sources */ = {isa = PBXBuildFile; fileRef = 369F582658F496A2B37FBCF9 /* HvSignalRPole.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
@@ -204,8 +212,10 @@
 		1E5359B31CEC423B51BAA182 /* HvControlPack.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvControlPack.c; sourceTree = "<group>"; };
 		20D6FD51122E27FAC3CDFF69 /* HvControlDelay.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlDelay.h; sourceTree = "<group>"; };
 		21A1BC249A64DC6D332E7548 /* HvHeavyInternal.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvHeavyInternal.h; sourceTree = "<group>"; };
+		2319EA61B6638AEA1EDCDCB4 /* PRSettingsStore.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = PRSettingsStore.h; path = PhaseRings/PRSettingsStore.h; sourceTree = "<group>"; };
 		235C7B16AA44E4219051A1D3 /* HvSignalCPole.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvSignalCPole.h; sourceTree = "<group>"; };
 		24D2D316267E0C66C285A7FC /* HvControlVar.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvControlVar.c; sourceTree = "<group>"; };
+		2BE3F991A7939CB1395D77D0 /* PRUserDefaultsStore.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PRUserDefaultsStore.m; path = PhaseRings/PRUserDefaultsStore.m; sourceTree = "<group>"; };
 		2CAA5E1BB73D1F00301FECDD /* HvSignalVar.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvSignalVar.c; sourceTree = "<group>"; };
 		2DCFAACE14E7EBE680383AF2 /* HvControlCast.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlCast.h; sourceTree = "<group>"; };
 		2F65F711BE867C9CBBBBE90E /* HvSignalCPole.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvSignalCPole.c; sourceTree = "<group>"; };
@@ -222,6 +232,7 @@
 		49A6E838BEB58BEE289780EC /* PhaseRingsKit.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = PhaseRingsKit.h; path = PhaseRings/PhaseRingsKit.h; sourceTree = "<group>"; };
 		4CA390179BBE9B9AA4EE141D /* HvControlRandom.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlRandom.h; sourceTree = "<group>"; };
 		5180F013A0170F69187FF63A /* HeavyContext.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; path = HeavyContext.cpp; sourceTree = "<group>"; };
+		5278758CCE0412185C8D9313 /* PRCompositionFactory.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = PRCompositionFactory.h; path = PhaseRings/PRCompositionFactory.h; sourceTree = "<group>"; };
 		538D3207BA55517D124D41B0 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/AudioToolbox.framework; sourceTree = DEVELOPER_DIR; };
 		55DD2EE05B088E112EF91096 /* HvSignalPhasor.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvSignalPhasor.h; sourceTree = "<group>"; };
 		5623758E19F7610F004F1281 /* iOSVersionDetection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iOSVersionDetection.h; sourceTree = "<group>"; };
@@ -328,11 +339,13 @@
 		63353DAD7D02FEFC0624EDB5 /* HvControlTabhead.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvControlTabhead.c; sourceTree = "<group>"; };
 		638DF12F6EE30DBF3574EBFD /* HvControlIf.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlIf.h; sourceTree = "<group>"; };
 		6AAE8E902A8BB52B32DE9265 /* HvSignalDel1.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvSignalDel1.h; sourceTree = "<group>"; };
+		6D8C05165FEA4EB25AF0A8DC /* PRSettings.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PRSettings.m; path = PhaseRings/PRSettings.m; sourceTree = "<group>"; };
 		6E260B2CD108227975106ABF /* HvControlUnop.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlUnop.h; sourceTree = "<group>"; };
 		714A1194F1A179C98BD2D677 /* HvSignalSamphold.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvSignalSamphold.c; sourceTree = "<group>"; };
 		751818BB69001020785AE3AF /* Heavy_SoundScraper.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; path = Heavy_SoundScraper.cpp; sourceTree = "<group>"; };
 		76616B931294942E675C36DB /* libPods-PhaseRings.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PhaseRings.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		77551EC3321C963F7AB732B2 /* PhaseRingsAUv3.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PhaseRingsAUv3.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		78DCDC29E9C8E3AE1049DC98 /* PRSettings.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = PRSettings.h; path = PhaseRings/PRSettings.h; sourceTree = "<group>"; };
 		7DA1734D264D6D9B7D08B993 /* HvHeavy.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvHeavy.h; sourceTree = "<group>"; };
 		7E06060200000000000000C0 /* PhaseRingsTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PhaseRingsTests-Info.plist"; sourceTree = "<group>"; };
 		7E06061000000000000000C0 /* ScaleMakerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScaleMakerTests.m; sourceTree = "<group>"; };
@@ -341,6 +354,7 @@
 		7E3E3DED2EA69B7EA6BB21CE /* Heavy_SoundScraper.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = Heavy_SoundScraper.h; sourceTree = "<group>"; };
 		7F49D0393F39D292F682B85A /* HvMessage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvMessage.h; sourceTree = "<group>"; };
 		807B70A84BE80C41E3ECA784 /* HvMessageQueue.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvMessageQueue.h; sourceTree = "<group>"; };
+		87C2283932AFF5AB2A220D26 /* PRSettingsModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PRSettingsModel.swift; path = PhaseRings/PRSettingsModel.swift; sourceTree = "<group>"; };
 		88927DD4FFADF5F4143D823B /* HvControlTabhead.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlTabhead.h; sourceTree = "<group>"; };
 		8DABAA2BD4E2B6A6D7B75B7B /* HeavyAudioEngine.mm */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.objcpp; name = HeavyAudioEngine.mm; path = PhaseRings/HeavyAudioEngine.mm; sourceTree = "<group>"; };
 		936EFAFD6A5E031DE019B8A2 /* Heavy_PhaseRing.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; path = Heavy_PhaseRing.cpp; sourceTree = "<group>"; };
@@ -357,6 +371,7 @@
 		AFE38C0BF3CBBEC07653C487 /* HvControlDelay.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvControlDelay.c; sourceTree = "<group>"; };
 		B2B747B8EB5FAFADA11A2B48 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/AVFoundation.framework; sourceTree = DEVELOPER_DIR; };
 		B7703060F50CD18366F26B3E /* HvLightPipe.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvLightPipe.c; sourceTree = "<group>"; };
+		BAC37C6FA151C9BE179BE771 /* PRUserDefaultsStore.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = PRUserDefaultsStore.h; path = PhaseRings/PRUserDefaultsStore.h; sourceTree = "<group>"; };
 		BAC6DEE4582393C5B10B6EB1 /* HvControlSlice.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvControlSlice.c; sourceTree = "<group>"; };
 		BACEAC6B28482E063E9DEB22 /* HeavyCore.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = HeavyCore.h; path = PhaseRings/HeavyCore.h; sourceTree = "<group>"; };
 		BD77ECC22489789D20D75F8D /* HvUtils.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvUtils.c; sourceTree = "<group>"; };
@@ -373,6 +388,7 @@
 		D3D2C13F402527670F450D15 /* HvMessagePool.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvMessagePool.h; sourceTree = "<group>"; };
 		D619E253BC2D884EDAAF3AA8 /* PhaseRingsAudioUnit.mm */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.objcpp; name = PhaseRingsAudioUnit.mm; path = PhaseRings/PhaseRingsAudioUnit.mm; sourceTree = "<group>"; };
 		D6A2A7A8390C588047827FAE /* HvControlVar.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlVar.h; sourceTree = "<group>"; };
+		D7099BE481A26E45FEEBCEC4 /* PRCompositionFactory.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PRCompositionFactory.m; path = PhaseRings/PRCompositionFactory.m; sourceTree = "<group>"; };
 		D7FE30F03D472885059F753B /* HvSignalTabwrite.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvSignalTabwrite.c; sourceTree = "<group>"; };
 		DD2A9C78DBDD9730133C34DD /* HeavyAudioEngine.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = HeavyAudioEngine.h; path = PhaseRings/HeavyAudioEngine.h; sourceTree = "<group>"; };
 		E225F4F61F13CB4F68E7FA3D /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -386,6 +402,7 @@
 		F841592971D76460030D39A6 /* HvSignalRPole.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvSignalRPole.h; sourceTree = "<group>"; };
 		F86F9A948783EFA0B850E403 /* HeavyCore.mm */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.objcpp; name = HeavyCore.mm; path = PhaseRings/HeavyCore.mm; sourceTree = "<group>"; };
 		FCCFB89B486B5BC30E343E80 /* HvTable.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvTable.h; sourceTree = "<group>"; };
+		FCFD7686990226EAA3708361 /* PRSettingsTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PRSettingsTests.m; path = PRSettingsTests.m; sourceTree = "<group>"; };
 		FFE32122497440293798A147 /* InstrumentViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = InstrumentViewController.m; path = PhaseRings/InstrumentViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -691,6 +708,14 @@
 				D619E253BC2D884EDAAF3AA8 /* PhaseRingsAudioUnit.mm */,
 				AEFF4CDC16657000B292817A /* InstrumentViewController.h */,
 				FFE32122497440293798A147 /* InstrumentViewController.m */,
+				78DCDC29E9C8E3AE1049DC98 /* PRSettings.h */,
+				2319EA61B6638AEA1EDCDCB4 /* PRSettingsStore.h */,
+				5278758CCE0412185C8D9313 /* PRCompositionFactory.h */,
+				6D8C05165FEA4EB25AF0A8DC /* PRSettings.m */,
+				D7099BE481A26E45FEEBCEC4 /* PRCompositionFactory.m */,
+				87C2283932AFF5AB2A220D26 /* PRSettingsModel.swift */,
+				BAC37C6FA151C9BE179BE771 /* PRUserDefaultsStore.h */,
+				2BE3F991A7939CB1395D77D0 /* PRUserDefaultsStore.m */,
 			);
 			name = controllers;
 			sourceTree = "<group>";
@@ -750,6 +775,7 @@
 				7E06063000000000000000C0 /* GenerativeSetupCompositionTests.m */,
 				7E06060200000000000000C0 /* PhaseRingsTests-Info.plist */,
 				965447B173741E68533AE789 /* PhaseRingsAudioUnitTests.m */,
+				FCFD7686990226EAA3708361 /* PRSettingsTests.m */,
 			);
 			path = PhaseRingsTests;
 			sourceTree = "<group>";
@@ -876,6 +902,9 @@
 				454FBEC64946165F1DA12E8E /* HeavyCore.h in Headers */,
 				40F903D4E9C60C5684AE2E9F /* PhaseRingsAudioUnit.h in Headers */,
 				E56D41D4667656E6D9403F4E /* InstrumentViewController.h in Headers */,
+				0A688F9D0AC9E4656802B1FD /* PRSettings.h in Headers */,
+				090DC4550EFCF6D580500EF1 /* PRSettingsStore.h in Headers */,
+				0EB8783B1D0D31182A97BC34 /* PRCompositionFactory.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1171,6 +1200,7 @@
 				562375CF19F764FC004F1281 /* NSData+F53OSCBlob.m in Sources */,
 				5623759D19F7610F004F1281 /* PGMidiFind.mm in Sources */,
 				AB102CAD8253A85186C189F1 /* HeavyAudioEngine.mm in Sources */,
+				78A5E7F67A4BBA713234C84B /* PRUserDefaultsStore.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1182,6 +1212,7 @@
 				7E06062100000000000000C0 /* SingingBowlSetupTests.m in Sources */,
 				7E06063100000000000000C0 /* GenerativeSetupCompositionTests.m in Sources */,
 				1308910E1736DA7E020B78BF /* PhaseRingsAudioUnitTests.m in Sources */,
+				938AA48867A9BFE774BB20C4 /* PRSettingsTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1240,6 +1271,9 @@
 				0F636C10838E2DAFEA76697A /* SingingBowlSetup.m in Sources */,
 				DEBEB2E2FE4C904B51B9837D /* ScaleMaker.m in Sources */,
 				6EF37449FDFB43B4A2A949E5 /* InstrumentViewController.m in Sources */,
+				8E0ECA269C8B8A6A254A32A3 /* PRSettings.m in Sources */,
+				A719C6CF1E43C7E055DBC755 /* PRCompositionFactory.m in Sources */,
+				EA39E0A3B84A1CBE6F0AB7D5 /* PRSettingsModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1328,6 +1362,9 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -1617,6 +1654,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
