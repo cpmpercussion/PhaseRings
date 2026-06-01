@@ -915,69 +915,20 @@ static void IAAConnectionChangedCallback(void *inRefCon,
     [self updateBowlViewColourScheme];
 }
 
-#pragma mark In App Settings Kit Methods
-- (IASKAppSettingsViewController*)appSettingsViewController {
-    if (!_appSettingsViewController) {
-        _appSettingsViewController = [[IASKAppSettingsViewController alloc] init];
-        _appSettingsViewController.delegate = self;
-        BOOL enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"AutoConnect"];
-        _appSettingsViewController.hiddenKeys = enabled ? nil : [NSSet setWithObjects:@"AutoConnectLogin", @"AutoConnectPassword", nil];
-    }
-    return _appSettingsViewController;
-}
-
+#pragma mark Shared SwiftUI Settings (Phase F.2 / F.5)
+// The shared PhaseRingsKit settings screen is now the app's only settings UI
+// (IASK retired in F.5). Presented as a medium/large detent sheet, bound to the
+// same PRSettingsStore the composition is built from, plus the app-only MIDI /
+// Network sections. Reloads the composition on dismiss (Done or swipe-down) to
+// apply sound / volume / setup changes.
 - (IBAction)showSettingsModal:(id)sender {
-    // Phase F.2: opt into the shared SwiftUI settings screen alongside IASK, to
-    // compare. Flip with `defaults write <bundleid> PRUseSwiftUISettings -bool YES`.
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"PRUseSwiftUISettings"]) {
-        [self showSwiftUISettings:sender];
-        return;
-    }
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        [self showSettingsPopover:sender];
-    } else {
-            UINavigationController *aNavController = [[UINavigationController alloc] initWithRootViewController:self.appSettingsViewController];
-            [self.appSettingsViewController setShowCreditsFooter:NO];
-            [self.appSettingsViewController setShowDoneButton:YES];
-            [self presentViewController:aNavController animated:YES completion:nil];
-    }
-}
-
-// Settings popover for iPad using UIPopoverPresentationController (iOS 8+).
-- (void)showSettingsPopover:(UIButton *)sender {
-    if (self.presentedViewController) {
-        [self dismissViewControllerAnimated:YES completion:nil];
-        return;
-    }
-    [self.appSettingsViewController setShowCreditsFooter:NO];
-    [self.appSettingsViewController setShowDoneButton:NO];
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.appSettingsViewController];
-    navController.modalPresentationStyle = UIModalPresentationPopover;
-    UIPopoverPresentationController *popover = navController.popoverPresentationController;
-    popover.sourceView = sender;
-    popover.sourceRect = sender.bounds;
-    popover.permittedArrowDirections = UIPopoverArrowDirectionAny;
-    popover.delegate = self;
-    [self presentViewController:navController animated:YES completion:nil];
-}
-
-- (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender {
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-#pragma mark Shared SwiftUI Settings (Phase F.2)
-// Presents the shared PhaseRingsKit settings screen as a medium/large detent
-// sheet, bound to the same PRSettingsStore the composition is built from, so
-// edits land in the exact NSUserDefaults keys IASK uses. Reloads the
-// composition on dismiss (Done or swipe-down) to apply sound / volume / setup
-// changes.
-- (void)showSwiftUISettings:(id)sender {
     if (self.presentedViewController) {
         [self dismissViewControllerAnimated:YES completion:nil];
         return;
     }
     PRSettingsHostingController *settings =
         [[PRSettingsHostingController alloc] initWithStore:self.settingsStore];
+    settings.showsAppSettings = YES;  // app shows MIDI / Network; the extension doesn't
     __weak typeof(self) weakSelf = self;
     settings.onDone = ^{ [weakSelf dismissSwiftUISettings]; };
     settings.presentationController.delegate = self;  // swipe-to-dismiss reload
@@ -991,9 +942,8 @@ static void IAAConnectionChangedCallback(void *inRefCon,
 }
 
 - (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController {
-    // Called when the popover is dismissed by tapping outside it on iPad, or
-    // when the SwiftUI settings sheet is swiped down. Reload only for the
-    // SwiftUI settings path so IASK behaviour is unchanged.
+    // Called when the settings sheet is swiped down; reload so the edited
+    // settings apply (mirrors the Done path).
     if ([presentationController.presentedViewController isKindOfClass:[PRSettingsHostingController class]]) {
         [self openComposition];
     }

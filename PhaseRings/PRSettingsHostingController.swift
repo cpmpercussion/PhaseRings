@@ -34,6 +34,11 @@ public final class PRSettingsHostingController: UIViewController {
     /// controller delegate).
     @objc public var onDone: (() -> Void)?
 
+    /// When true, the screen also shows the app-only MIDI / Network sections.
+    /// The standalone app sets this; the AUv3 extension leaves it off. Set
+    /// before presentation (read in viewDidLoad).
+    @objc public var showsAppSettings: Bool = false
+
     @objc public init(store: PRSettingsStore) {
         self.model = PRSettingsModel(store: store)
         super.init(nibName: nil, bundle: nil)
@@ -55,7 +60,8 @@ public final class PRSettingsHostingController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
 
-        let host = UIHostingController(rootView: PRSettingsView(model: model) { [weak self] in
+        let host = UIHostingController(rootView: PRSettingsView(model: model,
+                                                                 showsAppSettings: showsAppSettings) { [weak self] in
             self?.onDone?()
         })
         addChild(host)

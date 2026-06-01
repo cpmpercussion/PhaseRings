@@ -24,9 +24,18 @@ public struct PRSettingsView: View {
 
     @ObservedObject private var model: PRSettingsModel
     private let onDone: () -> Void
+    private let showsAppSettings: Bool
 
-    public init(model: PRSettingsModel, onDone: @escaping () -> Void = {}) {
+    // App-only settings: not part of the shared instrument model (the extension
+    // has no MIDI / ensemble networking), so they bind straight to the standard
+    // NSUserDefaults keys the app already uses. Shown only when showsAppSettings.
+    @AppStorage("midi_out") private var midiOut = true
+    @AppStorage("midi_in") private var midiIn = true
+    @AppStorage("remote_control_enabled") private var remoteControlEnabled = false
+
+    public init(model: PRSettingsModel, showsAppSettings: Bool = false, onDone: @escaping () -> Void = {}) {
         self.model = model
+        self.showsAppSettings = showsAppSettings
         self.onDone = onDone
     }
 
@@ -88,6 +97,16 @@ public struct PRSettingsView: View {
                     Slider(value: $model.reverbVolume, in: 0...1)
                 }
                 Toggle("Process Audio Effects", isOn: $model.processEffects)
+            }
+
+            if showsAppSettings {
+                Section(header: Text("MIDI")) {
+                    Toggle("MIDI Out Enabled", isOn: $midiOut)
+                    Toggle("MIDI In Enabled", isOn: $midiIn)
+                }
+                Section(header: Text("Network")) {
+                    Toggle("Enable Remote Control", isOn: $remoteControlEnabled)
+                }
             }
         }
     }

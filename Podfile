@@ -2,5 +2,6 @@
 platform :ios, '16.0'
 
 target 'PhaseRings' do
-  pod 'InAppSettingsKit'
+  # InAppSettingsKit retired in issue #23 F.5 — the shared SwiftUI settings
+  # screen (PhaseRingsKit) is now the app's only in-app settings UI.
 end

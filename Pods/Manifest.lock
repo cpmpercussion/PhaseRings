@@ -1,16 +1,3 @@
-PODS:
-  - InAppSettingsKit (3.9.2)
-
-DEPENDENCIES:
-  - InAppSettingsKit
-
-SPEC REPOS:
-  trunk:
-    - InAppSettingsKit
-
-SPEC CHECKSUMS:
-  InAppSettingsKit: 960d91fde94cae12a007c2272e34700a171df600
-
-PODFILE CHECKSUM: ac20ccffc3b14ceb4d573e01df31557cd571c0c1
+PODFILE CHECKSUM: 7c9666d6d8b6cc2ac6767f765171da9ab8c4c791
 
 COCOAPODS: 1.16.2

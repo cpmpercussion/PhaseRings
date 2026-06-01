@@ -1,1 +1,0 @@
-../../../InAppSettingsKit/Sources/InAppSettingsKit/include/IASKSlider.h

@@ -189,11 +189,29 @@ Per Charles's issue comment — a cleaner on-screen interface. **Implemented:**
    free of the #25 skip. Live host close/reopen check still pending (Phase H 4).
 
 ### Phase F.5 — Retrofit the standalone app (Phase F step 3)
+Split into two commits (settings first, then the riskier surface embed).
+
+**F.5a — settings unified + IASK retired ✅ (implemented)**
+- `ViewController -showSettingsModal:` now always presents the shared
+  `PRSettingsHostingController` (the `PRUseSwiftUISettings` toggle is gone). It
+  sets `showsAppSettings = YES`.
+- `PRSettingsView` gained a `showsAppSettings` flag → renders app-only **MIDI**
+  (`midi_out`/`midi_in`) and **Network** (`remote_control_enabled`) sections,
+  bound via `@AppStorage` straight to the existing NSUserDefaults keys. The
+  extension leaves the flag off. (The `AutoConnect*` keys IASK referenced were
+  dead — defined in no plist, read nowhere — so they're dropped, not ported.)
+- **IASK fully retired:** removed the `IASKAppSettingsViewController` /
+  popover / delegate code, the `IASKSettingsDelegate` conformance, and the
+  `InAppSettingsKit` pod (`pod install` → 0 pods). The `Settings.bundle` stays
+  (it backs the iOS system Settings.app pane, independent of IASK).
+
+**F.5b — embed the shared instrument surface (pending, the risky half)**
 1. Point `ViewController` at an embedded `InstrumentViewController` for the ring
    surface + on-screen controls, leaving only networking / MIDI-out / IAA /
-   ensemble chrome in the app shell.
-2. Swap the IASK popover for `PRSettingsHostingController` (+ the app-only sections).
-3. Confirm no behaviour regression: audio, settings persistence, ensemble net,
+   ensemble chrome in the app shell. Needs new callout seams on
+   `InstrumentViewController` for the app's touch→OSC broadcast + MIDI-out and
+   the remote-OSC **playback** path that animates the rings from the network.
+2. Confirm no behaviour regression: audio, settings persistence, ensemble net,
    IAA, screenshot mode (`ViewController.m:339`).
 
 ---
