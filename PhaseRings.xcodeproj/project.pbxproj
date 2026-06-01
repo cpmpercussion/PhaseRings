@@ -63,7 +63,6 @@
 		5623DB6E188CDB3800AA6C14 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5623DB6C188CDB3800AA6C14 /* InfoPlist.strings */; };
 		5623DB70188CDB3800AA6C14 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5623DB6F188CDB3800AA6C14 /* main.m */; };
 		5623DB74188CDB3800AA6C14 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5623DB73188CDB3800AA6C14 /* AppDelegate.m */; };
-		5623DB77188CDB3800AA6C14 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5623DB75188CDB3800AA6C14 /* Main.storyboard */; };
 		5623DB7A188CDB3800AA6C14 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5623DB79188CDB3800AA6C14 /* ViewController.m */; };
 		5623DB7C188CDB3800AA6C14 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5623DB7B188CDB3800AA6C14 /* Images.xcassets */; };
 		5623DB83188CDB3800AA6C14 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5623DB82188CDB3800AA6C14 /* XCTest.framework */; };
@@ -295,7 +294,6 @@
 		5623DB71188CDB3800AA6C14 /* PhaseRings-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PhaseRings-Prefix.pch"; sourceTree = "<group>"; };
 		5623DB72188CDB3800AA6C14 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		5623DB73188CDB3800AA6C14 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		5623DB76188CDB3800AA6C14 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		5623DB78188CDB3800AA6C14 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ViewController.h; path = PhaseRings/ViewController.h; sourceTree = "<group>"; };
 		5623DB79188CDB3800AA6C14 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ViewController.m; path = PhaseRings/ViewController.m; sourceTree = "<group>"; };
 		5623DB7B188CDB3800AA6C14 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
@@ -674,7 +672,6 @@
 			isa = PBXGroup;
 			children = (
 				562375D419F76CF7004F1281 /* Launch Screen.xib */,
-				5623DB75188CDB3800AA6C14 /* Main.storyboard */,
 				565A2322188F94AE00093B32 /* SingingBowlView.h */,
 				565A2323188F94AE00093B32 /* SingingBowlView.m */,
 				5674AF22195011370052121E /* MetatoneEnsembleView.h */,
@@ -1104,7 +1101,6 @@
 				568BDC151A03488B0056CF22 /* SoundScraperSynthEnvironment.pd in Resources */,
 				5623DB7C188CDB3800AA6C14 /* Images.xcassets in Resources */,
 				5623DB6E188CDB3800AA6C14 /* InfoPlist.strings in Resources */,
-				5623DB77188CDB3800AA6C14 /* Main.storyboard in Resources */,
 				5658053618C82C44003F3394 /* Settings.bundle in Resources */,
 				562375D519F76CF7004F1281 /* Launch Screen.xib in Resources */,
 			);
@@ -1327,14 +1323,6 @@
 				5623DB6D188CDB3800AA6C14 /* en */,
 			);
 			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-		5623DB75188CDB3800AA6C14 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				5623DB76188CDB3800AA6C14 /* Base */,
-			);
-			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

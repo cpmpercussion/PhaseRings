@@ -137,6 +137,7 @@ static const int kPlaybackStateMoving  = 1;
     // reload-on-dismiss is needed here.
     PRSettingsHostingController *settings =
         [[PRSettingsHostingController alloc] initWithStore:self.settingsStore];
+    settings.showsAppSettings = self.showsAppSettings;
     __weak typeof(self) weakSelf = self;
     settings.onDone = ^{ [weakSelf dismissViewControllerAnimated:YES completion:nil]; };
     [self presentViewController:settings animated:YES completion:nil];
@@ -168,11 +169,19 @@ static const int kPlaybackStateMoving  = 1;
 #pragma mark - Setups
 
 - (void)setupStepperChanged {
-    [self applySetupForState:(int)lround(self.setupStepper.value)];
+    int state = (int)lround(self.setupStepper.value);
+    [self applySetupForState:state];
+    if ([self.delegate respondsToSelector:@selector(instrument:didChangeSetupState:)]) {
+        [self.delegate instrument:self didChangeSetupState:state];
+    }
 }
 
 - (void)applySetupForState:(int)state {
-    NSArray *pitches = [self.composition setupForState:state];
+    // Screenshot mode forces a fixed 9-pitch spread so App Store captures show a
+    // consistent, busier display (5 lit by lightAlternateRingsForScreenshot).
+    NSArray *pitches = self.screenshotMode
+        ? @[@48, @50, @52, @55, @57, @60, @62, @64, @67]
+        : [self.composition setupForState:state];
     if (pitches.count == 0) return;
     self.setupState = state;
     self.bowlSetup = [[SingingBowlSetup alloc] initWithPitches:[NSMutableArray arrayWithArray:pitches]];
@@ -226,6 +235,11 @@ static const int kPlaybackStateMoving  = 1;
     self.setupStepper.value = 0;
 
     [self applySetupForState:0];
+}
+
+- (void)applyCurrentSettings {
+    if (!self.isViewLoaded) return;
+    [self settingsDidChange:[self.settingsStore currentSettings]];
 }
 
 // Apply only what changed between the last-applied settings and the new ones,

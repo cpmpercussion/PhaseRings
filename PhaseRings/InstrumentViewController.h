@@ -28,6 +28,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)instrument:(InstrumentViewController *)vc touchBeganAtPoint:(CGPoint)point pitch:(int)pitch velocity:(int)velocity;
 - (void)instrument:(InstrumentViewController *)vc touchMovedToPoint:(CGPoint)point velocity:(CGFloat)pixelVelocity;
 - (void)instrumentTouchEnded:(InstrumentViewController *)vc;
+/// The user changed the setup with the on-screen stepper (not fired for
+/// host-driven `showSetupState:`), so a host can broadcast it to peers.
+- (void)instrument:(InstrumentViewController *)vc didChangeSetupState:(int)state;
 @end
 
 @interface InstrumentViewController : UIViewController
@@ -53,6 +56,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// Observes local input for app-only mirroring (OSC). MIDI-out does not go
 /// through here — see `midiOutSink`.
 @property (nonatomic, weak, nullable) id<InstrumentViewControllerDelegate> delegate;
+
+/// When YES, the gear presents the settings screen with the app-only MIDI /
+/// Network sections (the standalone app sets this). The AUv3 leaves it NO.
+@property (nonatomic) BOOL showsAppSettings;
 
 /// Transport for MIDI-out. The controller maps gestures to MIDI (note-on at
 /// tap, note-off, aftertouch from swirl velocity; channel 1) and hands the raw
@@ -93,6 +100,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Rebuild the ring layout from a default generative composition.
 - (void)reloadComposition;
+
+/// Re-read the settings store and apply any changes non-disruptively (rebuild
+/// only if the composition changed; otherwise just re-apply labels/sound). A
+/// host calls this when settings may have changed outside the in-app sheet
+/// (e.g. the iOS Settings.app pane) so the store's `onChange` did not fire.
+- (void)applyCurrentSettings;
 
 @end
 
