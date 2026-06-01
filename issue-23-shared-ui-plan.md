@@ -13,10 +13,12 @@ shared screen + IASK retired). **Deployment floor raised 14 → 16** during F.2
 so the shared settings sheet can use `presentationDetents` (via
 `UISheetPresentationController`).
 
-**Remaining: F.5b** — embed the shared instrument *surface* in the standalone
-app. This is a large `ViewController` + storyboard refactor whose ensemble/OSC/
-MIDI regression risk isn't covered by automated tests; **recommended to track as
-its own issue + PR.** Full spec under Phase F.5b below.
+**Remaining: F.5b** (issue **#27**) — embed the shared instrument *surface* in
+the standalone app, make the AUv3 design the default, kill `Main.storyboard`,
+deprecate the HCI-experiment chrome, and make **MIDI-out a shared app+AUv3
+feature**. IAA is removed first (#26). This is a large `ViewController` refactor
+whose ensemble/OSC regression risk isn't covered by automated tests, so it's its
+own issue + PR. Full spec under Phase F.5b below.
 
 ---
 
@@ -69,7 +71,8 @@ PhaseRingsKit (mixed ObjC/Swift framework, shared by both targets)
 
 App target                         Extension target
  ├─ ViewController  ──hosts──▶ InstrumentViewController
- │   + networking / MIDI / IAA / ensemble chrome only
+ │   + networking/OSC + ensemble chrome only (no storyboard; MIDI-out is
+ │     shared in the Kit; IAA removed in #26)
  └─ PRUserDefaultsStore (NSUserDefaults-backed PRSettingsStore)
 
  PhaseRingsAUViewController ──hosts──▶ InstrumentViewController
@@ -205,6 +208,8 @@ Split into two commits (settings first, then the riskier surface embed).
   bound via `@AppStorage` straight to the existing NSUserDefaults keys. The
   extension leaves the flag off. (The `AutoConnect*` keys IASK referenced were
   dead — defined in no plist, read nowhere — so they're dropped, not ported.)
+  **Note:** F.5b removes the **MIDI-out** toggle from this section — MIDI-out
+  becomes always-on and shared (B3a); only `midi_in` + Network remain app-only.
 - **IASK fully retired:** removed the `IASKAppSettingsViewController` /
   popover / delegate code, the `IASKSettingsDelegate` conformance, and the
   `InAppSettingsKit` pod (`pod install` → 0 pods). The `Settings.bundle` stays
@@ -212,30 +217,50 @@ Split into two commits (settings first, then the riskier surface embed).
 
 **F.5b — embed the shared instrument surface in the app (pending, the risky half)**
 
-> **Recommendation: split F.5b into its own issue + PR.** F.0–F.5a achieve the
-> headline of #23 (one shared settings UI, shared surface in the plugin) and are
-> independently shippable. F.5b is a large refactor of the app's 992-line
-> `ViewController` + the `Main` storyboard, and its main risk — regressing the
-> OSC/ensemble/MIDI performance paths — **cannot be caught by the current
-> automated tests** (no multi-device harness). It deserves its own PR with a
-> device/ensemble test pass, rather than riding on the settings work. The plan
-> below is the spec for that issue.
+> **Tracked as its own issue + PR (#27).** F.0–F.5a achieve the headline of #23
+> (one shared settings UI, shared surface in the plugin) and are independently
+> shippable. F.5b is a large refactor of the app's 992-line `ViewController` —
+> its main risk, regressing the OSC/ensemble performance paths, **cannot be
+> caught by the current automated tests** (no multi-device harness), so it needs
+> its own device/ensemble test pass. The plan below is the spec for that issue.
+
+> **Scope decisions (Charles, 2026-06-01) — the AUv3 surface becomes the
+> default; lean into it rather than preserving every storyboard behaviour:**
+> - **Kill `Main.storyboard`.** Build the container + window/root VC
+>   programmatically. Storyboards no longer earn their keep.
+> - **Deprecate the HCI-experiment chrome entirely** — remove
+>   `experimentNewSetupButton`, performance-type chrome, `randomiseSound`,
+>   `buttonFadingMode`, and the fades. Not coming back. This deletes a large
+>   slice of the untested `ViewController` surface and removes the need for the
+>   `controlsHidden`/`stepperHidden` seams the earlier draft proposed.
+> - **IAA is removed, not preserved** (issue #26). Land **#26 first** — it also
+>   refactors `ViewController` (the raw `AudioOutputUnitPublish` route), so do it
+>   before this embed rather than re-wiring IAA only to delete it.
+> - **MIDI-out becomes a shared app + AUv3 feature** (folded into #27). The
+>   gesture→MIDI mapping moves into the Kit; each host supplies a transport.
+>   **No settings switch** — always on (drop the `midi_out` gate + the F.5a
+>   settings toggle). See B3a.
+>
+> Net app shell after F.5b: networking/OSC + ensemble overlay wrapped around the
+> shared `InstrumentViewController`, with MIDI-out living in the Kit and no
+> storyboard. Ensemble (`ensembleView`/`oscStatusLabel`) + OSC-driven setup
+> changes stay app-only, exactly as before.
 
 #### B1. What `ViewController` does today that must survive the embed
 The app surface is not just "rings + stepper"; it is the hub for several
 app-only behaviours that all reach into the same `bowlView` / geometry:
 
-| Behaviour | Code today | Notes |
+| Behaviour | Code today | Disposition under F.5b |
 |---|---|---|
-| Local tap → note | `touchesBegan:` (`VC.m:394`) | audio + (gated) OSC touch msg + MIDI note on/off |
-| Local moved/ended | `touchesMoved/Ended:` (`:414/:423`) | OSC touch stream + MIDI note off |
-| Local swirl | `panGestureRecognized:` (`:435`) | audio sing + bowl animation + MIDI note/aftertouch |
-| **Remote playback** | `processPlaybackTouchWithX:Y:Vel:` → `playbackTappedNote:` / `playbackMovingNote:Vel:` (`:494–558`) | network-driven; animates rings + plays audio with a 1s auto-stop timer |
-| Remote setup change | network delegate → `compositionStepper`/`applyNewSetup:`/`updateSetupDescription:` (`:687`, `:707`) | ensemble "composition step" / "new idea" |
-| Performance-type chrome | hides/shows `compositionStepper`, `setupDescription`, `experimentNewSetupButton`; `randomiseSound`; fade in/out (`:773`+, `:903`+) | experiment-mode UI states |
-| Screenshot mode | `viewDidLayoutSubviews` → `lightAlternateRingsForScreenshot` + mute master (`:379`) | gated on `screenshotMode` default |
-| Geometry | `noteFromPosition:` / `calculateDistanceFromCenter:` (`:627/:633`) | used by touch + playback + MIDI |
-| Ensemble chrome | `ensembleView` `drawEnsemble:` (`:669`), `oscStatusLabel` | stays app-only, overlaid |
+| Local tap → note | `touchesBegan:` (`VC.m:394`) | **Keep.** Audio (Kit) + MIDI note on/off (now Kit, always-on) + gated OSC touch msg (app, via delegate) |
+| Local moved/ended | `touchesMoved/Ended:` (`:414/:423`) | **Keep.** OSC touch stream (app) + MIDI note off (Kit) |
+| Local swirl | `panGestureRecognized:` (`:435`) | **Keep.** audio sing + bowl animation (Kit) + MIDI note/aftertouch (Kit) + OSC (app) |
+| **Remote playback** | `processPlaybackTouchWithX:Y:Vel:` → `playbackTappedNote:` / `playbackMovingNote:Vel:` (`:494–558`) | **Keep, move into Kit.** network-driven; animates rings + plays audio with a 1s auto-stop timer |
+| Remote setup change | network delegate → `compositionStepper`/`applyNewSetup:`/`updateSetupDescription:` (`:687`, `:707`) | **Keep.** ensemble "composition step" / "new idea" → `showSetupState:` |
+| Performance-type chrome | hides/shows `compositionStepper`, `setupDescription`, `experimentNewSetupButton`; `randomiseSound`; fade in/out (`:773`+, `:903`+) | **DELETE** (HCI-experiment chrome deprecated) |
+| Screenshot mode | `viewDidLayoutSubviews` → `lightAlternateRingsForScreenshot` + mute master (`:379`) | **Keep, move into Kit** (`screenshotMode`) |
+| Geometry | `noteFromPosition:` / `calculateDistanceFromCenter:` (`:627/:633`) | **Keep in Kit** — used by touch + playback + MIDI |
+| Ensemble chrome | `ensembleView` `drawEnsemble:` (`:669`), `oscStatusLabel` | **Keep, app-only**, overlaid |
 
 #### B2. The audio-sink mismatch (decide first)
 `InstrumentViewController` sends events to a `HeavyCore` via
@@ -252,8 +277,8 @@ no `core` accessor (`HeavyAudioEngine.h`). Options:
   `coreProvider` returning `HeavyCore *`. Bypasses the engine's own send path.
 
 #### B3. New seams on `InstrumentViewController` (Kit)
-Add a delegate (preferred over scattered blocks) so the app can observe and
-drive the shared surface:
+A delegate (preferred over scattered blocks) carries **OSC/ensemble** concerns
+only — MIDI is no longer app-only, so it leaves this protocol (see B3a):
 ```
 @protocol InstrumentViewControllerDelegate <NSObject>
 @optional
@@ -264,53 +289,85 @@ drive the shared surface:
 - (void)instrumentTouchesEnded:(InstrumentViewController *)vc;
 @end
 ```
-Plus public API the app's network/perf code calls:
+Plus public API the app's network code calls:
 - `- (void)playbackTapAtPoint:(CGPoint)p` / `- (void)playbackSwirlAtPoint:(CGPoint)p velocity:(CGFloat)v` / `- (void)stopPlayback` — the remote-OSC playback path (incl. the auto-stop timer) moves into the Kit.
 - `- (void)showSetupState:(int)state` + `@property(readonly) NSInteger numberOfSetups` + `currentSetupState` — for remote setup changes (drives the existing stepper + label).
-- `@property BOOL controlsHidden` (or finer: `stepperHidden`, `setupLabelHidden`) — for performance-type chrome.
 - `@property BOOL screenshotMode` — moves `lightAlternateRingsForScreenshot` + the layout hook into the Kit.
 - Expose geometry if still needed: `- (int)pitchAtPoint:(CGPoint)p`.
 
-#### B4. View hierarchy / storyboard
-- `bowlView` is a storyboard `IBOutlet` with a pan recognizer; `ensembleView`,
-  `oscStatusLabel`, `settingsButton`, `experimentNewSetupButton` are sibling
-  chrome; `compositionStepper` + `setupDescription` **move into** the embedded
-  controller.
-- Replace `bowlView` with a full-bleed **container view** that hosts
-  `InstrumentViewController` as a child VC (`addChildViewController:` +
-  constraints), with the ensemble/OSC/experiment chrome kept as overlays on top.
-  Either restructure `Main.storyboard` or drop the storyboard surface and build
-  the container programmatically in `viewDidLoad` (lower-risk than hand-editing
-  storyboard XML; revisit).
-- Remove the now-duplicated `bowlView`/`compositionStepper`/`setupDescription`
-  outlets, touch/pan/playback/geometry methods, and `openComposition`'s ring
-  building from `ViewController`; route through the embedded controller + its
-  `settingsStore` (already an `id<PRSettingsStore>` on the app side).
+(No `controlsHidden`/`stepperHidden` seam — performance-type chrome is deleted.)
+
+#### B3a. Shared MIDI-out (folded into #27)
+MIDI-out moves from app-only inline code (`VC.m:401–486`, hand-built note/
+aftertouch bytes gated on the `midi_out` default, sent via
+`MetatoneMidiManager`'s PGMidi) into the Kit, so the AUv3 plugin emits MIDI too.
+The gesture→MIDI mapping (note-on at tap, note-off at end, aftertouch from swirl
+velocity, channel 1) lives in `InstrumentViewController`; each host provides a
+**transport sink**:
+```
+// Kit calls this whenever the instrument produces a MIDI event.
+@property (nonatomic, copy, nullable) void (^midiOutSink)(const uint8_t *bytes, NSUInteger length);
+```
+- **App** → `MetatoneMidiManager`'s `midi sendBytes:` (CoreMIDI), as today.
+- **AUv3** → advertise `MIDIOutputNames` and emit via the host-supplied
+  `MIDIOutputEventBlock`. Gestures fire on the **main thread** but
+  `MIDIOutputEventBlock` is pulled from the **render thread**, so the AU needs a
+  lock-free main→render handoff (small ring buffer drained in
+  `internalRenderBlock`). This is the only non-trivial new bit; the app side is
+  a straight lift.
+- **No settings switch:** drop the `midi_out` user-default gate and the MIDI-out
+  toggle F.5a added to `PRSettingsView`; MIDI-out is always on. (`midi_in` —
+  MIDI *input* feeding the synth — is unaffected and stays as-is.)
+
+#### B4. View hierarchy — kill the storyboard
+- Today `bowlView` is a storyboard `IBOutlet` with a pan recognizer;
+  `ensembleView`, `oscStatusLabel`, `settingsButton` are sibling chrome
+  (`experimentNewSetupButton` is deleted with the HCI chrome); `compositionStepper`
+  + `setupDescription` **move into** the embedded controller.
+- **Delete `Main.storyboard`.** Build the window/root VC programmatically (drop
+  `UIMainStoryboardFile` from Info.plist; add a minimal `SceneDelegate`/window
+  setup). `ViewController` builds a full-bleed **container view** in `viewDidLoad`
+  that hosts `InstrumentViewController` as a child VC (`addChildViewController:` +
+  constraints), with the ensemble/OSC chrome as overlays on top.
+- Remove the now-dead `bowlView`/`compositionStepper`/`setupDescription` outlets,
+  touch/pan/playback/geometry methods, the inline MIDI byte-building, and
+  `openComposition`'s ring building from `ViewController`; route through the
+  embedded controller + its `settingsStore` (already an `id<PRSettingsStore>` on
+  the app side) + the new MIDI-out sink (B3a).
 
 #### B5. Step order (each step builds + keeps the app shippable)
+0. **Land #26 first** (remove IAA) — it refactors the same `ViewController`.
 1. `HeavyEventSink` protocol + conformances (B2); retype `coreProvider`. Build app + appex.
-2. Add the delegate + public seams to `InstrumentViewController` (B3); move the
-   playback path + screenshot mode into the Kit. Unit-test playback/setup-state
-   logic where possible.
-3. Embed the child VC behind the existing surface in the app; wire delegate →
-   OSC/MIDI, network callbacks → `showSetupState:`, perf-types → `controlsHidden`,
+2. Add the OSC delegate + public seams to `InstrumentViewController` (B3); move the
+   playback path + screenshot mode into the Kit. Add the shared MIDI-out (B3a):
+   gesture→MIDI in the Kit + `midiOutSink`; AU `MIDIOutputNames` +
+   render-thread emit. Unit-test playback/setup-state + MIDI-mapping logic where possible.
+3. Delete the HCI-experiment chrome from `ViewController` (B1).
+4. Embed the child VC; build the container programmatically; wire delegate →
+   OSC, `midiOutSink` → CoreMIDI, network callbacks → `showSetupState:`,
    screenshot default → `screenshotMode`. Delete the dead `ViewController` code.
-4. Storyboard/outlet cleanup.
+5. Delete `Main.storyboard` + outlet cleanup; programmatic window setup.
 
 #### B6. Verification (NOT covered by current tests)
 1. Existing 47 unit + 5 UI/screenshot tests stay green (screenshot test pins the
-   surface — watch for layout drift from the embed).
+   surface — watch for layout drift from the embed; update if the deliberate
+   redesign changes it).
 2. **Device pass (manual, required before merge):** local tap/swirl audio + ring
-   animation; MIDI out (with `midi_out`); IAA host (AUM) still routes; screenshot
-   mode lights alternate rings + mutes.
+   animation; MIDI out from the **app** (always-on, no toggle); MIDI out from the
+   **AUv3 plugin** into a host (e.g. AUM MIDI routing); screenshot mode lights
+   alternate rings + mutes. (IAA no longer applies — removed in #26.)
 3. **Ensemble pass (manual, multi-device or loopback OSC):** touch broadcast,
    remote playback animates + sounds, remote composition-step / new-idea change
-   the setup, performance-type chrome toggles. This is the path with no automated
-   coverage and the main reason to PR it separately.
+   the setup. This is the path with no automated coverage and the main reason to
+   PR it separately.
 
 #### B7. Risks specific to F.5b
-- Silent ensemble/MIDI regressions (no automated coverage) — the dominant risk.
-- Storyboard surgery; child-VC layout vs. the screenshot test's expectations.
+- Silent ensemble regressions (no automated coverage) — the dominant risk.
+- AUv3 MIDI-out: main→render thread handoff must be lock-free / RT-safe; getting
+  the `MIDIOutputEventBlock` timing or `MIDIOutputNames` advertisement wrong = no
+  MIDI in the host. New surface, no prior coverage.
+- Programmatic window/root-VC setup replacing the storyboard — verify launch,
+  scene lifecycle, and child-VC layout vs. the screenshot test's expectations.
 - Touching shared `HeavyCore` for the sink protocol — re-verify the appex.
 - The remote-playback auto-stop timer + `currentlyPanningPitch` state moving into
   the Kit without changing behaviour.
