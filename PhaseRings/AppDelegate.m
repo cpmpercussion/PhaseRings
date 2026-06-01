@@ -29,7 +29,6 @@
                                @"scale_2":@8,
                                @"scale_3":@9,
                                @"midi_in":@YES,
-                               @"midi_out":@YES,
                                @"process_effects":@YES,
                                @"reverb_volume":@0.5,
                                @"master_volume":@1.0};

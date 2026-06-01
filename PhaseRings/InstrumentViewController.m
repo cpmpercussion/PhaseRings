@@ -219,8 +219,13 @@ static const int kPlaybackStateMoving  = 1;
     if (self.bowlSetup && size.width > 0 && size.height > 0 &&
         !CGSizeEqualToSize(size, self.lastDrawnSize)) {
         // drawSetup: reads note_labels from NSUserDefaults; drive it from our
-        // setting (the extension has its own defaults domain).
-        [[NSUserDefaults standardUserDefaults] setBool:self.showNoteLabels forKey:@"note_labels"];
+        // setting (the extension has its own defaults domain). Only write when it
+        // actually differs, so the app's NSUserDefaults observer isn't churned on
+        // every relayout.
+        NSUserDefaults *d = [NSUserDefaults standardUserDefaults];
+        if ([d boolForKey:@"note_labels"] != self.showNoteLabels) {
+            [d setBool:self.showNoteLabels forKey:@"note_labels"];
+        }
         [self.bowlView setSelectedColourScheme];
         [self.bowlView drawSetup:self.bowlSetup];
         self.lastDrawnSize = size;

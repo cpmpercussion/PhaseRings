@@ -301,7 +301,12 @@
 - (void)didReceiveEnsembleState:(NSString *)state withSpread:(NSNumber *)spread withRatio:(NSNumber *)ratio {
     if (!self.listenToMetatoneClassifierMessages) return;
     if ([state isEqualToString:@"divergence"] && [spread floatValue] < 10.0 && [spread floatValue] > -10.0) {
-        self.currentDistortion = [spread floatValue];
+        // `distortlevel` is a 0..1 control; clamp (the old hidden UISlider used
+        // to do this implicitly via its min/max).
+        float d = [spread floatValue];
+        if (d < 0) d = 0;
+        if (d > 1) d = 1;
+        self.currentDistortion = d;
         [self setDistortion:self.currentDistortion];
     } else {
         float newDistort = self.currentDistortion * 0.5;

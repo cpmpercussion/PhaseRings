@@ -14,16 +14,6 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>MIDI Out Enabled</string>
-			<key>Key</key>
-			<string>midi_out</string>
-			<key>DefaultValue</key>
-			<true/>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
 			<string>MIDI In Enabled</string>
 			<key>Key</key>
 			<string>midi_in</string>
