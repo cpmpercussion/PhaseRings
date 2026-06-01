@@ -46,6 +46,7 @@
 #import "GenerativeSetupComposition.h"
 #import "HeavyAudioEngine.h"
 #import <PhaseRingsKit/PhaseRingsKit.h>   // PRSettings / PRSettingsStore / PRCompositionFactory
+#import <PhaseRingsKit/PhaseRingsKit-Swift.h>  // PRSettingsHostingController (Phase F.2)
 #import "PRUserDefaultsStore.h"
 
 #define CLOUD_SERVER_TESTING_MODE YES
@@ -926,6 +927,12 @@ static void IAAConnectionChangedCallback(void *inRefCon,
 }
 
 - (IBAction)showSettingsModal:(id)sender {
+    // Phase F.2: opt into the shared SwiftUI settings screen alongside IASK, to
+    // compare. Flip with `defaults write <bundleid> PRUseSwiftUISettings -bool YES`.
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"PRUseSwiftUISettings"]) {
+        [self showSwiftUISettings:sender];
+        return;
+    }
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [self showSettingsPopover:sender];
     } else {
@@ -958,8 +965,38 @@ static void IAAConnectionChangedCallback(void *inRefCon,
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+#pragma mark Shared SwiftUI Settings (Phase F.2)
+// Presents the shared PhaseRingsKit settings screen as a medium/large detent
+// sheet, bound to the same PRSettingsStore the composition is built from, so
+// edits land in the exact NSUserDefaults keys IASK uses. Reloads the
+// composition on dismiss (Done or swipe-down) to apply sound / volume / setup
+// changes.
+- (void)showSwiftUISettings:(id)sender {
+    if (self.presentedViewController) {
+        [self dismissViewControllerAnimated:YES completion:nil];
+        return;
+    }
+    PRSettingsHostingController *settings =
+        [[PRSettingsHostingController alloc] initWithStore:self.settingsStore];
+    __weak typeof(self) weakSelf = self;
+    settings.onDone = ^{ [weakSelf dismissSwiftUISettings]; };
+    settings.presentationController.delegate = self;  // swipe-to-dismiss reload
+    [self presentViewController:settings animated:YES completion:nil];
+}
+
+- (void)dismissSwiftUISettings {
+    [self dismissViewControllerAnimated:YES completion:^{
+        [self openComposition];
+    }];
+}
+
 - (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController {
-    // Called when the popover is dismissed by tapping outside it on iPad.
+    // Called when the popover is dismissed by tapping outside it on iPad, or
+    // when the SwiftUI settings sheet is swiped down. Reload only for the
+    // SwiftUI settings path so IASK behaviour is unchanged.
+    if ([presentationController.presentedViewController isKindOfClass:[PRSettingsHostingController class]]) {
+        [self openComposition];
+    }
 }
 
 @end

@@ -5,7 +5,11 @@
 stripped-down `InstrumentViewController` (plugin). Finishes the deferred
 **Phase F step 3** of `auv3-plan.md`.
 
-This is a plan only — no code changes yet.
+**Status:** F.0–F.2 implemented (mixed ObjC/Swift Kit; settings model/store/
+composition factory; shared SwiftUI settings screen). **Deployment floor raised
+14 → 16** during F.2 so the shared settings sheet can use `presentationDetents`
+(via `UISheetPresentationController`) and F.3 can use `ViewThatFits` for the AU
+host pane. F.3–F.5 remain.
 
 ---
 
@@ -119,16 +123,24 @@ one settings screen + a thin `ObservableObject` bridge.
    `PRSettingsModel`.
    - **App-only sections** (MIDI, Network/remote, AutoConnect creds) are gated by
      a flag / injected section list so the extension simply omits them.
-2. `PRSettingsHostingController` — `@objc` `UIHostingController<PRSettingsView>`
-   subclass so ObjC hosts (`ViewController`, `InstrumentViewController`) can
-   present it. Reads/writes flow through `PRSettingsModel` → `PRSettingsStore`;
-   changes apply live.
+2. `PRSettingsHostingController` — `@objc` `UIViewController` that **embeds** a
+   `UIHostingController<PRSettingsView>` as a child (rather than subclassing the
+   generic hosting controller, which can't be represented in ObjC). ObjC hosts
+   (`ViewController`, `InstrumentViewController`) present it. Reads/writes flow
+   through `PRSettingsModel` → `PRSettingsStore`; changes apply live, and the
+   host reloads the composition on dismiss (Done or swipe-down).
+   - Presents itself as a **medium/large detent sheet** via
+     `UISheetPresentationController` (the primitive behind SwiftUI's
+     `presentationDetents`); set on the presented controller because the SwiftUI
+     surface is an embedded child. Both hosts get the half-sheet for free.
 3. **Retire IASK** for the instrument settings. (Decide separately whether to
    drop the `InAppSettingsKit` pod entirely or keep it only for any leftover
-   app-only screens — see Open questions.)
-4. **iOS 14 floor:** `Form`/`Picker`/`Slider`/`Toggle` are all available on 14;
-   avoid 15+-only modifiers (`.searchable`, newer `Picker` styles). Verify
-   layout in a small AU host pane, not just full-screen.
+   app-only screens — see Open questions.) **Status:** in the app, the SwiftUI
+   screen is wired *alongside* IASK behind the `PRUseSwiftUISettings` default for
+   side-by-side comparison; IASK removal lands in F.5.
+4. **iOS 16 floor:** `Form`/`Picker`/`Slider`/`Toggle` + `NavigationStack` +
+   detents are all available; verify layout in a small AU host pane, not just
+   full-screen (F.3 can lean on `ViewThatFits`).
 
 ### Phase F.3 — Expand `InstrumentViewController`'s on-screen UI (PhaseRingsKit)
 Per Charles's issue comment — a cleaner on-screen interface:
@@ -178,7 +190,10 @@ Per Charles's issue comment — a cleaner on-screen interface:
   toolchain change — confirm the AUv3 appex still embeds/signs cleanly and that
   the ObjC hosts can import `PhaseRingsKit-Swift.h`. De-risk this in Phase F.0
   *before* building the settings UI on top.
-- **SwiftUI on iOS 14:** stay within the 14.0 API surface for the settings form.
+- **Deployment floor 14 → 16 (decided in F.2):** raised so the settings sheet
+  can use detents and F.3 can use `ViewThatFits`. Trades off older-device users;
+  acceptable for v3.0. Bumped in `Podfile` + all `IPHONEOS_DEPLOYMENT_TARGET`
+  entries; `pod install` re-run.
 
 ## 5. Open questions (resolve before/while implementing)
 1. **Remove the `InAppSettingsKit` pod entirely**, or keep it for any residual
