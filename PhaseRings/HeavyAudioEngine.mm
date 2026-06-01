@@ -42,7 +42,6 @@
 
 #pragma mark - Pass-through properties
 
-- (AudioUnit)audioUnit { return _audioUnit; }
 - (double)sampleRate { return _core.sampleRate; }
 - (HeavySynth)activeSynth { return _core.activeSynth; }
 

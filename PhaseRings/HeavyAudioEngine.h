@@ -19,7 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithSampleRate:(double)sampleRate channels:(int)channels;
 
-@property (nonatomic, readonly) AudioUnit audioUnit;
 @property (nonatomic, readonly) double sampleRate;
 @property (nonatomic, readonly) HeavySynth activeSynth;
 @property (nonatomic, getter=isActive) BOOL active;

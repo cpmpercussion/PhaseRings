@@ -193,9 +193,8 @@ After the Heavy integration is verified working:
   different audio engine semantics that need verification)
 - Audiobus already dropped (per `MEMORY.md`), so no Audiobus regression
   test needed
-- IAA: confirm still works under Heavy. The current `AudioOutputUnitPublish`
-  setup is libpd-agnostic (Core Audio level), so it should be unaffected
-  but verify
+- IAA: ~~confirm still works under Heavy~~ — **removed entirely (issue #26)**;
+  the AUv3 plugin replaces it as the inter-app audio route. No longer relevant.
 
 ### 6. Polyphony sanity-check
 

@@ -2,21 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>AudioComponents</key>
-	<array>
-		<dict>
-			<key>manufacturer</key>
-			<string>cmpc</string>
-			<key>name</key>
-			<string>PhaseRings</string>
-			<key>subtype</key>
-			<string>synt</string>
-			<key>type</key>
-			<string>aurg</string>
-			<key>version</key>
-			<integer>2</integer>
-		</dict>
-	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -49,8 +34,6 @@
 	</array>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>PhaseRings discovers other PhaseRings players and a gesture classifier on your local network for ensemble performance.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>PhaseRings uses the microphone for audio input when used with inter-app audio.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>

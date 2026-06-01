@@ -29,14 +29,12 @@
 #define NUMBER_COMPOSITIONS_AVAILABLE 5
 #define BACKGROUND_SOUND_ALWAYS_ON YES
 // Modern iPads run hardware at 48 kHz; asking for 44.1 forced libpd to log
-// "could not set session sample rate" and left the published IAA AU
-// advertising 44.1 while the host expected 48. Match the hardware.
+// "could not set session sample rate". Match the hardware.
 #define SAMPLE_RATE 48000
 #define SOUND_OUTPUT_CHANNELS 2
 //#define TICKS_PER_BUFFER 4
 
 #import "ViewController.h"
-#import <AudioToolbox/AudioToolbox.h>
 #import <AVFoundation/AVFoundation.h>
 #import "ScaleMaker.h"
 #import "SingingBowlSetup.h"
@@ -90,12 +88,6 @@
 @property (strong, nonatomic) id<PRSettingsStore> settingsStore;
 @end
 
-static void IAAConnectionChangedCallback(void *inRefCon,
-                                         AudioUnit inUnit,
-                                         AudioUnitPropertyID inID,
-                                         AudioUnitScope inScope,
-                                         AudioUnitElement inElement);
-
 @implementation ViewController
 #pragma mark - Setup
 - (id<PRSettingsStore>)settingsStore
@@ -122,12 +114,8 @@ static void IAAConnectionChangedCallback(void *inRefCon,
     [self.experimentNewSetupButton setHidden:YES];
     [self.compositionStepper setHidden:NO];
     [self updateUITextLabels];
-    // Order matters for IAA: session must be configured with MixWithOthers
-    // before the audio unit is created, and the unit must be live before
-    // publication so hosts can connect to a real render callback.
     [self setupAudioSession];
     [self startAudioEngine];
-    [self publishAsNode];
 
     self.midiManager = [[MetatoneMidiManager alloc] init];
     __weak typeof(self) weakSelf = self;
@@ -165,98 +153,6 @@ static void IAAConnectionChangedCallback(void *inRefCon,
                                              selector:@selector(handleAudioSessionInterruption:)
                                                  name:AVAudioSessionInterruptionNotification
                                                object:[AVAudioSession sharedInstance]];
-}
-
-- (void) publishAsNode {
-    // Register as an IAA Remote Generator so hosts like AUM can route our audio.
-    AudioComponentDescription iaaDesc = {
-        .componentType         = kAudioUnitType_RemoteGenerator,
-        .componentSubType      = 'synt',
-        .componentManufacturer = 'cmpc'
-    };
-    AudioUnit unit = self.audioEngine.audioUnit;
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    OSStatus err = AudioOutputUnitPublish(&iaaDesc, CFSTR("PhaseRings"), 2, unit);
-#pragma clang diagnostic pop
-    if (err != noErr) {
-        NSLog(@"IAA: AudioOutputUnitPublish failed (%d)", (int)err);
-        return;
-    }
-    NSLog(@"IAA: Published as Remote Generator.");
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    OSStatus listenErr = AudioUnitAddPropertyListener(unit,
-                                                      kAudioUnitProperty_IsInterAppConnected,
-                                                      IAAConnectionChangedCallback,
-                                                      (__bridge void *)self);
-#pragma clang diagnostic pop
-    if (listenErr != noErr) {
-        NSLog(@"IAA: failed to install IsInterAppConnected listener (%d)", (int)listenErr);
-    }
-}
-
-- (void) handleIAAConnectionChange {
-    AudioUnit unit = self.audioEngine.audioUnit;
-    UInt32 connected = 0;
-    UInt32 size = sizeof(connected);
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    OSStatus err = AudioUnitGetProperty(unit,
-                                        kAudioUnitProperty_IsInterAppConnected,
-                                        kAudioUnitScope_Global,
-                                        0,
-                                        &connected,
-                                        &size);
-#pragma clang diagnostic pop
-    if (err != noErr) {
-        NSLog(@"IAA: failed to read IsInterAppConnected (%d)", (int)err);
-        return;
-    }
-    NSLog(@"IAA: connection state changed -> %@", connected ? @"CONNECTED" : @"DISCONNECTED");
-    if (connected) {
-        // Even if the unit is running, the IAA host bridge often needs us to
-        // cycle Start/Stop on connect before it begins pulling. Apple's
-        // InterAppAudioSampler and briomusic's interAppPDAudio both do this.
-        NSLog(@"IAA: cycling audio engine to bind to host bridge.");
-        [self.audioEngine setActive:NO];
-        [self.audioEngine setActive:YES];
-
-        // Query the host callbacks struct. Some hosts use this exchange as a
-        // "generator is ready" signal before they begin pulling.
-        HostCallbackInfo hostInfo;
-        UInt32 hostInfoSize = sizeof(hostInfo);
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        OSStatus hcErr = AudioUnitGetProperty(unit,
-                                              kAudioUnitProperty_HostCallbacks,
-                                              kAudioUnitScope_Global,
-                                              0,
-                                              &hostInfo,
-                                              &hostInfoSize);
-#pragma clang diagnostic pop
-        if (hcErr == noErr) {
-            NSLog(@"IAA: host callbacks acquired (beat=%p musical=%p transport=%p transport2=%p)",
-                  hostInfo.beatAndTempoProc,
-                  hostInfo.musicalTimeLocationProc,
-                  hostInfo.transportStateProc,
-                  hostInfo.transportStateProc2);
-        } else {
-            NSLog(@"IAA: host callbacks unavailable (%d)", (int)hcErr);
-        }
-    }
-}
-
-static void IAAConnectionChangedCallback(void *inRefCon,
-                                         AudioUnit inUnit,
-                                         AudioUnitPropertyID inID,
-                                         AudioUnitScope inScope,
-                                         AudioUnitElement inElement) {
-    ViewController *vc = (__bridge ViewController *)inRefCon;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [vc handleIAAConnectionChange];
-    });
 }
 
 - (void) startAudioEngine {
