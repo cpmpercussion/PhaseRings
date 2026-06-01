@@ -22,7 +22,7 @@ Three compositions of pitches are included in the app, but you can also create y
 - 3 built-in setups
 - Custom generative composition
 - 11 scales and modes
-- IAA support to stream audio to compatible apps
+- AUv3 instrument plugin to play PhaseRings inside compatible hosts
 - Core MIDI support for iOS MIDI Accessories
 
 ## performance

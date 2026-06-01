@@ -1044,9 +1044,6 @@
 							com.apple.BackgroundModes = {
 								enabled = 1;
 							};
-							com.apple.InterAppAudio = {
-								enabled = 1;
-							};
 						};
 					};
 					5623DB80188CDB3800AA6C14 = {
