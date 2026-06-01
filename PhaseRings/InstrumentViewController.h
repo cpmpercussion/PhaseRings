@@ -23,10 +23,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// unset, a session-only in-memory store is created on first access.
 @property (nonatomic, strong, null_resettable) id<PRSettingsStore> settingsStore;
 
-/// Supplies the live core to send events to, or nil when audio isn't running.
-/// Pulled on demand so it tolerates the AU allocating its core lazily. The
-/// host (AU view controller / standalone app) sets this.
-@property (nonatomic, copy, nullable) HeavyCore * _Nullable (^coreProvider)(void);
+/// Supplies the live event sink to send events to, or nil when audio isn't
+/// running. Pulled on demand so it tolerates the AU allocating its core
+/// lazily. The host sets this: the AUv3 returns its `HeavyCore`, the
+/// standalone app its `HeavyAudioEngine` — both conform to `HeavyEventSink`.
+@property (nonatomic, copy, nullable) id<HeavyEventSink> _Nullable (^coreProvider)(void);
 
 /// Called when the user picks a sound scheme (0..6) from the on-screen
 /// control bar. The host wires this to the AU's `sound` parameter so the

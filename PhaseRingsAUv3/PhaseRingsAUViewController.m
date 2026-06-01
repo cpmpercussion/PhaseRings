@@ -31,7 +31,7 @@
 
     InstrumentViewController *instrument = [[InstrumentViewController alloc] init];
     __weak PhaseRingsAUViewController *weakSelf = self;
-    instrument.coreProvider = ^HeavyCore * _Nullable {
+    instrument.coreProvider = ^id<HeavyEventSink> _Nullable {
         return weakSelf.audioUnit.core;
     };
     // Route sound-scheme changes through the AU's `sound` parameter so the

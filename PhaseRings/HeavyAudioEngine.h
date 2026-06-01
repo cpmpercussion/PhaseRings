@@ -11,11 +11,11 @@
 
 #import <Foundation/Foundation.h>
 #import <AudioToolbox/AudioToolbox.h>
-#import <PhaseRingsKit/HeavyCore.h>   // HeavySynth enum + HeavyCore (shared framework)
+#import <PhaseRingsKit/HeavyCore.h>   // HeavySynth enum + HeavyCore + HeavyEventSink (shared framework)
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface HeavyAudioEngine : NSObject
+@interface HeavyAudioEngine : NSObject <HeavyEventSink>
 
 - (instancetype)initWithSampleRate:(double)sampleRate channels:(int)channels;
 

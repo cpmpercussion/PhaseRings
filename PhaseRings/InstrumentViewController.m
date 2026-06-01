@@ -143,7 +143,7 @@ static const CGFloat kScreenDiagonal = 1280.0;
         self.soundSchemeHandler(scheme);
     } else {
         // No host wiring: drive the core directly.
-        HeavyCore *core = [self core];
+        id<HeavyEventSink> core = [self core];
         HeavySynth synth = (scheme == 0) ? HeavySynthPhase
                          : (scheme == 1) ? HeavySynthCircleStrings
                                          : HeavySynthSoundScraper;
@@ -262,14 +262,14 @@ static const CGFloat kScreenDiagonal = 1280.0;
     return [self.bowlSetup pitchAtRadius:radius];
 }
 
-- (HeavyCore *)core {
+- (id<HeavyEventSink>)core {
     return self.coreProvider ? self.coreProvider() : nil;
 }
 
 #pragma mark - Tap (note on)
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    HeavyCore *core = [self core];
+    id<HeavyEventSink> core = [self core];
     for (UITouch *touch in touches) {
         CGPoint point = [touch locationInView:self.view];
         int velocity = floorf(15 + (110 * (touch.majorRadius / 125.0)));
@@ -285,7 +285,7 @@ static const CGFloat kScreenDiagonal = 1280.0;
 #pragma mark - Pan (continuous "sing")
 
 - (void)panGestureRecognized:(UIPanGestureRecognizer *)sender {
-    HeavyCore *core = [self core];
+    id<HeavyEventSink> core = [self core];
     CGPoint point = [sender locationInView:self.view];
 
     CGFloat xVel = [sender velocityInView:self.view].x;
