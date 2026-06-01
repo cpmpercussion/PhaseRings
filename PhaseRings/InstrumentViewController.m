@@ -35,7 +35,14 @@ static const CGFloat kScreenDiagonal = 1280.0;
 @property (nonatomic, strong) UILabel *setupDescriptionLabel;
 // Last settings applied, so a settings change only rebuilds what actually moved.
 @property (nonatomic, strong) PRSettings *appliedSettings;
+// Remote-OSC playback state (continuous "swirl" with a 1s auto-stop timer).
+@property (nonatomic) int playbackPanGestureState;
+@property (nonatomic, strong, nullable) NSTimer *playbackPanGestureTimeout;
 @end
+
+// Playback pan states (matches the standalone app's PAN_STATE_* constants).
+static const int kPlaybackStateNothing = 0;
+static const int kPlaybackStateMoving  = 1;
 
 @implementation InstrumentViewController
 
@@ -196,6 +203,12 @@ static const CGFloat kScreenDiagonal = 1280.0;
         [self.bowlView setSelectedColourScheme];
         [self.bowlView drawSetup:self.bowlSetup];
         self.lastDrawnSize = size;
+        // Screenshot mode re-lights the rings after a (re)draw wipes the layer
+        // dictionaries, and mutes the master so captures are silent.
+        if (self.screenshotMode) {
+            [[self core] sendFloat:0.0 toReceiver:@"mastervolume"];
+            [self.bowlView lightAlternateRingsForScreenshot];
+        }
     }
 }
 
@@ -275,11 +288,49 @@ static const CGFloat kScreenDiagonal = 1280.0;
         int velocity = floorf(15 + (110 * (touch.majorRadius / 125.0)));
         if (velocity > 127) velocity = 127;
         if (velocity < 0) velocity = 0;
-        [core sendNoteOn:1 pitch:[self noteFromPosition:point] velocity:velocity];
+        int pitch = [self noteFromPosition:point];
+        [core sendNoteOn:1 pitch:pitch velocity:velocity];
+        // MIDI-out: a momentary note (on immediately followed by off), matching
+        // the standalone app's tap behaviour. Always emitted (no setting).
+        [self emitMIDIStatus:0x90 data1:(uint8_t)pitch data2:(uint8_t)velocity];
+        [self emitMIDIStatus:0x80 data1:(uint8_t)pitch data2:(uint8_t)velocity];
+        // OSC mirror (app-only): the app broadcast taps at velocity 0.
+        if ([self.delegate respondsToSelector:@selector(instrument:touchBeganAtPoint:pitch:velocity:)]) {
+            [self.delegate instrument:self touchBeganAtPoint:point pitch:pitch velocity:velocity];
+        }
         // SingingBowlView animates the tapped ring in its own touchesBegan; we
         // only send the note. (Calling animate here too double-triggered the
         // CATransaction and made the tap flash/disappear.)
     }
+}
+
+- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    if (![self.delegate respondsToSelector:@selector(instrument:touchMovedToPoint:velocity:)]) return;
+    for (UITouch *touch in touches) {
+        CGPoint point = [touch locationInView:self.view];
+        CGPoint prev  = [touch previousLocationInView:self.view];
+        CGFloat dx = point.x - prev.x, dy = point.y - prev.y;
+        CGFloat pixelVelocity = sqrt((dx * dx) + (dy * dy));
+        [self.delegate instrument:self touchMovedToPoint:point velocity:pixelVelocity];
+    }
+}
+
+- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    for (UITouch *touch in touches) {
+        // MIDI note-off for the ending touch's pitch, matching the app.
+        int pitch = [self noteFromPosition:[touch locationInView:self.view]];
+        [self emitMIDIStatus:0x80 data1:(uint8_t)pitch data2:0];
+    }
+    if ([self.delegate respondsToSelector:@selector(instrumentTouchEnded:)]) {
+        [self.delegate instrumentTouchEnded:self];
+    }
+}
+
+// Hand a 3-byte MIDI message to the host's transport, if any.
+- (void)emitMIDIStatus:(uint8_t)status data1:(uint8_t)data1 data2:(uint8_t)data2 {
+    if (!self.midiOutSink) return;
+    const uint8_t bytes[] = { status, data1, data2 };
+    self.midiOutSink(bytes, sizeof(bytes));
 }
 
 #pragma mark - Pan (continuous "sing")
@@ -303,6 +354,8 @@ static const CGFloat kScreenDiagonal = 1280.0;
         [core sendFloat:(float)[self noteFromPosition:point] toReceiver:@"singpitch"];
         self.currentlyPanningPitch = (UInt8)[self noteFromPosition:point];
         [self.bowlView continuouslyAnimateBowlAtRadius:[self distanceFromCenter:point]];
+        // MIDI-out: note-on for the swirl pitch.
+        [self emitMIDIStatus:0x90 data1:self.currentlyPanningPitch data2:(uint8_t)(velocity * 127)];
 
     } else if (sender.state == UIGestureRecognizerStateChanged) {
         CGFloat angle = (velHyp > 0) ? yVel / velHyp : 0;
@@ -314,13 +367,95 @@ static const CGFloat kScreenDiagonal = 1280.0;
         CGFloat trans = sqrt((xTrans * xTrans) + (yTrans * yTrans)) / kScreenDiagonal;
         [core sendFloat:trans toReceiver:@"panTranslation"];
         [self.bowlView changeContinuousAnimationSpeed:(3 * trans) + 0.1];
+        // MIDI-out: swirl velocity as channel aftertouch.
+        [self emitMIDIStatus:0xA0 data1:self.currentlyPanningPitch data2:(uint8_t)(velocity * 127)];
 
     } else if (sender.state == UIGestureRecognizerStateEnded ||
                sender.state == UIGestureRecognizerStateCancelled) {
         [core sendFloat:0 toReceiver:@"singlevel"];
         [core sendFloat:0 toReceiver:@"sing"];
         [self.bowlView stopAnimatingBowl];
+        // MIDI-out: note-off for the swirl pitch.
+        [self emitMIDIStatus:0x80 data1:self.currentlyPanningPitch data2:(uint8_t)(velocity * 127)];
     }
+}
+
+#pragma mark - Setup state (remote-driven)
+
+- (NSInteger)numberOfSetups {
+    return [self.composition numberOfSetups];
+}
+
+- (int)currentSetupState {
+    return self.setupState;
+}
+
+- (void)showSetupState:(int)state {
+    int count = (int)[self numberOfSetups];
+    if (count <= 0) return;
+    if (state < 0) state = 0;
+    if (state > count - 1) state = count - 1;
+    self.setupStepper.value = state;   // programmatic set does not fire the action
+    [self applySetupForState:state];
+}
+
+- (int)pitchAtPoint:(CGPoint)point {
+    return [self noteFromPosition:point];
+}
+
+#pragma mark - Remote-OSC playback
+
+- (void)playbackTapAtPoint:(CGPoint)point {
+    id<HeavyEventSink> core = [self core];
+    int velocity = 110;
+    [core sendNoteOn:1 pitch:[self noteFromPosition:point] velocity:velocity];
+    [self.bowlView animateBowlAtRadius:[self distanceFromCenter:point]];
+    [self stopPlayback];   // any tap stops an in-progress swirl
+}
+
+- (void)playbackSwirlAtPoint:(CGPoint)point velocity:(CGFloat)vel {
+    id<HeavyEventSink> core = [self core];
+    CGFloat angle = 0.5;
+    CGFloat velHyp = vel;
+    CGFloat velocity = log(velHyp) / 10.0;
+    if (velocity < 0) velocity = 0;
+    if (velocity > 1) velocity = 1;
+    CGFloat trans = velocity / kScreenDiagonal;
+    [core sendFloat:velocity toReceiver:@"singlevel"];
+    [self.bowlView changeBowlVolumeTo:velocity];
+
+    if (self.playbackPanGestureState == kPlaybackStateNothing) {
+        // Starting a playback swirl.
+        [core sendFloat:1 toReceiver:@"sing"];
+        [core sendFloat:(float)[self noteFromPosition:point] toReceiver:@"singpitch"];
+        self.currentlyPanningPitch = (UInt8)[self noteFromPosition:point];
+        [self.bowlView continuouslyAnimateBowlAtRadius:[self distanceFromCenter:point]];
+        self.playbackPanGestureState = kPlaybackStateMoving;
+        self.playbackPanGestureTimeout =
+            [NSTimer scheduledTimerWithTimeInterval:1.0 target:self
+                                           selector:@selector(stopPlayback) userInfo:nil repeats:NO];
+    } else {
+        // Continuing a playback swirl; extend the auto-stop timer.
+        [core sendFloat:velocity toReceiver:@"singlevel"];
+        [core sendFloat:angle toReceiver:@"sinPanAngle"];
+        [self.bowlView changeContinuousColour:angle forRadius:[self distanceFromCenter:point]];
+        [self.bowlView changeContinuousAnimationSpeed:(3 * trans) + 0.1];
+        [core sendFloat:trans toReceiver:@"panTranslation"];
+        [self.playbackPanGestureTimeout invalidate];
+        self.playbackPanGestureTimeout =
+            [NSTimer scheduledTimerWithTimeInterval:1.0 target:self
+                                           selector:@selector(stopPlayback) userInfo:nil repeats:NO];
+    }
+}
+
+- (void)stopPlayback {
+    id<HeavyEventSink> core = [self core];
+    [core sendFloat:0 toReceiver:@"singlevel"];
+    [core sendFloat:0 toReceiver:@"sing"];
+    [self.bowlView stopAnimatingBowl];
+    self.playbackPanGestureState = kPlaybackStateNothing;
+    [self.playbackPanGestureTimeout invalidate];
+    self.playbackPanGestureTimeout = nil;
 }
 
 @end
