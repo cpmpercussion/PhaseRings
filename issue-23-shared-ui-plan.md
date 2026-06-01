@@ -215,7 +215,16 @@ Split into two commits (settings first, then the riskier surface embed).
   `InAppSettingsKit` pod (`pod install` → 0 pods). The `Settings.bundle` stays
   (it backs the iOS system Settings.app pane, independent of IASK).
 
-**F.5b — embed the shared instrument surface in the app (pending, the risky half)**
+**F.5b — embed the shared instrument surface in the app ✅ (implemented, PR #31)**
+
+> Implemented on `issue-27-shared-surface-embed` (draft PR #31), pending the
+> manual device/ensemble verification pass. `HeavyEventSink` protocol (B2);
+> `InstrumentViewController` delegate + `midiOutSink` + playback + `showSetupState:`
+> + `screenshotMode` + `showsAppSettings` + `applyCurrentSettings` (B3/B3a);
+> `ViewController` reduced to a thin shell hosting the child VC (B1/B4); HCI
+> chrome deleted; `Main.storyboard` removed (programmatic window in AppDelegate);
+> shared MIDI-out on both hosts incl. the AUv3 `MIDIOutputEventBlock` render-thread
+> emit (B3a). 47 unit + 5 UI tests green. Original spec below.
 
 > **Tracked as its own issue + PR (#27).** F.0–F.5a achieve the headline of #23
 > (one shared settings UI, shared surface in the plugin) and are independently
