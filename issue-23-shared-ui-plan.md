@@ -5,13 +5,13 @@
 stripped-down `InstrumentViewController` (plugin). Finishes the deferred
 **Phase F step 3** of `auv3-plan.md`.
 
-**Status:** F.0–F.3 implemented (mixed ObjC/Swift Kit; settings model/store/
+**Status:** F.0–F.4 implemented (mixed ObjC/Swift Kit; settings model/store/
 composition factory; shared SwiftUI settings screen; expanded
-`InstrumentViewController` on-screen UI driven by the settings store).
-**Deployment floor raised 14 → 16** during F.2 so the shared settings sheet can
-use `presentationDetents` (via `UISheetPresentationController`). F.4 (AU
-`fullState` round-trip) and F.5 (retrofit the standalone app + retire IASK)
-remain.
+`InstrumentViewController` on-screen UI driven by the settings store; AUv3
+`fullState` round-trip via `PRAudioUnitStore`). **Deployment floor raised
+14 → 16** during F.2 so the shared settings sheet can use `presentationDetents`
+(via `UISheetPresentationController`). **F.5 remains** — retrofit the standalone
+app onto the shared surface + retire IASK.
 
 ---
 
@@ -167,13 +167,26 @@ Per Charles's issue comment — a cleaner on-screen interface. **Implemented:**
 `PRMemoryStore` is the interim extension backing store; F.4 swaps in a
 `fullState`-persisted `PRAudioUnitStore`.
 
-### Phase F.4 — AU state round-trip (extension)
-1. Add `fullState` / `fullStateForDocument` override to `PhaseRingsAudioUnit`
-   that serialises the non-parameter settings (composition/notes/scales/labels)
-   alongside the auto-serialised parameter tree.
-2. On `setFullState:`, restore into `PRAudioUnitStore` and refresh the instrument
-   surface.
-3. Verify state round-trips across host close/reopen (Phase H item 4).
+### Phase F.4 — AU state round-trip (extension) ✅
+**Implemented:**
+1. `PhaseRingsAudioUnit` overrides `fullState`/`setFullState:`: it merges the
+   non-parameter settings (composition/notes/scales/labels), held in a new
+   `instrumentSettingsState` dictionary, into the dict alongside the
+   auto-serialised parameter tree under `PhaseRingsInstrumentState`.
+   `fullStateForDocument` builds on `fullState`, so it's covered too.
+2. New **`PRAudioUnitStore`** (`PRSettingsStore`): the five audio params
+   read/write through the AU parameter tree (so host automation + state stay
+   consistent and the `implementorValueObserver` applies them to the core);
+   composition/notes/scales/labels read/write the AU's `instrumentSettingsState`.
+   `currentSettings` bases on `+[PRSettings defaultSettings]` so missing keys
+   (fresh or older sessions) degrade gracefully. The AU view controller injects
+   it into `InstrumentViewController.settingsStore`, replacing the F.3
+   `PRMemoryStore`.
+3. On restore, the AU fires `instrumentStateRestoredHandler` (main queue) →
+   `PRAudioUnitStore` rebroadcasts via `onChange` → the instrument surface
+   rebuilds. Covered by `PhaseRingsAUStateTests` (param+non-param round-trip,
+   cross-unit `fullState` restore, onChange-on-restore) — no render alloc, so
+   free of the #25 skip. Live host close/reopen check still pending (Phase H 4).
 
 ### Phase F.5 — Retrofit the standalone app (Phase F step 3)
 1. Point `ViewController` at an embedded `InstrumentViewController` for the ring

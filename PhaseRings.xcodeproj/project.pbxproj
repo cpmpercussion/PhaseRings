@@ -23,6 +23,7 @@
 		19FCAE99FF6A32F5FD5C3F8A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F30EBB0404A92871DD903C55 /* UIKit.framework */; };
 		1B058142A68305734A1E2A74 /* HvControlSlice.c in Sources */ = {isa = PBXBuildFile; fileRef = BAC6DEE4582393C5B10B6EB1 /* HvControlSlice.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		1BAEEFC44E1B6CE8F23D6D47 /* HvControlVar.c in Sources */ = {isa = PBXBuildFile; fileRef = 24D2D316267E0C66C285A7FC /* HvControlVar.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
+		1E656AAFFBED8391DB484A24 /* PRAudioUnitStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 893F5468F008DE59B6F88EFB /* PRAudioUnitStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25B319FC600AD8E0BF3CA83B /* gong.wav in Resources */ = {isa = PBXBuildFile; fileRef = 568BDC1D1A0349300056CF22 /* gong.wav */; };
 		326820C001CD1F8764C804FF /* HeavyContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5180F013A0170F69187FF63A /* HeavyContext.cpp */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		32EB414B44CF78466D5A8216 /* HvControlTabhead.c in Sources */ = {isa = PBXBuildFile; fileRef = 63353DAD7D02FEFC0624EDB5 /* HvControlTabhead.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
@@ -96,6 +97,7 @@
 		7E06063100000000000000C0 /* GenerativeSetupCompositionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E06063000000000000000C0 /* GenerativeSetupCompositionTests.m */; };
 		82079891D30C6A98B32F4C6F /* HvControlIf.c in Sources */ = {isa = PBXBuildFile; fileRef = 3FEFAEB8754C7116B036F486 /* HvControlIf.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		848D61EA8BA2C3F12635544A /* Heavy_CircleStrings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4135EF20A1888CD1520E6496 /* Heavy_CircleStrings.cpp */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
+		885B93A6C25EACCA8674F9D9 /* PRAudioUnitStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 82F62F2130F4486ECE243841 /* PRAudioUnitStore.m */; };
 		8946F05DE922E1ABE92B32CA /* bowl.wav in Resources */ = {isa = PBXBuildFile; fileRef = 568BDC1B1A0349300056CF22 /* bowl.wav */; };
 		8B279F2AF626503653DEFE06 /* HvControlExpr.c in Sources */ = {isa = PBXBuildFile; fileRef = F7EC8D7468ECD073FEA16275 /* HvControlExpr.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		8DFAF893AA9C26DDD69A95CE /* HvControlBinop.c in Sources */ = {isa = PBXBuildFile; fileRef = A9A936A81E31EF6FCF23772A /* HvControlBinop.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
@@ -360,8 +362,10 @@
 		7E3E3DED2EA69B7EA6BB21CE /* Heavy_SoundScraper.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = Heavy_SoundScraper.h; sourceTree = "<group>"; };
 		7F49D0393F39D292F682B85A /* HvMessage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvMessage.h; sourceTree = "<group>"; };
 		807B70A84BE80C41E3ECA784 /* HvMessageQueue.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvMessageQueue.h; sourceTree = "<group>"; };
+		82F62F2130F4486ECE243841 /* PRAudioUnitStore.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PRAudioUnitStore.m; path = PhaseRings/PRAudioUnitStore.m; sourceTree = "<group>"; };
 		87C2283932AFF5AB2A220D26 /* PRSettingsModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PRSettingsModel.swift; path = PhaseRings/PRSettingsModel.swift; sourceTree = "<group>"; };
 		88927DD4FFADF5F4143D823B /* HvControlTabhead.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvControlTabhead.h; sourceTree = "<group>"; };
+		893F5468F008DE59B6F88EFB /* PRAudioUnitStore.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = PRAudioUnitStore.h; path = PhaseRings/PRAudioUnitStore.h; sourceTree = "<group>"; };
 		8DABAA2BD4E2B6A6D7B75B7B /* HeavyAudioEngine.mm */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.objcpp; name = HeavyAudioEngine.mm; path = PhaseRings/HeavyAudioEngine.mm; sourceTree = "<group>"; };
 		936EFAFD6A5E031DE019B8A2 /* Heavy_PhaseRing.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; path = Heavy_PhaseRing.cpp; sourceTree = "<group>"; };
 		965447B173741E68533AE789 /* PhaseRingsAudioUnitTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = PhaseRingsAudioUnitTests.m; sourceTree = "<group>"; };
@@ -728,6 +732,8 @@
 				6EEF2373C042A5410672020B /* PRSettingsHostingController.swift */,
 				778CBCB62959C924ED6BC3EA /* PRMemoryStore.h */,
 				F513B27E8EA89F90FF28C1B4 /* PRMemoryStore.m */,
+				893F5468F008DE59B6F88EFB /* PRAudioUnitStore.h */,
+				82F62F2130F4486ECE243841 /* PRAudioUnitStore.m */,
 			);
 			name = controllers;
 			sourceTree = "<group>";
@@ -918,6 +924,7 @@
 				090DC4550EFCF6D580500EF1 /* PRSettingsStore.h in Headers */,
 				0EB8783B1D0D31182A97BC34 /* PRCompositionFactory.h in Headers */,
 				F6752DCCB9AF8D03D506A9BA /* PRMemoryStore.h in Headers */,
+				1E656AAFFBED8391DB484A24 /* PRAudioUnitStore.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1290,6 +1297,7 @@
 				ACD34839FFF44C7A2AA14BCC /* PRSettingsView.swift in Sources */,
 				4EE25A65A679B1AC7359750C /* PRSettingsHostingController.swift in Sources */,
 				625F3EB857C046FE0666D5DA /* PRMemoryStore.m in Sources */,
+				885B93A6C25EACCA8674F9D9 /* PRAudioUnitStore.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -42,6 +42,8 @@
     };
     self.instrument = instrument;
 
+    [self wireSettingsStore];
+
     [self addChildViewController:instrument];
     instrument.view.frame = self.view.bounds;
     instrument.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -59,6 +61,15 @@
     [self.instrument setDisplayedSoundScheme:(NSInteger)(p.value + 0.5f)];
 }
 
+// Back the shared instrument surface with an AU-backed settings store (params
+// in the tree, composition/notes/scales/labels in the AU's fullState), once
+// both the AU and the instrument exist. (Issue #23, Phase F.4.)
+- (void)wireSettingsStore {
+    if (!self.instrument || !self.audioUnit) return;
+    if ([self.instrument.settingsStore isKindOfClass:[PRAudioUnitStore class]]) return;
+    self.instrument.settingsStore = [[PRAudioUnitStore alloc] initWithAudioUnit:self.audioUnit];
+}
+
 #pragma mark - AUAudioUnitFactory
 
 - (AUAudioUnit *)createAudioUnitWithComponentDescription:(AudioComponentDescription)desc
@@ -66,7 +77,10 @@
     self.audioUnit = [[PhaseRingsAudioUnit alloc] initWithComponentDescription:desc
                                                                        options:0
                                                                          error:error];
-    dispatch_async(dispatch_get_main_queue(), ^{ [self syncDisplayedSound]; });
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self wireSettingsStore];
+        [self syncDisplayedSound];
+    });
     return self.audioUnit;
 }
 
