@@ -1,6 +1,6 @@
 // Dedicated harness for the [sampler-overlap] abstraction (Puckette's
 // overlapped granular sampler, adapted from the Pd manual). Wraps it via
-// PhaseRingSynth/sampler_overlap_test.pd, which exposes four clean receivers
+// synth/sampler_overlap_test.pd, which exposes four clean receivers
 // and routes the abstraction's outlet to dac~:
 //
 //   so_table   (symbol) -> inlet 0  switch tabread4~ to a named table
@@ -14,7 +14,7 @@
 //
 // Usage:
 //   overlap_harness [--sr 44100] [--duration-ms 4000] [--script events.txt]
-//                   [--out out.wav] [--samples-dir PhaseRingSynth/samples]
+//                   [--out out.wav] [--samples-dir synth/samples]
 //                   [--default-wav bowl.wav] [--table-wav crotale.wav]
 //
 // NOTE: the abstraction's ms->samples conversion hardcodes *44.1, so it
@@ -136,7 +136,7 @@ int main(int argc, char **argv) {
     double sr = 44100;
     int durationMs = 4000;
     std::string script, out = "overlap_out.wav";
-    std::string samplesDir = "PhaseRingSynth/samples";
+    std::string samplesDir = "synth/samples";
     std::string defaultWav = "bowl.wav";
     std::string tableWav = "crotale.wav";
 

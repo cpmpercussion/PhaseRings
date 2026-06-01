@@ -26,7 +26,7 @@ Branch: `v3.0-hvcc-migration` (commits since `8f9291b`).
 | `[list]` family | All `[list]`, `[list prepend]`, `[list split]`, `[list trim]` rewritten as `[pack]`/`[unpack]`/`[route]`/messages | hvcc supports zero list-family ops |
 | `$1-xyloClick` concat | Rewrote big embedded sample message | Heavy doesn't allow `$1-name` (dollar args must stand alone) |
 | `[tabread4~]` initial arg | Added `tabread4~ crotale` in all 6 instances | hvcc requires the table arg; `set <name>` still swaps at runtime. crotale chosen as largest sample for bounds-check headroom |
-| `[soundfiler]` removal | Moved sample-loading scaffolding into `PhaseRingSynth/load_sound_files.pd` (out of the compile path); deleted `[r samplesread]` gate | Heavy has no file I/O. Sample loading moves to the iOS host |
+| `[soundfiler]` removal | Moved sample-loading scaffolding into `synth/load_sound_files.pd` (out of the compile path); deleted `[r samplesread]` gate | Heavy has no file I/O. Sample loading moves to the iOS host |
 | `[makefilename]` removal | Removed defensive `panner/check-arg` idiom | Unsupported by hvcc; `panner` is always called with a literal arg |
 | `@hv_table` annotation | All 6 sample tables marked `table NAME 200000 @hv_table` | Exposes them in Heavy's generated C API for host-side sample loading |
 | `[pack s f f]` reorder | Reordered to `[pack f s f]` (gain first, tablename second), updated consumer `[unpack]` and `[set $1]` → `[set $2]` | hvcc allows `s` in `[pack]` slots > 0 but never in slot 0. `[unpack]` accepts `s` anywhere |
@@ -58,7 +58,7 @@ Branch: `v3.0-hvcc-migration` (commits since `8f9291b`).
   and filter/arith inlets like `[lop~]`/`[*~]` (implicit signal-var, `sVarf`).
   Inconsistent by object, so when in doubt insert `[sig~]`.
   Audit the whole patch set with
-  `tools/heavy_harness/check_control_to_signal_inlet.py PhaseRingSynth/**/*.pd`.
+  `tools/heavy_harness/check_control_to_signal_inlet.py synth/**/*.pd`.
 
 #### Control→signal-left-inlet audit (2026-05-30)
 
@@ -104,7 +104,7 @@ In the patch:
 
 The `pd soundfiles` subpatch in `SoundScraperSynthEnvironment.pd` is now an
 empty subpatch placeholder. The original soundfiler scaffolding lives in
-`PhaseRingSynth/load_sound_files.pd` outside the compile path (kept for
+`synth/load_sound_files.pd` outside the compile path (kept for
 reference / future libpd debugging).
 
 ## Next: iOS-side work (the actual v3.0 build)
@@ -169,7 +169,7 @@ Heavy code linked in (no audio driving it yet — that's Step 2).
 
 ### 3. Sample loading (SoundScraper only)
 
-- At app startup, decode the six WAVs in `PhaseRingSynth/samples/` via
+- At app startup, decode the six WAVs in `synth/samples/` via
   `AVAudioFile` to mono float32 at 44100 Hz. Cache `NSData` blobs.
 - When SoundScraper context is created:
   - For each table name, call `setLengthForTable(HV_..._TABLE_X, len)`
@@ -215,10 +215,10 @@ After the Heavy integration is verified working:
 - `project.yml` — XcodeGen spec; globs `PhaseRingsKit/Heavy/` into the framework
   target (run `xcodegen generate` to re-sync after `build_hvcc.sh`)
 - `PhaseRingsKit/Heavy/{shared,Heavy_*}` — vendored Heavy output
-- `PhaseRingSynth/*.pd` — patches that get compiled
-- `PhaseRingSynth/load_sound_files.pd` — out-of-compile-path; original
+- `synth/*.pd` — patches that get compiled
+- `synth/load_sound_files.pd` — out-of-compile-path; original
   soundfiler scaffolding kept for reference
-- `PhaseRingSynth/SoundScraperSynthEnvironment-old.pd` — pre-migration
+- `synth/SoundScraperSynthEnvironment-old.pd` — pre-migration
   backup of the SoundScraper patch (untracked); delete when confident
 
 ## Next after the libpd→Heavy swap: AUv3 instrument

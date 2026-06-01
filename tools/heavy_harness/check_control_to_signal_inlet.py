@@ -23,7 +23,7 @@ cReceive_*_sendMessage body / a VIf(ZERO) signal input.
 
 Usage:
     python3 tools/heavy_harness/check_control_to_signal_inlet.py PATH.pd [...]
-    python3 tools/heavy_harness/check_control_to_signal_inlet.py $(find PhaseRingSynth -name '*.pd')
+    python3 tools/heavy_harness/check_control_to_signal_inlet.py $(find synth -name '*.pd')
 """
 import sys, os, glob
 from collections import defaultdict
@@ -94,8 +94,8 @@ def io_types(path):
 def main(argv):
     paths = sorted(set(argv))
     # abstraction name -> file, for resolving local abstractions' inlet/outlet types
-    search = set(os.path.dirname(p) for p in paths) | {"PhaseRingSynth",
-                                                        "PhaseRingSynth/libs"}
+    search = set(os.path.dirname(p) for p in paths) | {"synth",
+                                                        "synth/libs"}
     abstr = {}
     for d in search:
         for p in glob.glob(os.path.join(d, "*.pd")):

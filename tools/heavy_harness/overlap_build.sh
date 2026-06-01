@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Build the dedicated [sampler-overlap] harness. Unlike build.sh (which links
 # the three app contexts), this compiles ONLY a standalone SamplerOverlap
-# context generated from PhaseRingSynth/sampler_overlap_test.pd, so it never
-# touches the app's vendored PhaseRings/Heavy/ tree.
+# context generated from synth/sampler_overlap_test.pd, so it never
+# touches the app's vendored PhaseRingsKit/Heavy/ tree.
 #
 # Usage:
 #   bash tools/heavy_harness/overlap_build.sh            # debug
@@ -17,7 +17,7 @@ if [ "${1:-}" == "--release" ]; then MODE="release"; fi
 
 REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 HARNESS_DIR="$REPO_ROOT/tools/heavy_harness"
-SYNTH_DIR="$REPO_ROOT/PhaseRingSynth"
+SYNTH_DIR="$REPO_ROOT/synth"
 HVCC="$REPO_ROOT/.venv-hvcc/bin/hvcc"
 GEN_DIR="$HARNESS_DIR/overlap_gen"
 BUILD_DIR="$HARNESS_DIR/build"

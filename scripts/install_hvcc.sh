@@ -3,7 +3,7 @@
 #
 # hvcc compiles Pure Data patches to self-contained C/C++ classes. We use it
 # here only for compatibility checking against the patches under
-# PhaseRingSynth/ -- the v3.0 AUv3 work tracked in issue #20.
+# synth/ -- the v3.0 AUv3 work tracked in issue #20.
 #
 # Output: .venv-hvcc/ at the repo root. Activate with:
 #   source .venv-hvcc/bin/activate

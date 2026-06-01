@@ -48,7 +48,7 @@ Each directory maps to exactly one target (XcodeGen globs them directly):
 - `PhaseRingsKit/` — the **PhaseRingsKit.framework** source: shared instrument surface, compositions, `HeavyCore`, the AUAudioUnit, and the generated `Heavy/` DSP
 - `PhaseRingsAUv3/` — the AUv3 app-extension wrapper
 - `PhaseRingsTests/`, `PhaseRingsUITests/` — test targets
-- `PhaseRingSynth/` — Pure Data patches (`.pd`) and audio samples (hvcc inputs; the 3 env patches + 6 sample WAVs are also bundled as resources)
+- `synth/` — Pure Data patches (`.pd`) and audio samples. The `.pd` files are hvcc *inputs only* (not bundled — the runtime engine is compiled Heavy, not libpd); the 6 sample WAVs under `synth/samples/` are bundled into the framework
 - `MetatoneOSC/` — OSC networking library (F53OSC + GCDAsyncSocket) and `MetatoneNetworkManager` (compiled into the app)
 - `MetatoneMIDI/` — Core MIDI wrapper (PGMidi) and `MetatoneMidiManager` (compiled into the app)
 
@@ -84,12 +84,12 @@ SingingBowlComposition (base)
 
 ### Pure Data patches
 
-Three top-level environment patches in `PhaseRingSynth/`:
+Three top-level environment patches in `synth/`:
 - `PhaseRingSynthEnvironment.pd` — phase synthesis
 - `CircleStringsSynthEnvironment.pd` — string synthesis
 - `SoundScraperSynthEnvironment.pd` — sample-based (bowl, gong, crotales, pot, marimba)
 
-Sub-patches and shared libraries live in `PhaseRingSynth/metaPdLibs/`. Audio samples (`.wav`) are in `PhaseRingSynth/samples/`.
+Sub-patches and shared libraries live in `synth/metaPdLibs/`. Audio samples (`.wav`) are in `synth/samples/`.
 
 The patches are compiled ahead-of-time with hvcc into `PhaseRingsKit/Heavy/` (vendored — `shared/` holds the runtime, `Heavy_<Name>/` the per-patch entry). Regenerate after any `.pd` change with:
 

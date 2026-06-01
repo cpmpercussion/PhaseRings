@@ -8,7 +8,7 @@
 //           [--duration-ms 3000]
 //           [--script events.txt]
 //           [--out out.wav]
-//           [--samples-dir PhaseRingSynth/samples]
+//           [--samples-dir synth/samples]
 //
 // Script format (one event per line, time-sorted not required):
 //   <time_ms> float <receiver> <value>
@@ -187,7 +187,7 @@ int main(int argc, char **argv) {
     int durationMs = 3000;
     std::string script;
     std::string out = "harness_out.wav";
-    std::string samplesDir = "PhaseRingSynth/samples";
+    std::string samplesDir = "synth/samples";
 
     for (int i = 1; i < argc; ++i) {
         std::string a = argv[i];

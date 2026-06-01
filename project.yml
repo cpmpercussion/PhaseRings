@@ -120,12 +120,12 @@ targets:
       - { path: PhaseRingsKit/PRMemoryStore.h, headerVisibility: public }
       - { path: PhaseRingsKit/PRAudioUnitStore.h, headerVisibility: public }
       # Audio samples loaded at runtime by the Heavy SoundScraper.
-      - { path: PhaseRingSynth/samples/almglockenC-441.wav, buildPhase: resources }
-      - { path: PhaseRingSynth/samples/bowl.wav, buildPhase: resources }
-      - { path: PhaseRingSynth/samples/crotale.wav, buildPhase: resources }
-      - { path: PhaseRingSynth/samples/gong.wav, buildPhase: resources }
-      - { path: PhaseRingSynth/samples/marimba.wav, buildPhase: resources }
-      - { path: PhaseRingSynth/samples/xylo.wav, buildPhase: resources }
+      - { path: synth/samples/almglockenC-441.wav, buildPhase: resources }
+      - { path: synth/samples/bowl.wav, buildPhase: resources }
+      - { path: synth/samples/crotale.wav, buildPhase: resources }
+      - { path: synth/samples/gong.wav, buildPhase: resources }
+      - { path: synth/samples/marimba.wav, buildPhase: resources }
+      - { path: synth/samples/xylo.wav, buildPhase: resources }
     settings:
       base:
         DEFINES_MODULE: YES
@@ -170,10 +170,6 @@ targets:
           - "PhaseRings-Prefix.pch"
       - path: MetatoneOSC
       - path: MetatoneMIDI
-      # Pd environment patches bundled with the app.
-      - { path: PhaseRingSynth/PhaseRingSynthEnvironment.pd, buildPhase: resources }
-      - { path: PhaseRingSynth/CircleStringsSynthEnvironment.pd, buildPhase: resources }
-      - { path: PhaseRingSynth/SoundScraperSynthEnvironment.pd, buildPhase: resources }
     settings:
       base:
         ASSETCATALOG_COMPILER_APPICON_NAME: Icon

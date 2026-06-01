@@ -2,7 +2,7 @@
 # Generate Heavy C++ from each top-level Pd environment patch into the iOS
 # project tree. Output is committed (treated as vendored sources) so the app
 # builds without requiring hvcc on every machine. Regenerate after editing
-# any .pd file under PhaseRingSynth/.
+# any .pd file under synth/.
 #
 # Layout produced:
 #   PhaseRingsKit/Heavy/shared/               -- Heavy runtime (one copy)
@@ -24,7 +24,7 @@ set -uo pipefail
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 VENV_DIR="$REPO_ROOT/.venv-hvcc"
 HVCC="$VENV_DIR/bin/hvcc"
-SYNTH_DIR="$REPO_ROOT/PhaseRingSynth"
+SYNTH_DIR="$REPO_ROOT/synth"
 OUT_ROOT="$REPO_ROOT/PhaseRingsKit/Heavy"
 TMP_ROOT="$OUT_ROOT/.tmp"
 
