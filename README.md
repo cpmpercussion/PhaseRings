@@ -2,7 +2,7 @@
 
 [![DOI](https://zenodo.org/badge/20166/cpmpercussion/PhaseRings.svg)](https://zenodo.org/badge/latestdoi/20166/cpmpercussion/PhaseRings)
 
-[Available in the App Store for iPad and iPhones][(https://itunes.apple.com/app/phaserings/id924795988)
+[Available in the App Store for iPad and iPhones](https://itunes.apple.com/app/phaserings/id924795988)
 
 ## touchscreen app for creative music making
 
