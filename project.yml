@@ -1,0 +1,326 @@
+name: PhaseRings
+# ---------------------------------------------------------------------------
+# Single source of truth for the Xcode project. Generate with:
+#   xcodegen generate            (or `xcodegen` for short)
+# The resulting PhaseRings.xcodeproj is NOT committed (see .gitignore) — it is
+# regenerated locally and in CI (ci_scripts/ci_post_clone.sh). After editing
+# any .pd patch, regenerate the Heavy sources then the project:
+#   bash scripts/build_hvcc.sh && xcodegen generate
+# ---------------------------------------------------------------------------
+
+options:
+  bundleIdPrefix: au.com.charlesmartin
+  deploymentTarget:
+    iOS: "16.0"
+  developmentLanguage: en
+  createIntermediateGroups: true
+  organizationName: Charles Martin
+  groupSortPosition: top
+
+# Project-wide build settings. These reproduce the values previously held at
+# the project level in project.pbxproj; XcodeGen layers its standard Xcode
+# defaults beneath them.
+settings:
+  base:
+    ALWAYS_SEARCH_USER_PATHS: NO
+    CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED: YES
+    CLANG_CXX_LANGUAGE_STANDARD: "gnu++0x"
+    CLANG_CXX_LIBRARY: "libc++"
+    CLANG_ENABLE_MODULES: YES
+    CLANG_ENABLE_OBJC_ARC: YES
+    CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING: YES
+    CLANG_WARN_BOOL_CONVERSION: YES
+    CLANG_WARN_COMMA: YES
+    CLANG_WARN_CONSTANT_CONVERSION: YES
+    CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS: YES
+    CLANG_WARN_DIRECT_OBJC_ISA_USAGE: YES_ERROR
+    CLANG_WARN_EMPTY_BODY: YES
+    CLANG_WARN_ENUM_CONVERSION: YES
+    CLANG_WARN_INFINITE_RECURSION: YES
+    CLANG_WARN_INT_CONVERSION: YES
+    CLANG_WARN_NON_LITERAL_NULL_CONVERSION: YES
+    CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF: YES
+    CLANG_WARN_OBJC_LITERAL_CONVERSION: YES
+    CLANG_WARN_OBJC_ROOT_CLASS: YES_ERROR
+    CLANG_WARN_RANGE_LOOP_ANALYSIS: YES
+    CLANG_WARN_STRICT_PROTOTYPES: YES
+    CLANG_WARN_SUSPICIOUS_MOVE: YES
+    CLANG_WARN_UNREACHABLE_CODE: YES
+    CLANG_WARN__DUPLICATE_METHOD_MATCH: YES
+    "CODE_SIGN_IDENTITY[sdk=iphoneos*]": "Apple Development"
+    ENABLE_BITCODE: NO
+    ENABLE_STRICT_OBJC_MSGSEND: YES
+    GCC_C_LANGUAGE_STANDARD: gnu99
+    GCC_NO_COMMON_BLOCKS: YES
+    GCC_WARN_64_TO_32_BIT_CONVERSION: YES
+    GCC_WARN_ABOUT_RETURN_TYPE: YES_ERROR
+    GCC_WARN_UNDECLARED_SELECTOR: YES
+    GCC_WARN_UNINITIALIZED_AUTOS: YES
+    GCC_WARN_UNUSED_FUNCTION: YES
+    GCC_WARN_UNUSED_VARIABLE: YES
+    SDKROOT: iphoneos
+    TARGETED_DEVICE_FAMILY: "1,2"
+    DEVELOPMENT_TEAM: EDH387FRHA
+    PROVISIONING_PROFILE: ""
+  configs:
+    Debug:
+      COPY_PHASE_STRIP: NO
+      ENABLE_TESTABILITY: YES
+      GCC_DYNAMIC_NO_PIC: NO
+      GCC_OPTIMIZATION_LEVEL: 0
+      GCC_PREPROCESSOR_DEFINITIONS:
+        - "DEBUG=1"
+        - "$(inherited)"
+      GCC_SYMBOLS_PRIVATE_EXTERN: NO
+      ONLY_ACTIVE_ARCH: YES
+    Release:
+      COPY_PHASE_STRIP: YES
+      ENABLE_NS_ASSERTIONS: NO
+      ONLY_ACTIVE_ARCH: NO
+      SWIFT_OPTIMIZATION_LEVEL: "-Owholemodule"
+      VALIDATE_PRODUCT: YES
+
+targets:
+
+  # ---------------------------------------------------------------------
+  # Shared instrument framework: Heavy DSP + HeavyCore + the shared
+  # SwiftUI/ObjC instrument surface, reused by the app and the AUv3.
+  # ---------------------------------------------------------------------
+  PhaseRingsKit:
+    type: framework
+    platform: iOS
+    sources:
+      # Hand-written framework sources. Headers default to project
+      # visibility; the public API headers are listed explicitly below.
+      - path: PhaseRingsKit
+        headerVisibility: project
+        excludes:
+          - "Heavy"
+          - "HeavyCore.h"
+          - "InstrumentViewController.h"
+          - "PRAudioUnitStore.h"
+          - "PRCompositionFactory.h"
+          - "PRMemoryStore.h"
+          - "PRSettings.h"
+          - "PRSettingsStore.h"
+          - "PhaseRingsAudioUnit.h"
+          - "PhaseRingsKit.h"
+      # Generated Heavy DSP — compiled with -DNDEBUG=1; headers stay private.
+      - path: PhaseRingsKit/Heavy
+        headerVisibility: project
+        compilerFlags: "-DNDEBUG=1"
+      # Public framework API (umbrella + consumed by app / AUv3 / tests).
+      - { path: PhaseRingsKit/PhaseRingsKit.h, headerVisibility: public }
+      - { path: PhaseRingsKit/HeavyCore.h, headerVisibility: public }
+      - { path: PhaseRingsKit/PhaseRingsAudioUnit.h, headerVisibility: public }
+      - { path: PhaseRingsKit/InstrumentViewController.h, headerVisibility: public }
+      - { path: PhaseRingsKit/PRSettings.h, headerVisibility: public }
+      - { path: PhaseRingsKit/PRSettingsStore.h, headerVisibility: public }
+      - { path: PhaseRingsKit/PRCompositionFactory.h, headerVisibility: public }
+      - { path: PhaseRingsKit/PRMemoryStore.h, headerVisibility: public }
+      - { path: PhaseRingsKit/PRAudioUnitStore.h, headerVisibility: public }
+      # Audio samples loaded at runtime by the Heavy SoundScraper.
+      - { path: synth/samples/almglockenC-441.wav, buildPhase: resources }
+      - { path: synth/samples/bowl.wav, buildPhase: resources }
+      - { path: synth/samples/crotale.wav, buildPhase: resources }
+      - { path: synth/samples/gong.wav, buildPhase: resources }
+      - { path: synth/samples/marimba.wav, buildPhase: resources }
+      - { path: synth/samples/xylo.wav, buildPhase: resources }
+    settings:
+      base:
+        DEFINES_MODULE: YES
+        CLANG_ENABLE_OBJC_WEAK: NO
+        CURRENT_PROJECT_VERSION: 1
+        DYLIB_COMPATIBILITY_VERSION: 1
+        DYLIB_CURRENT_VERSION: 1
+        DYLIB_INSTALL_NAME_BASE: "@rpath"
+        GENERATE_INFOPLIST_FILE: YES
+        HEADER_SEARCH_PATHS:
+          - "$(inherited)"
+          - "$(SRCROOT)/PhaseRingsKit/Heavy/shared"
+        INSTALL_PATH: "$(LOCAL_LIBRARY_DIR)/Frameworks"
+        LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/Frameworks @loader_path/Frameworks"
+        MARKETING_VERSION: "3.0"
+        PRODUCT_BUNDLE_IDENTIFIER: au.com.charlesmartin.PhaseRingsKit
+        PRODUCT_NAME: "$(TARGET_NAME:c99extidentifier)"
+        SKIP_INSTALL: YES
+        SWIFT_VERSION: "5.0"
+        VERSIONING_SYSTEM: "apple-generic"
+        VERSION_INFO_PREFIX: ""
+      configs:
+        Debug:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
+          SWIFT_OPTIMIZATION_LEVEL: "-Onone"
+    dependencies:
+      - sdk: Foundation.framework
+      - sdk: AVFoundation.framework
+      - sdk: AudioToolbox.framework
+      - sdk: UIKit.framework
+
+  # ---------------------------------------------------------------------
+  # Standalone application.
+  # ---------------------------------------------------------------------
+  PhaseRings:
+    type: application
+    platform: iOS
+    sources:
+      - path: PhaseRings
+        excludes:
+          - "PhaseRings-Info.plist"
+          - "PhaseRings-Prefix.pch"
+      - path: MetatoneOSC
+      - path: MetatoneMIDI
+    settings:
+      base:
+        ASSETCATALOG_COMPILER_APPICON_NAME: Icon
+        CODE_SIGN_ENTITLEMENTS: PhaseRings.entitlements
+        CODE_SIGN_IDENTITY: "Apple Development"
+        GCC_PRECOMPILE_PREFIX_HEADER: YES
+        GCC_PREFIX_HEADER: "PhaseRings/PhaseRings-Prefix.pch"
+        INFOPLIST_FILE: "PhaseRings/PhaseRings-Info.plist"
+        INFOPLIST_KEY_LSApplicationCategoryType: "public.app-category.music"
+        LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/Frameworks"
+        ONLY_ACTIVE_ARCH: NO
+        PRODUCT_BUNDLE_IDENTIFIER: au.com.charlesmartin.PhaseRings
+        PRODUCT_NAME: PhaseRings
+    dependencies:
+      - target: PhaseRingsKit
+        embed: true
+        codeSign: true
+      - target: PhaseRingsAUv3
+        embed: true
+        codeSign: true
+      - sdk: QuartzCore.framework
+      - sdk: CoreGraphics.framework
+      - sdk: AudioToolbox.framework
+      - sdk: CoreAudio.framework
+      - sdk: AVFoundation.framework
+      - sdk: UIKit.framework
+      - sdk: Foundation.framework
+
+  # ---------------------------------------------------------------------
+  # AUv3 instrument app extension (aumu / phrg / CPMa). The AUAudioUnit and
+  # principal view-controller logic live in PhaseRingsKit; this target is the
+  # thin extension wrapper. Info.plist is hand-maintained (NSExtension /
+  # AudioComponents) so GENERATE_INFOPLIST_FILE stays NO.
+  # ---------------------------------------------------------------------
+  PhaseRingsAUv3:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: PhaseRingsAUv3
+    settings:
+      base:
+        CLANG_ENABLE_MODULES: YES
+        CLANG_ENABLE_OBJC_WEAK: NO
+        CURRENT_PROJECT_VERSION: 1
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: PhaseRingsAUv3/Info.plist
+        LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks"
+        MARKETING_VERSION: "3.0"
+        PRODUCT_BUNDLE_IDENTIFIER: au.com.charlesmartin.PhaseRings.AUv3
+        PRODUCT_NAME: "$(TARGET_NAME)"
+        SKIP_INSTALL: YES
+    dependencies:
+      - target: PhaseRingsKit
+        embed: false
+        link: true
+      - sdk: Foundation.framework
+      - sdk: CoreAudioKit.framework
+      - sdk: AudioToolbox.framework
+      - sdk: AVFoundation.framework
+      - sdk: UIKit.framework
+
+  # ---------------------------------------------------------------------
+  # Unit tests (host = the app). Tests quoted-import headers that now live in
+  # three folders, hence the three header search paths.
+  # ---------------------------------------------------------------------
+  PhaseRingsTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: PhaseRingsTests
+        excludes:
+          - "PhaseRingsTests-Info.plist"
+    settings:
+      base:
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        FRAMEWORK_SEARCH_PATHS:
+          - "$(SDKROOT)/Developer/Library/Frameworks"
+          - "$(inherited)"
+          - "$(DEVELOPER_FRAMEWORKS_DIR)"
+        HEADER_SEARCH_PATHS:
+          - "$(inherited)"
+          - "$(SRCROOT)/PhaseRings"
+          - "$(SRCROOT)/PhaseRingsKit"
+          - "$(SRCROOT)/MetatoneOSC"
+        INFOPLIST_FILE: "PhaseRingsTests/PhaseRingsTests-Info.plist"
+        PRODUCT_BUNDLE_IDENTIFIER: "au.com.charlesmartin.$(PRODUCT_NAME:rfc1034identifier)"
+        PRODUCT_NAME: PhaseRingsTests
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/PhaseRings.app/PhaseRings"
+      configs:
+        Debug:
+          GCC_PREPROCESSOR_DEFINITIONS:
+            - "DEBUG=1"
+            - "$(inherited)"
+    dependencies:
+      - target: PhaseRings
+
+  # ---------------------------------------------------------------------
+  # UI tests.
+  # ---------------------------------------------------------------------
+  PhaseRingsUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: PhaseRingsUITests
+        excludes:
+          - "Info.plist"
+    settings:
+      base:
+        CLANG_ANALYZER_NONNULL: YES
+        CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION: YES_AGGRESSIVE
+        CLANG_WARN_DOCUMENTATION_COMMENTS: YES
+        GCC_WARN_UNINITIALIZED_AUTOS: YES_AGGRESSIVE
+        INFOPLIST_FILE: PhaseRingsUITests/Info.plist
+        LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/Frameworks @loader_path/Frameworks"
+        PRODUCT_BUNDLE_IDENTIFIER: au.com.charlesmartin.PhaseRingsUITests
+        PRODUCT_NAME: "$(TARGET_NAME)"
+        SWIFT_VERSION: "5.0"
+        TEST_TARGET_NAME: PhaseRings
+      configs:
+        Debug:
+          DEBUG_INFORMATION_FORMAT: dwarf
+          MTL_ENABLE_DEBUG_INFO: YES
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
+          SWIFT_OPTIMIZATION_LEVEL: "-Onone"
+        Release:
+          COPY_PHASE_STRIP: NO
+          DEBUG_INFORMATION_FORMAT: "dwarf-with-dsym"
+          MTL_ENABLE_DEBUG_INFO: NO
+          SWIFT_OPTIMIZATION_LEVEL: "-Owholemodule"
+    dependencies:
+      - target: PhaseRings
+
+schemes:
+  PhaseRings:
+    build:
+      targets:
+        PhaseRings: all
+      parallelizeBuild: true
+      buildImplicitDependencies: true
+    run:
+      config: Release
+    test:
+      config: Debug
+      targets:
+        - PhaseRingsTests
+        - PhaseRingsUITests
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
+      customArchiveName: PhaseRings
+      revealArchiveInOrganizer: true

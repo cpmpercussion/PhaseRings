@@ -14,7 +14,11 @@ build/
 DerivedData/
 
 ## hvcc intermediate work dir (regenerable via scripts/build_hvcc.sh).
-PhaseRings/Heavy/.tmp/
+PhaseRingsKit/Heavy/.tmp/
+
+## Xcode project is generated from project.yml by XcodeGen — do not commit it.
+## Run `xcodegen generate` (or open the generated PhaseRings.xcodeproj).
+PhaseRings.xcodeproj/
 
 ## Various settings
 *.pbxuser
@@ -49,14 +53,6 @@ playground.xcworkspace
 # Package.pins
 .build/
 
-# CocoaPods
-#
-# We recommend against adding the Pods directory to your .gitignore. However
-# you should judge for yourself, the pros and cons are mentioned at:
-# https://guides.cocoapods.org/using/using-cocoapods.html#should-i-check-the-pods-directory-into-source-control
-#
-# Pods/
-
 # Carthage
 #
 # Add this line if you want to avoid checking in source code from Carthage dependencies.
@@ -75,8 +71,6 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots
 fastlane/test_output
-
-PhaseRings.xcworkspace/xcuserdata
 
 # Generated App Store screenshots (see scripts/make_screenshots.sh)
 screenshots/

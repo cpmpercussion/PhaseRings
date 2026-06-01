@@ -8,15 +8,15 @@
 #   build/hvcc/<patch-name>.log     -- stdout+stderr from the hvcc run
 #   build/hvcc/summary.txt          -- exit codes per patch
 #
-# Search paths: PhaseRingSynth/ itself (root environment patches) and
-# PhaseRingSynth/libs/ (every abstraction the roots reference).
+# Search paths: synth/ itself (root environment patches) and
+# synth/libs/ (every abstraction the roots reference).
 
 set -uo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 VENV_DIR="$REPO_ROOT/.venv-hvcc"
 HVCC="$VENV_DIR/bin/hvcc"
-SYNTH_DIR="$REPO_ROOT/PhaseRingSynth"
+SYNTH_DIR="$REPO_ROOT/synth"
 OUT_DIR="$REPO_ROOT/build/hvcc"
 
 if [ ! -x "$HVCC" ]; then
