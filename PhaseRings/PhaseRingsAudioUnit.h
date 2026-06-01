@@ -40,6 +40,12 @@ extern const OSType PhaseRingsAUManufacturer;  // 'CPMa'
 /// so a PRAudioUnitStore can rebroadcast the restored state to the UI.
 @property (nonatomic, copy, nullable) void (^instrumentStateRestoredHandler)(void);
 
+/// Queue a MIDI message for output to the host (via `MIDIOutputEventBlock`).
+/// Called from the main thread (the instrument surface's gesture → MIDI
+/// mapping); the bytes are drained and emitted on the render thread. The unit
+/// advertises a single output port via `MIDIOutputNames`. (Issue #27, B3a.)
+- (void)sendMIDIOutBytes:(const uint8_t *)bytes length:(NSUInteger)length;
+
 /// AudioComponentDescription for this unit ('aumu' / 'phrg' / 'CPMa').
 + (AudioComponentDescription)componentDescription;
 

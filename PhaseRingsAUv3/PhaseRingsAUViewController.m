@@ -40,6 +40,11 @@
         AUParameter *p = [weakSelf.audioUnit.parameterTree parameterWithAddress:4 /* sound */];
         p.value = (AUValue)scheme;
     };
+    // MIDI-out: queue the surface's MIDI for the host (drained on the render
+    // thread and emitted via MIDIOutputEventBlock).
+    instrument.midiOutSink = ^(const uint8_t *bytes, NSUInteger length) {
+        [weakSelf.audioUnit sendMIDIOutBytes:bytes length:length];
+    };
     self.instrument = instrument;
 
     [self wireSettingsStore];
