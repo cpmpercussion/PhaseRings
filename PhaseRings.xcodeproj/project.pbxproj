@@ -63,7 +63,6 @@
 		5623DB6E188CDB3800AA6C14 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5623DB6C188CDB3800AA6C14 /* InfoPlist.strings */; };
 		5623DB70188CDB3800AA6C14 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5623DB6F188CDB3800AA6C14 /* main.m */; };
 		5623DB74188CDB3800AA6C14 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5623DB73188CDB3800AA6C14 /* AppDelegate.m */; };
-		5623DB77188CDB3800AA6C14 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5623DB75188CDB3800AA6C14 /* Main.storyboard */; };
 		5623DB7A188CDB3800AA6C14 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5623DB79188CDB3800AA6C14 /* ViewController.m */; };
 		5623DB7C188CDB3800AA6C14 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5623DB7B188CDB3800AA6C14 /* Images.xcassets */; };
 		5623DB83188CDB3800AA6C14 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5623DB82188CDB3800AA6C14 /* XCTest.framework */; };
@@ -107,6 +106,7 @@
 		8F62F8157E2F351360B762BB /* PhaseRingsKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2FE08C08C2919251994F67C0 /* PhaseRingsKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		930216EC6F45AE5626733767 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 538D3207BA55517D124D41B0 /* AudioToolbox.framework */; };
 		938AA48867A9BFE774BB20C4 /* PRSettingsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FCFD7686990226EAA3708361 /* PRSettingsTests.m */; };
+		A11CE27000000000000A0001 /* SharedSurfaceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A11CE27000000000000A0002 /* SharedSurfaceTests.m */; };
 		9EC2B128CDB543EF40E22DAF /* PhaseRingsAUv3.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 77551EC3321C963F7AB732B2 /* PhaseRingsAUv3.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A2F2F47F68D85A492C2F0ADB /* HvSignalCPole.c in Sources */ = {isa = PBXBuildFile; fileRef = 2F65F711BE867C9CBBBBE90E /* HvSignalCPole.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		A5E492F877F4BF40AB965EEE /* HvControlDelay.c in Sources */ = {isa = PBXBuildFile; fileRef = AFE38C0BF3CBBEC07653C487 /* HvControlDelay.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
@@ -295,7 +295,6 @@
 		5623DB71188CDB3800AA6C14 /* PhaseRings-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PhaseRings-Prefix.pch"; sourceTree = "<group>"; };
 		5623DB72188CDB3800AA6C14 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		5623DB73188CDB3800AA6C14 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		5623DB76188CDB3800AA6C14 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		5623DB78188CDB3800AA6C14 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ViewController.h; path = PhaseRings/ViewController.h; sourceTree = "<group>"; };
 		5623DB79188CDB3800AA6C14 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ViewController.m; path = PhaseRings/ViewController.m; sourceTree = "<group>"; };
 		5623DB7B188CDB3800AA6C14 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
@@ -415,6 +414,7 @@
 		F86F9A948783EFA0B850E403 /* HeavyCore.mm */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.objcpp; name = HeavyCore.mm; path = PhaseRings/HeavyCore.mm; sourceTree = "<group>"; };
 		FCCFB89B486B5BC30E343E80 /* HvTable.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvTable.h; sourceTree = "<group>"; };
 		FCFD7686990226EAA3708361 /* PRSettingsTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PRSettingsTests.m; path = PRSettingsTests.m; sourceTree = "<group>"; };
+		A11CE27000000000000A0002 /* SharedSurfaceTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SharedSurfaceTests.m; path = SharedSurfaceTests.m; sourceTree = "<group>"; };
 		FFE32122497440293798A147 /* InstrumentViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = InstrumentViewController.m; path = PhaseRings/InstrumentViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -674,7 +674,6 @@
 			isa = PBXGroup;
 			children = (
 				562375D419F76CF7004F1281 /* Launch Screen.xib */,
-				5623DB75188CDB3800AA6C14 /* Main.storyboard */,
 				565A2322188F94AE00093B32 /* SingingBowlView.h */,
 				565A2323188F94AE00093B32 /* SingingBowlView.m */,
 				5674AF22195011370052121E /* MetatoneEnsembleView.h */,
@@ -794,6 +793,7 @@
 				7E06060200000000000000C0 /* PhaseRingsTests-Info.plist */,
 				965447B173741E68533AE789 /* PhaseRingsAudioUnitTests.m */,
 				FCFD7686990226EAA3708361 /* PRSettingsTests.m */,
+				A11CE27000000000000A0002 /* SharedSurfaceTests.m */,
 			);
 			path = PhaseRingsTests;
 			sourceTree = "<group>";
@@ -1104,7 +1104,6 @@
 				568BDC151A03488B0056CF22 /* SoundScraperSynthEnvironment.pd in Resources */,
 				5623DB7C188CDB3800AA6C14 /* Images.xcassets in Resources */,
 				5623DB6E188CDB3800AA6C14 /* InfoPlist.strings in Resources */,
-				5623DB77188CDB3800AA6C14 /* Main.storyboard in Resources */,
 				5658053618C82C44003F3394 /* Settings.bundle in Resources */,
 				562375D519F76CF7004F1281 /* Launch Screen.xib in Resources */,
 			);
@@ -1211,6 +1210,7 @@
 				7E06063100000000000000C0 /* GenerativeSetupCompositionTests.m in Sources */,
 				1308910E1736DA7E020B78BF /* PhaseRingsAudioUnitTests.m in Sources */,
 				938AA48867A9BFE774BB20C4 /* PRSettingsTests.m in Sources */,
+				A11CE27000000000000A0001 /* SharedSurfaceTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1327,14 +1327,6 @@
 				5623DB6D188CDB3800AA6C14 /* en */,
 			);
 			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-		5623DB75188CDB3800AA6C14 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				5623DB76188CDB3800AA6C14 /* Base */,
-			);
-			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

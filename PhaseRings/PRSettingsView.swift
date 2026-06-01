@@ -29,7 +29,8 @@ public struct PRSettingsView: View {
     // App-only settings: not part of the shared instrument model (the extension
     // has no MIDI / ensemble networking), so they bind straight to the standard
     // NSUserDefaults keys the app already uses. Shown only when showsAppSettings.
-    @AppStorage("midi_out") private var midiOut = true
+    // MIDI-out is always on (issue #27): emitted by the shared surface for both
+    // the app and the AUv3, so there is no longer a toggle for it.
     @AppStorage("midi_in") private var midiIn = true
     @AppStorage("remote_control_enabled") private var remoteControlEnabled = false
 
@@ -101,7 +102,6 @@ public struct PRSettingsView: View {
 
             if showsAppSettings {
                 Section(header: Text("MIDI")) {
-                    Toggle("MIDI Out Enabled", isOn: $midiOut)
                     Toggle("MIDI In Enabled", isOn: $midiIn)
                 }
                 Section(header: Text("Network")) {

@@ -48,6 +48,10 @@ static NSString *ReceiverForParam(AUParameterAddress addr) {
 }
 
 namespace {
+// Capacity of the outgoing-MIDI FIFO (single-producer main thread → single-
+// consumer render thread). Power of two so wrap is a mask.
+constexpr uint32_t kMidiOutCap = 256;
+
 // Stable, heap-owned state the render block captures. The host guarantees it
 // will not call the render block while render resources are deallocated, so
 // the block only ever sees a valid (or null) refCon. The atomic guards the
@@ -56,6 +60,15 @@ struct AURenderCtx {
     std::atomic<void *> heavyRefCon{nullptr};  // HeavyCore.renderRefCon (HeavyRenderState*)
     float *scratch[2] = { nullptr, nullptr };  // fallback output when the host hands us null buffers
     uint32_t scratchFrames = 0;
+
+    // Outgoing MIDI (B3a): the gesture→MIDI mapping runs on the main thread and
+    // enqueues here; the render block drains and emits via the host's
+    // MIDIOutputEventBlock. SPSC ring; 3-byte messages (the only kind we emit).
+    uint8_t midiOut[kMidiOutCap][3];
+    std::atomic<uint32_t> midiHead{0};  // producer (main)
+    std::atomic<uint32_t> midiTail{0};  // consumer (render)
+    // (__bridge) AUMIDIOutputEventBlock, kept alive by the AU's capturedMIDIOut.
+    std::atomic<void *> midiSink{nullptr};
 };
 }
 
@@ -66,6 +79,9 @@ struct AURenderCtx {
 @property (nonatomic, strong) AUAudioUnitBus *outputBus;
 @property (nonatomic, strong) AUAudioUnitBusArray *outputBusArray;
 @property (nonatomic, strong) AUParameterTree *parameterTree;
+// Strong copy of the host's MIDI-output block; keeps it alive while the render
+// block holds a __bridge pointer to it in _rc->midiSink.
+@property (nonatomic, copy, nullable) AUMIDIOutputEventBlock capturedMIDIOut;
 @end
 
 @implementation PhaseRingsAudioUnit
@@ -230,6 +246,27 @@ struct AURenderCtx {
     return _outputBusArray;
 }
 
+#pragma mark - MIDI out (B3a)
+
+// Advertise a single MIDI output port so hosts expose us as a MIDI source and
+// install a MIDIOutputEventBlock.
+- (NSArray<NSString *> *)MIDIOutputNames {
+    return @[@"PhaseRings"];
+}
+
+// Main-thread producer: enqueue a 3-byte message for the render thread to emit.
+// Drops the message if the FIFO is full (rather than block the UI).
+- (void)sendMIDIOutBytes:(const uint8_t *)bytes length:(NSUInteger)length {
+    if (length < 1 || !bytes) return;
+    uint32_t head = _rc->midiHead.load(std::memory_order_relaxed);
+    uint32_t next = (head + 1) & (kMidiOutCap - 1);
+    if (next == _rc->midiTail.load(std::memory_order_acquire)) return;  // full
+    _rc->midiOut[head][0] = bytes[0];
+    _rc->midiOut[head][1] = (length > 1) ? bytes[1] : 0;
+    _rc->midiOut[head][2] = (length > 2) ? bytes[2] : 0;
+    _rc->midiHead.store(next, std::memory_order_release);
+}
+
 #pragma mark - Render resources
 
 - (BOOL)allocateRenderResourcesAndReturnError:(NSError **)outError {
@@ -257,12 +294,20 @@ struct AURenderCtx {
     [self.core selectSynth:SynthForScheme(scheme)];
     [self pushAllParametersToCore];
 
+    // Capture the host's MIDI-output block (set before render begins). The
+    // strong property keeps it alive; the render block reads the bridged
+    // pointer. Cleared in deallocateRenderResources.
+    self.capturedMIDIOut = self.MIDIOutputEventBlock;
+    _rc->midiSink.store((__bridge void *)self.capturedMIDIOut, std::memory_order_release);
+
     _rc->heavyRefCon.store(self.core.renderRefCon, std::memory_order_release);
     return YES;
 }
 
 - (void)deallocateRenderResources {
     _rc->heavyRefCon.store(nullptr, std::memory_order_release);
+    _rc->midiSink.store(nullptr, std::memory_order_release);
+    self.capturedMIDIOut = nil;
     self.core = nil;
     [self freeScratch];
     [super deallocateRenderResources];
@@ -293,6 +338,20 @@ struct AURenderCtx {
                 outputData->mBuffers[i].mData = rc->scratch[i];
                 outputData->mBuffers[i].mDataByteSize = frameCount * sizeof(float);
             }
+        }
+
+        // Emit any queued outgoing MIDI through the host's block (B3a). Drains
+        // regardless of audio state so UI gestures still produce MIDI.
+        AUMIDIOutputEventBlock midiSink =
+            (__bridge AUMIDIOutputEventBlock)rc->midiSink.load(std::memory_order_acquire);
+        if (midiSink) {
+            uint32_t tail = rc->midiTail.load(std::memory_order_relaxed);
+            uint32_t head = rc->midiHead.load(std::memory_order_acquire);
+            while (tail != head) {
+                midiSink((AUEventSampleTime)timestamp->mSampleTime, 0 /*cable*/, 3, rc->midiOut[tail]);
+                tail = (tail + 1) & (kMidiOutCap - 1);
+            }
+            rc->midiTail.store(tail, std::memory_order_release);
         }
 
         void *refCon = rc->heavyRefCon.load(std::memory_order_acquire);

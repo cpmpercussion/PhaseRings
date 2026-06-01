@@ -5,164 +5,169 @@
 //  Created by Charles Martin on 20/01/2014.
 //  Copyright (c) 2014 Charles Martin. All rights reserved.
 //
+//  Thin app shell around the shared PhaseRingsKit InstrumentViewController.
+//  This file owns only the app-only subsystems: OSC ensemble networking, Core
+//  MIDI out, and the ensemble overlay. The playable surface, settings UI,
+//  ring/touch logic and MIDI mapping all live in the Kit (shared with AUv3).
+//
 
-#define TEST_PITCHES @[@36,@39,@43,@47,@51,@58,@62,@76,@80]
-#define METATONE_NEWSECTION_MESSAGE @"NEWSECTION"
 #define METATONE_NEWIDEA_MESSAGE @"new_idea"
-
-#define METATONE_EXPERIMENT_BOTH @"/metatone/experiment/both"
-#define METATONE_EXPERIMENT_BUTTON @"/metatone/experiment/button"
-#define METATONE_EXPERIMENT_SERVER @"/metatone/experiment/server"
-#define METATONE_EXPERIMENT_NONE @"/metatone/experiment/none"
-
-#define IPAD_SCREEN_DIAGONAL_LENGTH 1280
 #define ENSEMBLE_STATUS_MODE NO
-
-#define PHASE_SYNTH_PATCH @"PhaseRingSynthEnvironment.pd"
-#define STRING_SYNTH_PATCH @"CircleStringsSynthEnvironment.pd"
-#define BOWL_SYNTH_PATCH @"SoundScraperSynthEnvironment.pd"
-#define GONG_SYNTH_PATCH @"SoundScraperSynthEnvironment.pd"
-#define CROTALES_SYNTH_PATCH @"SoundScraperSynthEnvironment.pd"
-#define POT_SYNTH_PATCH @"SoundScraperSynthEnvironment.pd"
-#define MARIMBA_SYNTH_PATCH @"SoundScraperSynthEnvironment.pd"
-#define SOUND_SCHEMES @[PHASE_SYNTH_PATCH,STRING_SYNTH_PATCH,BOWL_SYNTH_PATCH,GONG_SYNTH_PATCH,CROTALES_SYNTH_PATCH,POT_SYNTH_PATCH,MARIMBA_SYNTH_PATCH]
 #define NUMBER_COMPOSITIONS_AVAILABLE 5
 #define BACKGROUND_SOUND_ALWAYS_ON YES
 // Modern iPads run hardware at 48 kHz; asking for 44.1 forced libpd to log
 // "could not set session sample rate". Match the hardware.
 #define SAMPLE_RATE 48000
 #define SOUND_OUTPUT_CHANNELS 2
-//#define TICKS_PER_BUFFER 4
 
 #import "ViewController.h"
 #import <AVFoundation/AVFoundation.h>
-#import "ScaleMaker.h"
-#import "SingingBowlSetup.h"
-#import "SingingBowlView.h"
 #import "MetatoneEnsembleView.h"
-#import "SingingBowlComposition.h"
-#import "GenerativeSetupComposition.h"
 #import "HeavyAudioEngine.h"
-#import <PhaseRingsKit/PhaseRingsKit.h>   // PRSettings / PRSettingsStore / PRCompositionFactory
-#import <PhaseRingsKit/PhaseRingsKit-Swift.h>  // PRSettingsHostingController (Phase F.2)
+#import <PhaseRingsKit/PhaseRingsKit.h>          // InstrumentViewController, PRSettings
 #import "PRUserDefaultsStore.h"
 
-#define CLOUD_SERVER_TESTING_MODE YES
-
-#define PERFORMANCE_TYPE_LOCAL 0
-#define PERFORMANCE_TYPE_REMOTE 1
-#define EXPERIMENT_TYPE_BOTH 2
-#define EXPERIMENT_TYPE_NONE 3
-#define EXPERIMENT_TYPE_BUTTON 4
-#define EXPERIMENT_TYPE_SERVER 5
-#define EXPERIMENT_TYPE_BUTTON_FADE 6
-
-@interface ViewController ()
+@interface ViewController () <InstrumentViewControllerDelegate>
 // Audio
-@property (strong,nonatomic) HeavyAudioEngine *audioEngine;
-@property (strong, nonatomic) SingingBowlSetup *bowlSetup;
-@property (nonatomic) UInt8 currentlyPanningPitch;
-@property (nonatomic) int playbackPanGestureState;
-@property (nonatomic) CGPoint lastPlaybackTouchPoint;
-@property (nonatomic) CGFloat lastPlaybackTouchVelocity;
-
+@property (strong, nonatomic) HeavyAudioEngine *audioEngine;
+// The shared instrument surface, embedded as a child view controller.
+@property (strong, nonatomic) InstrumentViewController *instrument;
 // Network
-@property (strong,nonatomic) MetatoneNetworkManager *networkManager;
-@property (strong,nonatomic) NSMutableDictionary *metatoneClients;
-//UI
-@property (weak, nonatomic) IBOutlet SingingBowlView *bowlView;
-@property (weak, nonatomic) IBOutlet MetatoneEnsembleView *ensembleView;
-
-//@property (nonatomic) CGFloat viewRadius;
-@property (weak, nonatomic) IBOutlet UISlider *distortSlider;
-@property (weak, nonatomic) IBOutlet UILabel *oscStatusLabel;
-@property (weak, nonatomic) IBOutlet UILabel *setupDescription;
-@property (weak, nonatomic) IBOutlet UIStepper *compositionStepper;
-@property (weak, nonatomic) IBOutlet UIButton *settingsButton;
-
-// Composition
-@property (strong,nonatomic) SingingBowlComposition *composition;
-@property (strong, nonatomic) NSDate* timeOfLastNewIdea;
-
-// Settings (shared, host-agnostic store; NSUserDefaults-backed in the app)
+@property (strong, nonatomic) MetatoneNetworkManager *networkManager;
+@property (strong, nonatomic) NSMutableDictionary *metatoneClients;
+// Ensemble overlay (app-only; hidden unless ENSEMBLE_STATUS_MODE).
+@property (weak, nonatomic) MetatoneEnsembleView *ensembleView;
+// Settings (shared, host-agnostic store; NSUserDefaults-backed in the app).
 @property (strong, nonatomic) id<PRSettingsStore> settingsStore;
+@property (strong, nonatomic) NSDate *timeOfLastNewIdea;
+// Classifier-driven distortion level (formerly held by a hidden slider).
+@property (nonatomic) float currentDistortion;
 @end
 
 @implementation ViewController
-#pragma mark - Setup
-- (id<PRSettingsStore>)settingsStore
-{
+
+#pragma mark - Lazy subsystems
+
+- (id<PRSettingsStore>)settingsStore {
     if (!_settingsStore) {
         _settingsStore = [[PRUserDefaultsStore alloc] init];
     }
     return _settingsStore;
 }
 
-- (HeavyAudioEngine *)audioEngine
-{
+- (HeavyAudioEngine *)audioEngine {
     if (!_audioEngine) {
         _audioEngine = [[HeavyAudioEngine alloc] initWithSampleRate:SAMPLE_RATE
-                                                            channels:SOUND_OUTPUT_CHANNELS];
+                                                           channels:SOUND_OUTPUT_CHANNELS];
     }
     return _audioEngine;
 }
 
-- (void)viewDidLoad
-{
+#pragma mark - Setup
+
+- (void)viewDidLoad {
     [super viewDidLoad];
-    [self.distortSlider setHidden:YES];
-    [self.experimentNewSetupButton setHidden:YES];
-    [self.compositionStepper setHidden:NO];
-    [self updateUITextLabels];
+    self.view.backgroundColor = [UIColor blackColor];
+
     [self setupAudioSession];
     [self startAudioEngine];
 
+    // Core MIDI: input notes play the engine; output is emitted by the Kit
+    // surface through its midiOutSink (wired in -embedInstrument).
     self.midiManager = [[MetatoneMidiManager alloc] init];
     __weak typeof(self) weakSelf = self;
     self.midiManager.noteOnHandler = ^(int pitch, int velocity) {
         [weakSelf.audioEngine sendNoteOn:1 pitch:pitch velocity:velocity];
     };
-    
-    // Setup composition
-    [self openComposition];
-    
-    // Setup Network
+
+    [self embedInstrument];
+    [self setupEnsembleOverlay];
+
+    // Network
     [self setupOSCLogging];
     self.timeOfLastNewIdea = [NSDate date];
-    
-    // Ensemble Heads Up Display
-    #pragma mark TODO What is Ensemble Status Mode and is it necessary anymore? Consider removing.
-    if (ENSEMBLE_STATUS_MODE) {
-        NSLog(@"Displaying Ensemble Status UI");
-        [self.ensembleView setHidden:NO];
-    } else {
-        NSLog(@"Hiding Ensemble Status UI");
-        [self.ensembleView setHidden:YES];
-    }
-    [self.experimentNewSetupButton setHidden:YES];
-    self.experimentMode = NO;
     self.listenToMetatoneClassifierMessages = YES;
+
+    // Push volume/effects changes to the engine whenever settings change (from
+    // the in-app sheet or the iOS Settings.app). Composition / sound / labels
+    // are handled by the embedded surface via its settings store.
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(settingsChangedPushToEngine)
+                                                 name:NSUserDefaultsDidChangeNotification
+                                               object:nil];
 }
 
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
-#pragma mark - Audio Setup Methods.
--(void) setupAudioSession {
-    // HeavyAudioEngine sets the session category (Playback + MixWithOthers)
-    // when it builds the AudioUnit. We just listen for interruptions here.
+// Build and embed the shared instrument surface, wiring it to the app-only
+// subsystems (audio engine, OSC, Core MIDI out).
+- (void)embedInstrument {
+    InstrumentViewController *instrument = [[InstrumentViewController alloc] init];
+    instrument.settingsStore = self.settingsStore;
+    instrument.showsAppSettings = YES;   // app shows MIDI / Network sections
+    instrument.screenshotMode = [[NSUserDefaults standardUserDefaults] boolForKey:@"screenshotMode"];
+
+    __weak typeof(self) weakSelf = self;
+    // Audio sink: the standalone app drives a HeavyAudioEngine.
+    instrument.coreProvider = ^id<HeavyEventSink> _Nullable {
+        return weakSelf.audioEngine;
+    };
+    // MIDI-out transport: route the Kit's MIDI bytes to Core MIDI.
+    instrument.midiOutSink = ^(const uint8_t *bytes, NSUInteger length) {
+        [weakSelf.midiManager.midi sendBytes:bytes size:(UInt32)length];
+    };
+    instrument.delegate = self;   // OSC mirror + setup-change broadcast
+
+    self.instrument = instrument;
+    [self addChildViewController:instrument];
+    instrument.view.frame = self.view.bounds;
+    instrument.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.view addSubview:instrument.view];
+    [instrument didMoveToParentViewController:self];
+
+    // Initial sound + volumes to the engine (the surface owns sound-scheme
+    // selection; the app owns the master/reverb/effects levels).
+    [self openPdPatch];
+}
+
+- (void)setupEnsembleOverlay {
+    MetatoneEnsembleView *ensemble = [[MetatoneEnsembleView alloc] initWithFrame:self.view.bounds];
+    ensemble.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    ensemble.backgroundColor = [UIColor clearColor];
+    ensemble.userInteractionEnabled = NO;
+    ensemble.hidden = !ENSEMBLE_STATUS_MODE;
+    [self.view addSubview:ensemble];
+    self.ensembleView = ensemble;
+}
+
+#pragma mark - Audio
+
+- (void)setupAudioSession {
+    // HeavyAudioEngine sets the session category when it builds the AudioUnit;
+    // we just listen for interruptions here.
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleAudioSessionInterruption:)
                                                  name:AVAudioSessionInterruptionNotification
                                                object:[AVAudioSession sharedInstance]];
 }
 
-- (void) startAudioEngine {
+- (void)startAudioEngine {
     [self openPdPatch];
     [self.audioEngine setActive:YES];
 }
 
-- (void) shutdownSoundProcessing {
+- (void)shutdownSoundProcessing {
     if (!BACKGROUND_SOUND_ALWAYS_ON) {
         [self.audioEngine setActive:NO];
+    }
+}
+
+- (void)restartSoundProcessing {
+    if (!self.audioEngine.isActive) {
+        [self openPdPatch];
+        [self.audioEngine setActive:YES];
     }
 }
 
@@ -180,668 +185,162 @@
     }
 }
 
-- (void) restartSoundProcessing {
-    if (!self.audioEngine.isActive) {
-        [self openPdPatch];
-        [self.audioEngine setActive:YES];
-    }
-}
-
-
-- (void) openComposition {
-    #pragma mark TODO - add some more interesting way to specify octave for each base note.
-    [[NSUserDefaults standardUserDefaults] synchronize];
-    // Composition + custom notes/scales now come from the shared settings store
-    // and are turned into a GenerativeSetupComposition by PRCompositionFactory,
-    // so the app and the AUv3 extension build the identical composition.
-    PRSettings *settings = [self.settingsStore currentSettings];
-    self.composition = [PRCompositionFactory compositionForSettings:settings];
-    [self.compositionStepper setMinimumValue:0];
-    [self.compositionStepper setMaximumValue:[self.composition numberOfSetups] - 1];
-    [self.compositionStepper setWraps:YES];
-    [self updateSetupDescription:0];
-
-    // Update bowl view.
-    NSArray *initialPitches = [self.composition firstSetup];
-    // Screenshot mode forces a fixed 9-pitch Mixolydian-rooted spread so App
-    // Store screenshots show a consistent, busier display (5 lit by
-    // lightAlternateRingsForScreenshot's every-other pattern).
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"screenshotMode"]) {
-        initialPitches = @[@48, @50, @52, @55, @57, @60, @62, @64, @67];
-    }
-    self.bowlSetup = [[SingingBowlSetup alloc] initWithPitches:[NSMutableArray arrayWithArray:initialPitches]];
-//    self.viewRadius = [self calculateMaximumRadius];
-    [self.bowlView drawSetup:self.bowlSetup];
-}
-
--(void) updateUITextLabels {
-    // Setup Description Label
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"setup_label"]) {
-        [self.setupDescription setHidden:NO];
-    } else {
-        [self.setupDescription setHidden:YES];
-    }
-    // OSC Status Label: only used to surface experiment-mode messages now.
-    [self.oscStatusLabel setHidden:!self.experimentMode];
-}
-
-- (void) updateBowlViewColourScheme {
-    [self.bowlView setSelectedColourScheme];
-}
-
-// Selects the Heavy synth context for the current sound scheme and pushes the
-// initial setting messages. Sound schemes 0/1 map to Phase / CircleStrings;
-// 2..6 all use SoundScraper and pick a sample via `selectsound`.
-- (void) openPdPatch {
-    [[NSUserDefaults standardUserDefaults] synchronize];
-    NSInteger soundScheme = [[NSUserDefaults standardUserDefaults] integerForKey:@"sound"];
+// Selects the Heavy synth for the current sound scheme and pushes the level
+// settings. Sound schemes 0/1 map to Phase / CircleStrings; 2..6 use
+// SoundScraper and pick a sample via `selectsound`.
+- (void)openPdPatch {
+    NSUserDefaults *d = [NSUserDefaults standardUserDefaults];
+    NSInteger soundScheme = [d integerForKey:@"sound"];
     HeavySynth synth;
     switch (soundScheme) {
         case 0:  synth = HeavySynthPhase;         break;
         case 1:  synth = HeavySynthCircleStrings; break;
         default: synth = HeavySynthSoundScraper;  break;
     }
-    NSLog(@"PATCH OPENING: sound=%ld -> synth=%ld", (long)soundScheme, (long)synth);
     [self.audioEngine selectSynth:synth];
-
     [self.audioEngine sendFloat:soundScheme toReceiver:@"selectsound"];
-    [self.audioEngine sendFloat:[[NSUserDefaults standardUserDefaults] floatForKey:@"master_volume"] toReceiver:@"mastervolume"];
-    [self.audioEngine sendFloat:[[NSUserDefaults standardUserDefaults] floatForKey:@"reverb_volume"] toReceiver:@"reverbvolume"];
-    [self.audioEngine sendFloat:[[NSUserDefaults standardUserDefaults] boolForKey:@"process_effects"] ? 1 : 0
-                     toReceiver:@"processeffects"];
+    [self.audioEngine sendFloat:[d floatForKey:@"master_volume"] toReceiver:@"mastervolume"];
+    [self.audioEngine sendFloat:[d floatForKey:@"reverb_volume"] toReceiver:@"reverbvolume"];
+    [self.audioEngine sendFloat:[d boolForKey:@"process_effects"] ? 1 : 0 toReceiver:@"processeffects"];
 }
 
-
-#pragma mark - UI Methods
-
-- (void) applyNewSetup: (NSArray *) setup {
-    NSLog(@"VC: Drawing new setup.");
-    self.bowlSetup = [[SingingBowlSetup alloc] initWithPitches:[NSMutableArray arrayWithArray:setup]];
-    [self.bowlView drawSetup:self.bowlSetup];
+// Any NSUserDefaults change (in-app sheet or the iOS Settings.app pane): push
+// the volume/effects levels to the engine, and let the surface re-apply
+// composition / sound / labels non-disruptively. For in-app-sheet edits the
+// surface already updated via the store's onChange, so this is a cheap no-op.
+- (void)settingsChangedPushToEngine {
+    [self openPdPatch];
+    [self.instrument applyCurrentSettings];
 }
 
-- (void) updateSetupDescription:(int)state {
-    NSString *newDescription = [[(GenerativeSetupComposition *) self.composition setupDescriptions] objectAtIndex:state];
-    [self.setupDescription setText:newDescription];
-    NSLog(@"VC: SETUP DESCRIPTION: %@",newDescription);
-}
-
-- (void) viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
-}
-
-- (void) viewWillAppear:(BOOL)animated {
-}
-
-- (void) viewDidLayoutSubviews {
-#pragma mark TODO is drawing the setup necessary each time the subviews are laid out? maybe for rotation.
-    // Laying out the subviews -- better draw the setup again?? Really?
-    // Maybe this protects agains issues with rotation.
-    [self.bowlView drawSetup:self.bowlSetup];
-    // Screenshot mode re-lights the rings after every layout pass because
-    // drawSetup wipes the layer dictionaries.
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"screenshotMode"]) {
-        [self.audioEngine sendFloat:0.0 toReceiver:@"mastervolume"];
-        [self.bowlView lightAlternateRingsForScreenshot];
-    }
-}
-
-#pragma mark - Touch and Performance Methods
-
--(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    for (UITouch * touch in [touches objectEnumerator]) {
-        CGPoint point = [touch locationInView:self.view];
-        int velocity = floorf(15 + (110*((touch.majorRadius)/125)));
-        if (velocity > 127) velocity = 127;
-        if (velocity < 0) velocity = 0;
-        [self.audioEngine sendNoteOn:1 pitch:[self noteFromPosition:point] velocity:velocity];
-        
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"midi_out"]) {
-            [self.networkManager sendMessageWithTouch:point Velocity:0.0];
-            const UInt8 noteOn[]  = { 0x90, [self noteFromPosition:point], velocity };
-            [self.midiManager.midi sendBytes:noteOn size:sizeof(noteOn)];
-            // TODO delay noteOff message by a short amount - say 20ms.
-            const UInt8 noteOff[]  = { 0x80, [self noteFromPosition:point], velocity };
-            [self.midiManager.midi sendBytes:noteOff size:sizeof(noteOff)];
-        }
-    }
-}
-
--(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-    for (UITouch *touch in [touches objectEnumerator]) {
-        CGFloat xVelocity = [touch locationInView:self.view].x - [touch previousLocationInView:self.view].x;
-        CGFloat yVelocity = [touch locationInView:self.view].y - [touch previousLocationInView:self.view].y;
-        CGFloat velocity = sqrt((xVelocity * xVelocity) + (yVelocity * yVelocity));
-        [self.networkManager sendMessageWithTouch:[touch locationInView:self.view] Velocity:velocity];
-    }
-}
-
--(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-    for (UITouch *touch in [touches objectEnumerator]) {
-        [self.networkManager sendMessageTouchEnded];
-        CGPoint touchFirstPoint = [touch locationInView:self.view];
-        // Maybe handle noteOff here for ending touches.
-        // TODO delay noteOff message by a short amount - say 20ms.
-        #pragma mark TODO: make sure note off is working properly.
-        const UInt8 noteOff[]  = { 0x80, [self noteFromPosition:touchFirstPoint], 0 };
-        [self.midiManager.midi sendBytes:noteOff size:sizeof(noteOff)];
-    }
-}
-
-- (IBAction)panGestureRecognized:(UIPanGestureRecognizer *)sender {
-    CGFloat xVelocity = [sender velocityInView:self.view].x;
-    CGFloat yVelocity = [sender velocityInView:self.view].y;
-    CGFloat velHyp = sqrt((xVelocity * xVelocity) + (yVelocity * yVelocity));
-    CGFloat velocity = log(velHyp)/10;
-    if (velocity < 0) velocity = 0;
-    if (velocity > 1) velocity = 1;
-    [self.audioEngine sendFloat:velocity toReceiver:@"singlevel" ];
-    [self.bowlView changeBowlVolumeTo:velocity];
-    
-    if ([sender state] == UIGestureRecognizerStateBegan) { // pan began
-        [self.audioEngine sendFloat:1 toReceiver:@"sing"];
-        [self.audioEngine sendFloat:(float) [self noteFromPosition:[sender locationInView:self.view]] toReceiver:@"singpitch"];
-        self.currentlyPanningPitch = (UInt8) [self noteFromPosition:[sender locationInView:self.view]];
-        
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"midi_out"]) {
-            const UInt8 noteOn[] = {0x90,self.currentlyPanningPitch,(UInt8) (velocity * 127)};
-            [self.midiManager.midi sendBytes:noteOn size:sizeof(noteOn)];
-        }
-        
-        [self.bowlView continuouslyAnimateBowlAtRadius:[self calculateDistanceFromCenter:[sender locationInView:self.view]]];
-        
-    } else if ([sender state] == UIGestureRecognizerStateChanged) { // pan changed
-        [self.audioEngine sendFloat:velocity toReceiver:@"singlevel" ]; // Send Velocity
-        // send angle message to PD.
-        CGFloat angle = [sender velocityInView:self.view].y/velHyp;
-        [self.audioEngine sendFloat:angle toReceiver:@"sinPanAngle"];
-        [self.bowlView changeContinuousColour:angle forRadius:[self calculateDistanceFromCenter:[sender locationInView:self.view]]];
-        //NSLog(@"%f",[sender velocityInView:self.view].y/velHyp);
-        // send distance var to PD.
-        CGFloat xTrans = [sender translationInView:self.view].x;
-        CGFloat yTrans = [sender translationInView:self.view].y;
-        CGFloat trans = sqrt((xTrans * xTrans) + (yTrans * yTrans)) / IPAD_SCREEN_DIAGONAL_LENGTH;
-        //NSLog(@"%f",trans);
-        [self.audioEngine sendFloat:trans toReceiver:@"panTranslation"];
-        [self.bowlView changeContinuousAnimationSpeed:(3*trans) + 0.1];
-        // Send Translation as MIDI CC
-        // UInt8 translation[] = {0x00,(UInt8) (trans * 127)};
-        // Send Angle as MIDI CC
-        // Send Velocity as note aftertouch.
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"midi_out"]) {
-            const UInt8 aftertouch[] = {0xA0,self.currentlyPanningPitch,(UInt8) (velocity * 127)};
-            [self.midiManager.midi sendBytes:aftertouch size:sizeof(aftertouch)];
-        }
-        
-    } else if (([sender state] == UIGestureRecognizerStateEnded) || ([sender state] == UIGestureRecognizerStateCancelled)) { // panended
-        [self.audioEngine sendFloat:0 toReceiver:@"singlevel"];
-        [self.audioEngine sendFloat:0 toReceiver:@"sing"];
-        [self.bowlView stopAnimatingBowl];
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"midi_out"]) {
-            const UInt8 noteOff[] = {0x80,self.currentlyPanningPitch,(UInt8) (velocity * 127)};
-            [self.midiManager.midi sendBytes:noteOff size:sizeof(noteOff)];
-        }
-    }
-}
-
-#pragma mark OSC Playback Methods
-
-/*! Playback a single tapped note */
--(void)playbackTappedNote:(CGPoint) point {
-    int velocity = 110;
-    [self.audioEngine sendNoteOn:1 pitch:[self noteFromPosition:point] velocity:velocity];
-    [self.bowlView animateBowlAtRadius:[self calculateDistanceFromCenter:point]];
-}
-
-#define PAN_STATE_NOTHING 0
-#define PAN_STATE_MOVING 1
-
-/*! Playback a moving note */
--(void)playbackMovingNote:(CGPoint) point Vel:(CGFloat)vel {
-    CGFloat angle = 0.5; //[sender velocityInView:self.view].y/velHyp;
-    CGFloat velHyp = vel;
-    CGFloat velocity = log(velHyp)/10;
-    if (velocity < 0) velocity = 0;
-    if (velocity > 1) velocity = 1;
-    CGFloat trans = velocity / IPAD_SCREEN_DIAGONAL_LENGTH;
-    // Always do these:
-    [self.audioEngine sendFloat:velocity toReceiver:@"singlevel" ];
-    [self.bowlView changeBowlVolumeTo:velocity];
-    
-    if (self.playbackPanGestureState == PAN_STATE_NOTHING) {
-        // Starting a Pan Gesture
-        // TODO some kind of check to start the pan.
-        [self.audioEngine sendFloat:1 toReceiver:@"sing"];
-        [self.audioEngine sendFloat:(float) [self noteFromPosition:point] toReceiver:@"singpitch"];
-        self.currentlyPanningPitch = (UInt8) [self noteFromPosition:point];
-        [self.bowlView continuouslyAnimateBowlAtRadius:[self calculateDistanceFromCenter:point]];
-        self.playbackPanGestureState = PAN_STATE_MOVING;
-        // start timer
-        self.playbackPanGestureTimeout = [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(playbackStopContinuousNotes) userInfo:nil repeats:NO];
-    } else {
-        // Continuing a Pan Gesture
-        [self.audioEngine sendFloat:velocity toReceiver:@"singlevel" ]; // Send Velocity
-        [self.audioEngine sendFloat:angle toReceiver:@"sinPanAngle"];
-        [self.bowlView changeContinuousColour:angle forRadius:[self calculateDistanceFromCenter:point]];
-        [self.bowlView changeContinuousAnimationSpeed:(3*trans) + 0.1];
-        [self.audioEngine sendFloat:trans toReceiver:@"panTranslation"];
-        [self.playbackPanGestureTimeout invalidate];
-        self.playbackPanGestureTimeout = [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(playbackStopContinuousNotes) userInfo:nil repeats:NO];
-        // extend timer
-    }
-}
-
-/*! Stop continuous notes in playback mode */
--(void)playbackStopContinuousNotes {
-    // Stopping a pan gesture
-    [self.audioEngine sendFloat:0 toReceiver:@"singlevel"];
-    [self.audioEngine sendFloat:0 toReceiver:@"sing"];
-    [self.bowlView stopAnimatingBowl];
-    self.playbackPanGestureState = PAN_STATE_NOTHING;
-    [self.playbackPanGestureTimeout invalidate];
-}
-
-/*! Process playback touches to tapped and moving notes. */
--(void)processPlaybackTouchWithX:(NSNumber *)x Y:(NSNumber *)y Vel:(NSNumber *)vel {
-    CGPoint point = CGPointMake(x.floatValue, y.floatValue);
-    CGFloat velocity = vel.floatValue;
-    if (vel.floatValue > 0.0) {
-        [self playbackMovingNote:point Vel:velocity];
-    } else {
-        [self playbackTappedNote:point];
-        [self playbackStopContinuousNotes]; // any tap stops a swipe.
-    }
-}
-
-#pragma mark UI Element Methods
-
-- (IBAction)steppedMoved:(UIStepper *)sender {
-    int state = (int) sender.value;
-    NSArray *newSetup = [self.composition setupForState:state];
-    [self applyNewSetup:newSetup];
-    [self updateSetupDescription:state];
-    [self.networkManager sendMetatoneMessage:@"CompositionStep" withState:[NSString stringWithFormat:@"%d",state]];
-}
-- (IBAction)sliderMoved:(UISlider *)sender {
-    [self setDistortion:[sender value]];
-}
--(void)setDistortion:(float)level {
+- (void)setDistortion:(float)level {
     [self.audioEngine sendFloat:level toReceiver:@"distortlevel"];
 }
 
-// New Setup Button just for Experiment Mode!
-- (IBAction)experimentNewSetupButtonPressed:(UIButton *)sender {
-    NSLog(@"New Setup Button Pressed!");
-    int state = (int) (self.compositionStepper.value + 1) % (int) (self.compositionStepper.maximumValue + 1);
-    NSLog(@"New Setup Number is: %d",state);
-    [self.compositionStepper setValue:state];
-    NSArray *newSetup = [self.composition setupForState:state];
-    [self applyNewSetup:newSetup];
-    [self updateSetupDescription:state];
-    // Now randomise sound!
-    [self randomiseSound];
-    // Send to everyone in the network.
-    [self.networkManager sendMetatoneMessageViaServer:@"CompositionStep" withState:[NSString stringWithFormat:@"%d",state]];
-    if (self.buttonFadingMode) {
-        // Fading out the button.
-        [self fadeOutNewSetupButton];
-    }
+#pragma mark - InstrumentViewControllerDelegate (local input → app-only OSC)
+
+- (void)instrument:(InstrumentViewController *)vc touchBeganAtPoint:(CGPoint)point pitch:(int)pitch velocity:(int)velocity {
+    [self.networkManager sendMessageWithTouch:point Velocity:0.0];
 }
 
-#define BUTTON_FADING_ANIMATION_TIME 2.0
-- (void) fadeInNewSetupButton {
-    //[self.experimentNewSetupButton setHidden:NO];
-    NSLog(@"Fading in the button");
-    [UIView animateWithDuration:BUTTON_FADING_ANIMATION_TIME animations:^{
-        self.experimentNewSetupButton.alpha = 1;
-    }];
-}
-- (void) fadeOutNewSetupButton {
-    //[self.experimentNewSetupButton setHidden:YES];
-    NSLog(@"Fading out the button");
-    [UIView animateWithDuration:BUTTON_FADING_ANIMATION_TIME animations:^{
-        self.experimentNewSetupButton.alpha = 0;
-    }];
+- (void)instrument:(InstrumentViewController *)vc touchMovedToPoint:(CGPoint)point velocity:(CGFloat)pixelVelocity {
+    [self.networkManager sendMessageWithTouch:point Velocity:pixelVelocity];
 }
 
-- (void) setVolumeReverbToDefault {
-    [self.audioEngine sendFloat:1.0 toReceiver:@"mastervolume"];
-    [self.audioEngine sendFloat:0.5 toReceiver:@"reverbvolume"];
+- (void)instrumentTouchEnded:(InstrumentViewController *)vc {
+    [self.networkManager sendMessageTouchEnded];
 }
 
-- (void) randomiseSound {
-    int newSound = arc4random_uniform((u_int32_t) [SOUND_SCHEMES count] -2 ) + 2;
-    [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newSound] forKey:@"sound"];
+- (void)instrument:(InstrumentViewController *)vc didChangeSetupState:(int)state {
+    [self.networkManager sendMetatoneMessage:@"CompositionStep"
+                                   withState:[NSString stringWithFormat:@"%d", state]];
 }
 
-#pragma mark - For note calculation.
--(CGFloat)calculateMaximumRadius {
-    CGPoint cent = self.view.center;
-    return sqrt((cent.x * cent.x) + (cent.y * cent.y));
-}
+#pragma mark - Network setup
 
--(CGFloat)calculateDistanceFromCenter:(CGPoint)touchPoint {
-    CGFloat xDist = (touchPoint.x - self.view.center.x);
-    CGFloat yDist = (touchPoint.y - self.view.center.y);
-    return sqrt((xDist * xDist) + (yDist * yDist));
-}
-
--(int)noteFromPosition:(CGPoint) point
-{
-    CGFloat distance = [self calculateDistanceFromCenter:point];
-    CGFloat radius = distance / [self calculateMaximumRadius];
-    int note = [self.bowlSetup pitchAtRadius:radius];
-    return note;
-}
-
-#pragma mark - Network Methods
--(void)stopOSCLogging
-{
+- (void)stopOSCLogging {
     NSLog(@"VC: stopOSCLogging was called");
 }
 
--(void)setupOSCLogging {
+- (void)setupOSCLogging {
     NSLog(@"VC: setupOSCLogging was called");
     self.metatoneClients = [[NSMutableDictionary alloc] init];
     self.networkManager = [[MetatoneNetworkManager alloc] initWithDelegate:self shouldOscLog:YES];
 }
 
--(void)searchingForLoggingServer {
+#pragma mark - MetatoneNetworkManagerDelegate
+
+- (void)searchingForLoggingServer {
     NSLog(@"VC: Searching for logging server.");
 }
 
--(void)stoppedSearchingForLoggingServer {
+- (void)stoppedSearchingForLoggingServer {
     NSLog(@"VC: Stopped searching for logging server.");
 }
 
--(void)metatoneClientFoundWithAddress:(NSString *)address andPort:(int)port andHostname:(NSString *)hostname {
-    [self.metatoneClients setObject:address forKey:hostname];
-    NSString *clientNames = @"";
-    for (NSString* name in [self.metatoneClients keyEnumerator]) {
-        clientNames = [clientNames stringByAppendingString:name];
-        clientNames = [clientNames stringByAppendingString:@"\n"];
-    }
-    //    [self.playerStatusLabel setText:clientNames];
-    [self.ensembleView drawEnsemble:self.metatoneClients];
-}
-
--(void)metatoneClientRemovedwithAddress:(NSString *)address andPort:(int)port andHostname:(NSString *)hostname {}
-
--(void)loggingServerFoundWithAddress:(NSString *)address andPort:(int)port andHostname:(NSString *)hostname {
+- (void)loggingServerFoundWithAddress:(NSString *)address andPort:(int)port andHostname:(NSString *)hostname {
     NSLog(@"VC: Connected to logging server: %@", hostname);
-    // Check whether to send remote control message to server.
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"remote_control_enabled"]) {
         [self.networkManager sendMessageRemoteControl];
     }
 }
 
--(void)didReceiveMetatoneMessageFrom:(NSString *)device withName:(NSString *)name andState:(NSString *)state {
-    NSLog(@"METATONE: Received app message from:%@ with state:%@",device,state);
-//        [self.networkManager sendMetatoneMessage:@"CompositionStep" withState:[NSString stringWithFormat:@"%d",state]];
+- (void)metatoneClientFoundWithAddress:(NSString *)address andPort:(int)port andHostname:(NSString *)hostname {
+    [self.metatoneClients setObject:address forKey:hostname];
+    [self.ensembleView drawEnsemble:self.metatoneClients];
+}
+
+- (void)metatoneClientRemovedwithAddress:(NSString *)address andPort:(int)port andHostname:(NSString *)hostname {}
+
+// Remote composition-step: jump the surface to a given setup index.
+- (void)didReceiveMetatoneMessageFrom:(NSString *)device withName:(NSString *)name andState:(NSString *)state {
+    NSLog(@"METATONE: Received app message from:%@ with state:%@", device, state);
     if ([name isEqualToString:@"CompositionStep"]) {
-        int newSetupNumber = [state intValue];
-        if (newSetupNumber > self.compositionStepper.maximumValue) {
-                    NSLog(@"METATONE: Can't set composition to state %d, above maximum value: %f", newSetupNumber,self.compositionStepper.maximumValue);
-                    newSetupNumber = self.compositionStepper.maximumValue;
-        }
-        NSLog(@"METATONE: Setting composition to state %d",newSetupNumber);
-        [self.compositionStepper setValue:newSetupNumber];
-        NSArray *newSetup = [self.composition setupForState:newSetupNumber];
-        [self applyNewSetup:newSetup];
-        [self updateSetupDescription:newSetupNumber];
-        if (self.experimentMode) [self randomiseSound];
-        if (self.buttonFadingMode) [self fadeOutNewSetupButton]; // fade out after somebody presses the button.
+        [self.instrument showSetupState:[state intValue]];
     }
 }
 
--(void)didReceiveEnsembleEvent:(NSString *)event forDevice:(NSString *)device withMeasure:(NSNumber *)measure {
-    NSLog(@"EnsembleEvent: %@ \n",event);
-    if (self.listenToMetatoneClassifierMessages) {
-        if ([event isEqualToString:METATONE_NEWIDEA_MESSAGE] && ([self.timeOfLastNewIdea timeIntervalSinceNow] < -10.0)) {
-            if (!self.buttonFadingMode) {
-                // Change the setup and update the sound.
-                NSArray *newSetup = [self.composition nextSetup];
-                [self applyNewSetup:newSetup];
-                if (self.experimentMode) [self randomiseSound];
-            } else {
-                // Fade in the button and wait for it to be pressed.
-                [self fadeInNewSetupButton];
-            }
-            //[self.compositionStepper setValue:(self.compositionStepper.value + 1)];
-            self.timeOfLastNewIdea = [NSDate date];
-        } else {
-            NSLog(@"Ensemble Event Received: Too soon after last event!");
-        }
+// Remote "new idea": advance to the next setup (wrapping).
+- (void)didReceiveEnsembleEvent:(NSString *)event forDevice:(NSString *)device withMeasure:(NSNumber *)measure {
+    NSLog(@"EnsembleEvent: %@", event);
+    if (!self.listenToMetatoneClassifierMessages) return;
+    if ([event isEqualToString:METATONE_NEWIDEA_MESSAGE] &&
+        [self.timeOfLastNewIdea timeIntervalSinceNow] < -10.0) {
+        int next = self.instrument.currentSetupState + 1;
+        if (next >= (int)self.instrument.numberOfSetups) next = 0;
+        [self.instrument showSetupState:next];
+        self.timeOfLastNewIdea = [NSDate date];
     }
 }
 
--(void)didReceiveGestureMessageFor:(NSString *)device withClass:(NSString *)class {
-    NSLog(@"Gesture: %@",class);
-    //    [self.gestureStatusLabel setText:class];
+- (void)didReceiveGestureMessageFor:(NSString *)device withClass:(NSString *)class {
+    NSLog(@"Gesture: %@", class);
 }
 
-#pragma TODO - fix up this section so that it does something more useful.
--(void)didReceiveEnsembleState:(NSString *)state withSpread:(NSNumber *)spread withRatio:(NSNumber*) ratio{
-    //    NSLog(@"Ensemble State: %@",state);
-    //    [self.ensembleStatusLabel setText:state];
-    // Cut for experiment.
-    if (self.listenToMetatoneClassifierMessages) {
-        if ([state isEqualToString:@"divergence"] && [spread floatValue] < 10.0 && [spread floatValue] > -10.0) {
-            float newDistort = [spread floatValue];
-            [self.distortSlider setValue:newDistort animated:YES];
+// Classifier ensemble state drives a subtle distortion swell on divergence.
+- (void)didReceiveEnsembleState:(NSString *)state withSpread:(NSNumber *)spread withRatio:(NSNumber *)ratio {
+    if (!self.listenToMetatoneClassifierMessages) return;
+    if ([state isEqualToString:@"divergence"] && [spread floatValue] < 10.0 && [spread floatValue] > -10.0) {
+        // `distortlevel` is a 0..1 control; clamp (the old hidden UISlider used
+        // to do this implicitly via its min/max).
+        float d = [spread floatValue];
+        if (d < 0) d = 0;
+        if (d > 1) d = 1;
+        self.currentDistortion = d;
+        [self setDistortion:self.currentDistortion];
+    } else {
+        float newDistort = self.currentDistortion * 0.5;
+        if (newDistort <= 1 && newDistort >= 0) {
+            self.currentDistortion = newDistort;
             [self setDistortion:newDistort];
-//            NSLog(@"Distortion Reduced to %f",newDistort);
-        } else {
-            float oldDistort = [self.distortSlider value];
-            float newDistort = oldDistort * 0.5;
-            if (newDistort <= 1 && newDistort >= 0) {
-                [self.distortSlider setValue:newDistort animated:YES];
-                [self setDistortion:newDistort];
-//                NSLog(@"Distortion Reduced to %f",newDistort);
-            }
         }
     }
 }
 
-#pragma mark TODO make sure that Performance Start Events are working
-// performance start events should be of the form:
-// /metatone/performance/start (string) deviceID (int) type (composition) int
-// the type should be
-//#define PERFORMANCE_TYPE_LOCAL 0
-//#define PERFORMANCE_TYPE_REMOTE 1
-//#define EXPERIMENT_TYPE_BOTH 2
-//#define EXPERIMENT_TYPE_NONE 3
-//#define EXPERIMENT_TYPE_BUTTON 4
-//#define EXPERIMENT_TYPE_SERVER 5
-//#define EXPERIMENT_TYPE_BUTTON_FADE 6
-//
-// the composition is an int that corresponds to one of the available compositions,
-// for the experiment, the int can be random (as long as everybody has the same one).
--(void)didReceivePerformanceStartEvent:(NSString *)event forDevice:(NSString *)device withType:(NSNumber *)type andComposition:(NSNumber *)composition {
-    // Open the new composition
-    NSLog(@"PERFORMANCE: Received Performance Event: %@, %@, %@, %@", event,device,type,composition);
-    int newComposition = [composition intValue] % NUMBER_COMPOSITIONS_AVAILABLE;
-    self.currentPerformanceType = [type intValue];
-    switch (self.currentPerformanceType) {
-        case PERFORMANCE_TYPE_LOCAL:
-            // Local
-            NSLog(@"PERFORMANCE: Starting Local Mode.");
-            [self.compositionStepper setHidden:YES];
-            [self.settingsButton setHidden:NO];
-            [self.setupDescription setHidden:NO];
-            [self.experimentNewSetupButton setHidden:YES];
-            self.listenToMetatoneClassifierMessages = YES;
-            self.buttonFadingMode = NO;
-            self.experimentMode = NO;
-            [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
-            break;
-        case PERFORMANCE_TYPE_REMOTE:
-            // Remote
-            NSLog(@"PERFORMANCE: Starting Remote Mode. Normal");
-            [self.compositionStepper setHidden:NO];
-            self.buttonFadingMode = NO;
-            [self.settingsButton setHidden:NO];
-            [self.setupDescription setHidden:NO];
-            [self.experimentNewSetupButton setHidden:YES];
-            self.listenToMetatoneClassifierMessages = YES;
-            self.experimentMode = NO;
-            break;
-        case EXPERIMENT_TYPE_BUTTON:
-            // Button
-            self.listenToMetatoneClassifierMessages = NO;
-            self.buttonFadingMode = NO;
-            self.experimentMode = YES;
-            [self.oscStatusLabel setText:@"EXPERIMENT: Button control."];
-            [self randomiseSound];
-            [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
-            NSLog(@"EXPERIMENT: Starting Button Mode.");
-            [self.compositionStepper setHidden:YES];
-            [self.settingsButton setHidden:YES];
-            [self.setupDescription setHidden:YES];
-            [self.experimentNewSetupButton setHidden:NO];
-            [self fadeInNewSetupButton];
-            break;
-        case EXPERIMENT_TYPE_SERVER:
-            NSLog(@"EXPERIMENT: Starting Server Mode.");
-            [self.oscStatusLabel setText:@"EXPERIMENT: Server control."];
-            // Server
-            self.listenToMetatoneClassifierMessages = YES;
-            self.buttonFadingMode = NO;
-            self.experimentMode = YES;
-            [self randomiseSound];
-            [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
-            [self.compositionStepper setHidden:YES];
-            [self.settingsButton setHidden:YES];
-            [self.setupDescription setHidden:YES];
-            [self.experimentNewSetupButton setHidden:YES];
-            [self fadeOutNewSetupButton];
-            break;
-        case EXPERIMENT_TYPE_NONE:
-            NSLog(@"EXPERIMENT: Starting None Mode.");
-            [self.oscStatusLabel setText:@"EXPERIMENT: No controls."];
-            // None
-            self.listenToMetatoneClassifierMessages = NO;
-            self.buttonFadingMode = NO;
-            self.experimentMode = YES;
-            [self randomiseSound];
-            [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
-            [self.compositionStepper setHidden:YES];
-            [self.settingsButton setHidden:YES];
-            [self.setupDescription setHidden:YES];
-            [self.experimentNewSetupButton setHidden:YES];
-            [self fadeOutNewSetupButton];
-            break;
-        case EXPERIMENT_TYPE_BOTH:
-            NSLog(@"EXPERIMENT: Starting Both Mode.");
-            [self.oscStatusLabel setText:@"EXPERIMENT: Button + Server."];
-            // Both
-            self.listenToMetatoneClassifierMessages = YES;
-            self.buttonFadingMode = NO;
-            self.experimentMode = YES;
-            [self randomiseSound];
-            [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
-            [self.compositionStepper setHidden:YES];
-            [self.settingsButton setHidden:YES];
-            [self.setupDescription setHidden:YES];
-            [self.experimentNewSetupButton setHidden:NO];
-            [self fadeInNewSetupButton];
-            break;
-        case EXPERIMENT_TYPE_BUTTON_FADE:
-            NSLog(@"EXPERIMENT: Starting Button-Fade Mode.");
-            [self.oscStatusLabel setText:@"EXPERIMENT: Button ⨯ Server."];
-            // Fade
-            self.listenToMetatoneClassifierMessages = YES;
-            self.buttonFadingMode = YES;
-            self.experimentMode = YES;
-            [self randomiseSound];
-            [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithInt:newComposition] forKey:@"composition"];
-            [self.compositionStepper setHidden:YES];
-            [self.settingsButton setHidden:YES];
-            [self.setupDescription setHidden:YES];
-            [self.experimentNewSetupButton setHidden:NO];
-            [self fadeOutNewSetupButton];
-            break;
-        default:
-            NSLog(@"PERFORMANCE: Unknown type: %d, changing to remote type!",self.currentPerformanceType);
-            self.currentPerformanceType = PERFORMANCE_TYPE_REMOTE;
-            // Remote
-            [self.oscStatusLabel setText:@"Unknown performance type."];
-            [self.compositionStepper setHidden:NO];
-            [self.settingsButton setHidden:NO];
-            [self.setupDescription setHidden:NO];
-            [self.experimentNewSetupButton setHidden:YES];
-            self.listenToMetatoneClassifierMessages = YES;
-            self.buttonFadingMode = NO;
-            self.experimentMode = YES;
-            break;
-    }
-}
-
--(void)didReceivePerformanceEndEvent:(NSString *)event forDevice:(NSString *)device {
-    // Performance end - go back to default configuration.
-    NSLog(@"PERFORMANCE: Ended, going back to default state");
-    [self searchingForLoggingServer];
-    [self.compositionStepper setHidden:NO];
-    [self.settingsButton setHidden:NO];
-    [self.experimentNewSetupButton setHidden:YES];
-    self.listenToMetatoneClassifierMessages = YES;
-    [self updateUITextLabels];
-    [self updateBowlViewColourScheme];
-}
-
--(void) didReceiveGesturePlayMessageFor:(NSString*)device withClass:(NSString*)cla {
-    // Do something with the message.
-}
--(void) didReceiveTouchPlayMessageFor:(NSString*)device X:(NSNumber*)x Y:(NSNumber*)y vel:(NSNumber*)vel {
-    [self processPlaybackTouchWithX:x Y:y Vel:vel];
-}
-
-#pragma mark Experiment Mode Methods
-
--(void)startExperimentMode {
-    NSLog(@"Entering Experiment Mode:");
-}
-
--(void)stopExperimentMode {
-    NSLog(@"Entering Normal Mode: Configuring UI Elements...");
-    [self.compositionStepper setHidden:NO];
-    [self.settingsButton setHidden:NO];
-    [self.experimentNewSetupButton setHidden:YES];
-    [self updateUITextLabels];
-    [self updateBowlViewColourScheme];
-}
-
-#pragma mark Shared SwiftUI Settings (Phase F.2 / F.5)
-// The shared PhaseRingsKit settings screen is now the app's only settings UI
-// (IASK retired in F.5). Presented as a medium/large detent sheet, bound to the
-// same PRSettingsStore the composition is built from, plus the app-only MIDI /
-// Network sections. Reloads the composition on dismiss (Done or swipe-down) to
-// apply sound / volume / setup changes.
-- (IBAction)showSettingsModal:(id)sender {
-    if (self.presentedViewController) {
-        [self dismissViewControllerAnimated:YES completion:nil];
-        return;
-    }
-    PRSettingsHostingController *settings =
-        [[PRSettingsHostingController alloc] initWithStore:self.settingsStore];
-    settings.showsAppSettings = YES;  // app shows MIDI / Network; the extension doesn't
-    __weak typeof(self) weakSelf = self;
-    settings.onDone = ^{ [weakSelf dismissSwiftUISettings]; };
-    settings.presentationController.delegate = self;  // swipe-to-dismiss reload
-    [self presentViewController:settings animated:YES completion:nil];
-}
-
-- (void)dismissSwiftUISettings {
-    [self dismissViewControllerAnimated:YES completion:^{
-        [self openComposition];
+// Ensemble performance start: everyone moves to the same composition.
+- (void)didReceivePerformanceStartEvent:(NSString *)event forDevice:(NSString *)device withType:(NSNumber *)type andComposition:(NSNumber *)composition {
+    NSLog(@"PERFORMANCE: Received Performance Event: %@, %@, %@", event, device, composition);
+    NSInteger newComposition = [composition intValue] % NUMBER_COMPOSITIONS_AVAILABLE;
+    [self.settingsStore updateSettings:^(PRSettings *settings) {
+        settings.composition = newComposition;
     }];
+    self.listenToMetatoneClassifierMessages = YES;
 }
 
-- (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController {
-    // Called when the settings sheet is swiped down; reload so the edited
-    // settings apply (mirrors the Done path).
-    if ([presentationController.presentedViewController isKindOfClass:[PRSettingsHostingController class]]) {
-        [self openComposition];
+- (void)didReceivePerformanceEndEvent:(NSString *)event forDevice:(NSString *)device {
+    NSLog(@"PERFORMANCE: Ended, going back to default state");
+    self.listenToMetatoneClassifierMessages = YES;
+}
+
+- (void)didReceiveGesturePlayMessageFor:(NSString *)device withClass:(NSString *)cla {}
+
+// Remote-OSC playback: animate the rings + play audio as a peer touches.
+- (void)didReceiveTouchPlayMessageFor:(NSString *)device X:(NSNumber *)x Y:(NSNumber *)y vel:(NSNumber *)vel {
+    CGPoint point = CGPointMake(x.floatValue, y.floatValue);
+    if (vel.floatValue > 0.0) {
+        [self.instrument playbackSwirlAtPoint:point velocity:vel.floatValue];
+    } else {
+        [self.instrument playbackTapAtPoint:point];
     }
 }
 

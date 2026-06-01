@@ -25,7 +25,19 @@ typedef NS_ENUM(NSInteger, HeavySynth) {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface HeavyCore : NSObject
+/// Control-event sink for the Heavy DSP. Both the host-agnostic `HeavyCore`
+/// (driven by the AUv3 render block) and the standalone app's
+/// `HeavyAudioEngine` conform, so the shared `InstrumentViewController` can
+/// drive either through its `coreProvider` without knowing which host it is
+/// running in. See issue #27 (Phase F.5b, B2).
+@protocol HeavyEventSink <NSObject>
+- (void)selectSynth:(HeavySynth)synth;
+- (void)sendFloat:(float)value toReceiver:(NSString *)receiver;
+- (void)sendBangToReceiver:(NSString *)receiver;
+- (void)sendNoteOn:(int)channel pitch:(int)pitch velocity:(int)velocity;
+@end
+
+@interface HeavyCore : NSObject <HeavyEventSink>
 
 - (instancetype)initWithSampleRate:(double)sampleRate channels:(int)channels;
 

@@ -31,7 +31,7 @@
 
     InstrumentViewController *instrument = [[InstrumentViewController alloc] init];
     __weak PhaseRingsAUViewController *weakSelf = self;
-    instrument.coreProvider = ^HeavyCore * _Nullable {
+    instrument.coreProvider = ^id<HeavyEventSink> _Nullable {
         return weakSelf.audioUnit.core;
     };
     // Route sound-scheme changes through the AU's `sound` parameter so the
@@ -39,6 +39,11 @@
     instrument.soundSchemeHandler = ^(NSInteger scheme) {
         AUParameter *p = [weakSelf.audioUnit.parameterTree parameterWithAddress:4 /* sound */];
         p.value = (AUValue)scheme;
+    };
+    // MIDI-out: queue the surface's MIDI for the host (drained on the render
+    // thread and emitted via MIDIOutputEventBlock).
+    instrument.midiOutSink = ^(const uint8_t *bytes, NSUInteger length) {
+        [weakSelf.audioUnit sendMIDIOutBytes:bytes length:length];
     };
     self.instrument = instrument;
 
