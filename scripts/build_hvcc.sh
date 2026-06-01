@@ -5,16 +5,16 @@
 # any .pd file under PhaseRingSynth/.
 #
 # Layout produced:
-#   PhaseRings/Heavy/shared/                  -- Heavy runtime (one copy)
-#   PhaseRings/Heavy/Heavy_PhaseRing/         -- patch-specific .cpp/.h/.hpp only
-#   PhaseRings/Heavy/Heavy_CircleStrings/
-#   PhaseRings/Heavy/Heavy_SoundScraper/
+#   PhaseRingsKit/Heavy/shared/               -- Heavy runtime (one copy)
+#   PhaseRingsKit/Heavy/Heavy_PhaseRing/      -- patch-specific .cpp/.h/.hpp only
+#   PhaseRingsKit/Heavy/Heavy_CircleStrings/
+#   PhaseRingsKit/Heavy/Heavy_SoundScraper/
 #
 # Why split? Each `hvcc` run emits the full runtime alongside the
 # patch-specific Heavy_<Name>.cpp; the runtime files are byte-identical across
 # contexts (with SoundScraper adding HvControlPrint / HvSignalSamphold).
 # Linking all three trees would produce hundreds of duplicate symbols, so we
-# consolidate runtime files into PhaseRings/Heavy/shared/ (taking the union
+# consolidate runtime files into PhaseRingsKit/Heavy/shared/ (taking the union
 # across contexts) and keep only the per-context entry points beside it.
 #
 # See hvcc-migration-plan.md (Step 1) for context.
@@ -25,7 +25,7 @@ REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 VENV_DIR="$REPO_ROOT/.venv-hvcc"
 HVCC="$VENV_DIR/bin/hvcc"
 SYNTH_DIR="$REPO_ROOT/PhaseRingSynth"
-OUT_ROOT="$REPO_ROOT/PhaseRings/Heavy"
+OUT_ROOT="$REPO_ROOT/PhaseRingsKit/Heavy"
 TMP_ROOT="$OUT_ROOT/.tmp"
 
 if [ ! -x "$HVCC" ]; then
