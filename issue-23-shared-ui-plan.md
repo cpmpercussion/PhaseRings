@@ -5,11 +5,13 @@
 stripped-down `InstrumentViewController` (plugin). Finishes the deferred
 **Phase F step 3** of `auv3-plan.md`.
 
-**Status:** F.0–F.2 implemented (mixed ObjC/Swift Kit; settings model/store/
-composition factory; shared SwiftUI settings screen). **Deployment floor raised
-14 → 16** during F.2 so the shared settings sheet can use `presentationDetents`
-(via `UISheetPresentationController`) and F.3 can use `ViewThatFits` for the AU
-host pane. F.3–F.5 remain.
+**Status:** F.0–F.3 implemented (mixed ObjC/Swift Kit; settings model/store/
+composition factory; shared SwiftUI settings screen; expanded
+`InstrumentViewController` on-screen UI driven by the settings store).
+**Deployment floor raised 14 → 16** during F.2 so the shared settings sheet can
+use `presentationDetents` (via `UISheetPresentationController`). F.4 (AU
+`fullState` round-trip) and F.5 (retrofit the standalone app + retire IASK)
+remain.
 
 ---
 
@@ -142,18 +144,28 @@ one settings screen + a thin `ObservableObject` bridge.
    detents are all available; verify layout in a small AU host pane, not just
    full-screen (F.3 can lean on `ViewThatFits`).
 
-### Phase F.3 — Expand `InstrumentViewController`'s on-screen UI (PhaseRingsKit)
-Per Charles's issue comment — a cleaner on-screen interface:
-1. Replace the ad-hoc 3-pill bar with: **scale/setup label**, a **setup stepper**
-   (currently app-only — `compositionStepper`), and a **Settings button** that
-   presents `PRSettingsHostingController` (UIKit chrome, stays ObjC).
-2. Drive composition + labels from `PRSettings` instead of the hardcoded
-   `reloadComposition` defaults (`InstrumentViewController.m:166`).
-3. Keep the `coreProvider` / `soundSchemeHandler` block seam; route *all* setting
-   changes through the store, and have each host observe the store to push to its
-   core / AU params.
-4. Ensure it lays out in a small host pane as well as full-screen iPad
-   (carry-over watch-item from `auv3-plan.md` risks).
+### Phase F.3 — Expand `InstrumentViewController`'s on-screen UI (PhaseRingsKit) ✅
+Per Charles's issue comment — a cleaner on-screen interface. **Implemented:**
+1. Replaced the ad-hoc 3-pill bar (sound menu / New Setup / Labels) with a
+   **setup stepper** (`UIStepper`, wraps, range from `numberOfSetups`), a
+   **setup description label** (shown per the `setup_label` setting), and a
+   **Settings gear** that presents `PRSettingsHostingController`. Sound scheme +
+   note labels moved off the bar into the shared settings screen.
+2. Composition + labels now come from `PRSettings` via
+   `+[PRCompositionFactory compositionForSettings:]` — the hardcoded
+   `@[45,50,57]`/`IONIAN…` defaults are gone.
+3. The controller gained a `settingsStore` property (injectable; defaults to a
+   new in-memory **`PRMemoryStore`** when no host injects one). It subscribes to
+   `store.onChange` and applies *only what moved* in `-settingsDidChange:`
+   (rebuild composition vs. just relabel vs. re-apply sound), so toggling a label
+   doesn't reset the player to setup 0. Sound still routes out through the
+   existing `soundSchemeHandler` seam (→ AU `sound` param in the extension).
+4. Layout uses safe-area constraints; the bar is compact for small AU host panes.
+
+**Deferred to F.4:** AU parameter-tree ↔ store sync (today the extension's
+`PRMemoryStore` is seeded from defaults, not the AU's restored `sound`/volumes).
+`PRMemoryStore` is the interim extension backing store; F.4 swaps in a
+`fullState`-persisted `PRAudioUnitStore`.
 
 ### Phase F.4 — AU state round-trip (extension)
 1. Add `fullState` / `fullStateForDocument` override to `PhaseRingsAudioUnit`

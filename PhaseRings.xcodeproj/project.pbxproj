@@ -83,6 +83,7 @@
 		57342792CD9AAF60FB37E637 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2B747B8EB5FAFADA11A2B48 /* AVFoundation.framework */; };
 		574954270C3229547739C826 /* Heavy_PhaseRing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 936EFAFD6A5E031DE019B8A2 /* Heavy_PhaseRing.cpp */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		5D828F93851BCE01C7E66FF6 /* GenerativeSetupComposition.m in Sources */ = {isa = PBXBuildFile; fileRef = 564C44B21952B05500FD0E8B /* GenerativeSetupComposition.m */; };
+		625F3EB857C046FE0666D5DA /* PRMemoryStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F513B27E8EA89F90FF28C1B4 /* PRMemoryStore.m */; };
 		65FE414BEDAAEBA5C91E2A2F /* HvControlSystem.c in Sources */ = {isa = PBXBuildFile; fileRef = EBCAD8691E8C53B8357E1468 /* HvControlSystem.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		6EF37449FDFB43B4A2A949E5 /* InstrumentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FFE32122497440293798A147 /* InstrumentViewController.m */; };
 		6FE34876A8184B50C98CD9BE /* SingingBowlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 565A2323188F94AE00093B32 /* SingingBowlView.m */; };
@@ -130,6 +131,7 @@
 		EA39E0A3B84A1CBE6F0AB7D5 /* PRSettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87C2283932AFF5AB2A220D26 /* PRSettingsModel.swift */; };
 		EBA106E6CC90C9847C4DA586 /* HeavyCore.mm in Sources */ = {isa = PBXBuildFile; fileRef = F86F9A948783EFA0B850E403 /* HeavyCore.mm */; };
 		F170830076459FD0B2652B7F /* CoreAudioKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D299B6AB6006E8D78B451066 /* CoreAudioKit.framework */; };
+		F6752DCCB9AF8D03D506A9BA /* PRMemoryStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 778CBCB62959C924ED6BC3EA /* PRMemoryStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F742BE5C2FC6A0452DEDA304 /* HvSignalRPole.c in Sources */ = {isa = PBXBuildFile; fileRef = 369F582658F496A2B37FBCF9 /* HvSignalRPole.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		FA0C807880A753A39574EE64 /* HvSignalDel1.c in Sources */ = {isa = PBXBuildFile; fileRef = 127F253A7DB2514DB13EB424 /* HvSignalDel1.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		FBB7C9F4D40ADA3AB25BAF43 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F30EBB0404A92871DD903C55 /* UIKit.framework */; };
@@ -348,6 +350,7 @@
 		751818BB69001020785AE3AF /* Heavy_SoundScraper.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; path = Heavy_SoundScraper.cpp; sourceTree = "<group>"; };
 		76616B931294942E675C36DB /* libPods-PhaseRings.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PhaseRings.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		77551EC3321C963F7AB732B2 /* PhaseRingsAUv3.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PhaseRingsAUv3.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		778CBCB62959C924ED6BC3EA /* PRMemoryStore.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = PRMemoryStore.h; path = PhaseRings/PRMemoryStore.h; sourceTree = "<group>"; };
 		78DCDC29E9C8E3AE1049DC98 /* PRSettings.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = PRSettings.h; path = PhaseRings/PRSettings.h; sourceTree = "<group>"; };
 		7DA1734D264D6D9B7D08B993 /* HvHeavy.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvHeavy.h; sourceTree = "<group>"; };
 		7E06060200000000000000C0 /* PhaseRingsTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PhaseRingsTests-Info.plist"; sourceTree = "<group>"; };
@@ -402,6 +405,7 @@
 		EBCAD8691E8C53B8357E1468 /* HvControlSystem.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvControlSystem.c; sourceTree = "<group>"; };
 		F30EBB0404A92871DD903C55 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		F3B4773062766A7B145C5404 /* HvControlRandom.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvControlRandom.c; sourceTree = "<group>"; };
+		F513B27E8EA89F90FF28C1B4 /* PRMemoryStore.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PRMemoryStore.m; path = PhaseRings/PRMemoryStore.m; sourceTree = "<group>"; };
 		F7EC8D7468ECD073FEA16275 /* HvControlExpr.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = HvControlExpr.c; sourceTree = "<group>"; };
 		F841592971D76460030D39A6 /* HvSignalRPole.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvSignalRPole.h; sourceTree = "<group>"; };
 		F86F9A948783EFA0B850E403 /* HeavyCore.mm */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.objcpp; name = HeavyCore.mm; path = PhaseRings/HeavyCore.mm; sourceTree = "<group>"; };
@@ -722,6 +726,8 @@
 				2BE3F991A7939CB1395D77D0 /* PRUserDefaultsStore.m */,
 				C910836788C6908B3BA9A9B4 /* PRSettingsView.swift */,
 				6EEF2373C042A5410672020B /* PRSettingsHostingController.swift */,
+				778CBCB62959C924ED6BC3EA /* PRMemoryStore.h */,
+				F513B27E8EA89F90FF28C1B4 /* PRMemoryStore.m */,
 			);
 			name = controllers;
 			sourceTree = "<group>";
@@ -911,6 +917,7 @@
 				0A688F9D0AC9E4656802B1FD /* PRSettings.h in Headers */,
 				090DC4550EFCF6D580500EF1 /* PRSettingsStore.h in Headers */,
 				0EB8783B1D0D31182A97BC34 /* PRCompositionFactory.h in Headers */,
+				F6752DCCB9AF8D03D506A9BA /* PRMemoryStore.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1282,6 +1289,7 @@
 				EA39E0A3B84A1CBE6F0AB7D5 /* PRSettingsModel.swift in Sources */,
 				ACD34839FFF44C7A2AA14BCC /* PRSettingsView.swift in Sources */,
 				4EE25A65A679B1AC7359750C /* PRSettingsHostingController.swift in Sources */,
+				625F3EB857C046FE0666D5DA /* PRMemoryStore.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

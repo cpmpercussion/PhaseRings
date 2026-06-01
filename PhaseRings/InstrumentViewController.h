@@ -11,10 +11,17 @@
 
 #import <UIKit/UIKit.h>
 #import <PhaseRingsKit/HeavyCore.h>
+#import <PhaseRingsKit/PRSettingsStore.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface InstrumentViewController : UIViewController
+
+/// Backing store for the instrument's settings (composition, notes/scales,
+/// sound, labels). Drives the ring layout and the shared settings screen. Hosts
+/// may inject their own (app → NSUserDefaults, AUv3 → fullState in F.4); if left
+/// unset, a session-only in-memory store is created on first access.
+@property (nonatomic, strong, null_resettable) id<PRSettingsStore> settingsStore;
 
 /// Supplies the live core to send events to, or nil when audio isn't running.
 /// Pulled on demand so it tolerates the AU allocating its core lazily. The

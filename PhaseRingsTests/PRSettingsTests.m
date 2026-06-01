@@ -123,4 +123,43 @@ static const NSInteger kBaseA = 33;
     [d removePersistentDomainForName:suite];
 }
 
+#pragma mark - PRMemoryStore (Phase F.3 default backing store)
+
+- (void)testMemoryStoreSeedsFromDefaults {
+    PRSettings *s = [[[PRMemoryStore alloc] init] currentSettings];
+    PRSettings *defaults = [PRSettings defaultSettings];
+    XCTAssertEqual(s.sound, defaults.sound);
+    XCTAssertEqual(s.composition, defaults.composition);
+}
+
+- (void)testMemoryStoreRoundTripsAndIsolatesSnapshots {
+    PRMemoryStore *store = [[PRMemoryStore alloc] init];
+    [store updateSettings:^(PRSettings *s) {
+        s.composition = 3;
+        s.note1 = 7;
+        s.scale2 = 9;
+        s.masterVolume = 1.25f;
+    }];
+    PRSettings *r = [store currentSettings];
+    XCTAssertEqual(r.composition, 3);
+    XCTAssertEqual(r.note1, 7);
+    XCTAssertEqual(r.scale2, 9);
+    XCTAssertEqualWithAccuracy(r.masterVolume, 1.25f, 0.0001);
+
+    // currentSettings hands back a copy: mutating it must not affect the store.
+    r.composition = 0;
+    XCTAssertEqual([store currentSettings].composition, 3);
+}
+
+- (void)testMemoryStoreFiresOnChange {
+    PRMemoryStore *store = [[PRMemoryStore alloc] init];
+    XCTestExpectation *fired = [self expectationWithDescription:@"onChange"];
+    store.onChange = ^(PRSettings *s) {
+        XCTAssertEqual(s.sound, 5);
+        [fired fulfill];
+    };
+    [store updateSettings:^(PRSettings *s) { s.sound = 5; }];
+    [self waitForExpectations:@[fired] timeout:1.0];
+}
+
 @end
