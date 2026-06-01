@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(log show *)",
+      "Bash(otool *)",
+      "Bash(xcrun simctl list *)"
+    ]
+  }
+}

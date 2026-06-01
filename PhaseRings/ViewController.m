@@ -27,7 +27,6 @@
 #define MARIMBA_SYNTH_PATCH @"SoundScraperSynthEnvironment.pd"
 #define SOUND_SCHEMES @[PHASE_SYNTH_PATCH,STRING_SYNTH_PATCH,BOWL_SYNTH_PATCH,GONG_SYNTH_PATCH,CROTALES_SYNTH_PATCH,POT_SYNTH_PATCH,MARIMBA_SYNTH_PATCH]
 #define NUMBER_COMPOSITIONS_AVAILABLE 5
-#define BASE_A 33
 #define BACKGROUND_SOUND_ALWAYS_ON YES
 // Modern iPads run hardware at 48 kHz; asking for 44.1 forced libpd to log
 // "could not set session sample rate" and left the published IAA AU
@@ -46,6 +45,9 @@
 #import "SingingBowlComposition.h"
 #import "GenerativeSetupComposition.h"
 #import "HeavyAudioEngine.h"
+#import <PhaseRingsKit/PhaseRingsKit.h>   // PRSettings / PRSettingsStore / PRCompositionFactory
+#import <PhaseRingsKit/PhaseRingsKit-Swift.h>  // PRSettingsHostingController (Phase F.2)
+#import "PRUserDefaultsStore.h"
 
 #define CLOUD_SERVER_TESTING_MODE YES
 
@@ -83,6 +85,9 @@
 // Composition
 @property (strong,nonatomic) SingingBowlComposition *composition;
 @property (strong, nonatomic) NSDate* timeOfLastNewIdea;
+
+// Settings (shared, host-agnostic store; NSUserDefaults-backed in the app)
+@property (strong, nonatomic) id<PRSettingsStore> settingsStore;
 @end
 
 static void IAAConnectionChangedCallback(void *inRefCon,
@@ -93,6 +98,14 @@ static void IAAConnectionChangedCallback(void *inRefCon,
 
 @implementation ViewController
 #pragma mark - Setup
+- (id<PRSettingsStore>)settingsStore
+{
+    if (!_settingsStore) {
+        _settingsStore = [[PRUserDefaultsStore alloc] init];
+    }
+    return _settingsStore;
+}
+
 - (HeavyAudioEngine *)audioEngine
 {
     if (!_audioEngine) {
@@ -282,50 +295,11 @@ static void IAAConnectionChangedCallback(void *inRefCon,
 - (void) openComposition {
     #pragma mark TODO - add some more interesting way to specify octave for each base note.
     [[NSUserDefaults standardUserDefaults] synchronize];
-    // 36 -- C two below middle C
-    // 33 - A below that.
-    NSInteger compositionSetting = [[NSUserDefaults standardUserDefaults] integerForKey:@"composition"];
-    NSInteger note1 = BASE_A + [[NSUserDefaults standardUserDefaults] integerForKey:@"note_1"];
-    NSInteger note2 = BASE_A + [[NSUserDefaults standardUserDefaults] integerForKey:@"note_2"];
-    NSInteger note3 = BASE_A + [[NSUserDefaults standardUserDefaults] integerForKey:@"note_3"];
-    NSInteger scale_1 = [[NSUserDefaults standardUserDefaults] integerForKey:@"scale_1"];
-    NSInteger scale_2 = [[NSUserDefaults standardUserDefaults] integerForKey:@"scale_2"];
-    NSInteger scale_3 = [[NSUserDefaults standardUserDefaults] integerForKey:@"scale_3"];
-    NSArray *scalesList = @[@"IONIAN",@"DORIAN",@"PHRYGIAN",@"LYDIAN",@"MIXOLYDIAN",@"AEOLIAN",@"LOCHRIAN",@"LYDIANSHARPFIVE",@"MIXOFLATSIX",@"OCTATONIC",@"WHOLETONE"];
-    
-    NSArray *notes = @[[NSNumber numberWithInteger:note1],[NSNumber numberWithInteger:note2],[NSNumber numberWithInteger:note3]];
-    NSArray *scales = @[[scalesList objectAtIndex:scale_1],[scalesList objectAtIndex:scale_2],[scalesList objectAtIndex:scale_3]];
-    switch (compositionSetting) {
-        case 1:
-            NSLog(@"COMPOSITION OPENING: Study in Bowls");
-            notes = @[@41,@42,@48];
-            scales = @[@"MIXOLYDIAN",@"LYDIAN",@"LYDIANSHARPFIVE"];
-            break;
-        case 2:
-            NSLog(@"COMPOSITION OPENING: Amores");
-            notes = @[@36,@37,@41];
-            scales = @[@"MIXOFLATSIX",@"OCTATONIC",@"WHOLETONE"];
-            break;
-        case 3:
-            NSLog(@"COMPOSITION OPENING: MixoSteps");
-            notes = @[@36,@38,@41];
-            scales = @[@"MIXOLYDIAN",@"MIXOLYDIAN",@"MIXOLYDIAN"];
-            break;
-        case 4:
-            NSLog(@"COMPOSITION OPENING: Scheimpflug Principle");
-            notes = @[@36,@38,@40];
-            scales = @[@"WHOLETONE",@"MIXOFLATSIX",@"LOCHRIAN"];
-            break;
-        default:
-            NSLog(@"COMPOSITION OPENING: Custom composition");
-            notes = @[[NSNumber numberWithInteger:note1],[NSNumber numberWithInteger:note2],[NSNumber numberWithInteger:note3]];
-            scales = @[[scalesList objectAtIndex:scale_1],[scalesList objectAtIndex:scale_2],[scalesList objectAtIndex:scale_3]];
-            break;
-    }
-    NSLog(@"COMPOSITION OPENING: Base notes will be: %@, %@, %@",notes[0],notes[1],notes[2]);
-    NSLog(@"COMPOSITION OPENING: Scales will be %@, %@, %@",scales[0],scales[1],scales[2]);
-    
-    self.composition = [[GenerativeSetupComposition alloc] initWithRootNotes:notes andScales:scales];
+    // Composition + custom notes/scales now come from the shared settings store
+    // and are turned into a GenerativeSetupComposition by PRCompositionFactory,
+    // so the app and the AUv3 extension build the identical composition.
+    PRSettings *settings = [self.settingsStore currentSettings];
+    self.composition = [PRCompositionFactory compositionForSettings:settings];
     [self.compositionStepper setMinimumValue:0];
     [self.compositionStepper setMaximumValue:[self.composition numberOfSetups] - 1];
     [self.compositionStepper setWraps:YES];
@@ -941,52 +915,38 @@ static void IAAConnectionChangedCallback(void *inRefCon,
     [self updateBowlViewColourScheme];
 }
 
-#pragma mark In App Settings Kit Methods
-- (IASKAppSettingsViewController*)appSettingsViewController {
-    if (!_appSettingsViewController) {
-        _appSettingsViewController = [[IASKAppSettingsViewController alloc] init];
-        _appSettingsViewController.delegate = self;
-        BOOL enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"AutoConnect"];
-        _appSettingsViewController.hiddenKeys = enabled ? nil : [NSSet setWithObjects:@"AutoConnectLogin", @"AutoConnectPassword", nil];
-    }
-    return _appSettingsViewController;
-}
-
+#pragma mark Shared SwiftUI Settings (Phase F.2 / F.5)
+// The shared PhaseRingsKit settings screen is now the app's only settings UI
+// (IASK retired in F.5). Presented as a medium/large detent sheet, bound to the
+// same PRSettingsStore the composition is built from, plus the app-only MIDI /
+// Network sections. Reloads the composition on dismiss (Done or swipe-down) to
+// apply sound / volume / setup changes.
 - (IBAction)showSettingsModal:(id)sender {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        [self showSettingsPopover:sender];
-    } else {
-            UINavigationController *aNavController = [[UINavigationController alloc] initWithRootViewController:self.appSettingsViewController];
-            [self.appSettingsViewController setShowCreditsFooter:NO];
-            [self.appSettingsViewController setShowDoneButton:YES];
-            [self presentViewController:aNavController animated:YES completion:nil];
-    }
-}
-
-// Settings popover for iPad using UIPopoverPresentationController (iOS 8+).
-- (void)showSettingsPopover:(UIButton *)sender {
     if (self.presentedViewController) {
         [self dismissViewControllerAnimated:YES completion:nil];
         return;
     }
-    [self.appSettingsViewController setShowCreditsFooter:NO];
-    [self.appSettingsViewController setShowDoneButton:NO];
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.appSettingsViewController];
-    navController.modalPresentationStyle = UIModalPresentationPopover;
-    UIPopoverPresentationController *popover = navController.popoverPresentationController;
-    popover.sourceView = sender;
-    popover.sourceRect = sender.bounds;
-    popover.permittedArrowDirections = UIPopoverArrowDirectionAny;
-    popover.delegate = self;
-    [self presentViewController:navController animated:YES completion:nil];
+    PRSettingsHostingController *settings =
+        [[PRSettingsHostingController alloc] initWithStore:self.settingsStore];
+    settings.showsAppSettings = YES;  // app shows MIDI / Network; the extension doesn't
+    __weak typeof(self) weakSelf = self;
+    settings.onDone = ^{ [weakSelf dismissSwiftUISettings]; };
+    settings.presentationController.delegate = self;  // swipe-to-dismiss reload
+    [self presentViewController:settings animated:YES completion:nil];
 }
 
-- (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender {
-    [self dismissViewControllerAnimated:YES completion:nil];
+- (void)dismissSwiftUISettings {
+    [self dismissViewControllerAnimated:YES completion:^{
+        [self openComposition];
+    }];
 }
 
 - (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController {
-    // Called when the popover is dismissed by tapping outside it on iPad.
+    // Called when the settings sheet is swiped down; reload so the edited
+    // settings apply (mirrors the Done path).
+    if ([presentationController.presentedViewController isKindOfClass:[PRSettingsHostingController class]]) {
+        [self openComposition];
+    }
 }
 
 @end

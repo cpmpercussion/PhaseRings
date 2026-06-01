@@ -29,6 +29,17 @@ extern const OSType PhaseRingsAUManufacturer;  // 'CPMa'
 /// drains).
 @property (nonatomic, readonly, nullable) HeavyCore *core;
 
+/// Non-parameter instrument settings (composition / notes / scales / labels)
+/// that aren't expressible in the AU parameter tree but must still round-trip
+/// through the host's session save/restore. Keyed by the names PRAudioUnitStore
+/// uses; seeded from the instrument defaults at init. Serialised inside
+/// `fullState` under `kPhaseRingsInstrumentStateKey`. (Issue #23, Phase F.4.)
+@property (atomic, copy) NSDictionary<NSString *, NSNumber *> *instrumentSettingsState;
+
+/// Fired on the main thread after `setFullState:` restores instrument settings,
+/// so a PRAudioUnitStore can rebroadcast the restored state to the UI.
+@property (nonatomic, copy, nullable) void (^instrumentStateRestoredHandler)(void);
+
 /// AudioComponentDescription for this unit ('aumu' / 'phrg' / 'CPMa').
 + (AudioComponentDescription)componentDescription;
 

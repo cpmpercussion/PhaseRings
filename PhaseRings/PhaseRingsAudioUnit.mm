@@ -12,6 +12,10 @@ const OSType PhaseRingsAUType         = kAudioUnitType_MusicDevice;       // 'au
 const OSType PhaseRingsAUSubType      = 'phrg';
 const OSType PhaseRingsAUManufacturer = 'CPMa';
 
+// fullState key under which the non-parameter instrument settings ride
+// alongside the auto-serialised parameter tree. (Issue #23, Phase F.4.)
+static NSString *const kPhaseRingsInstrumentStateKey = @"PhaseRingsInstrumentState";
+
 // Parameter addresses. The float-receiver params map 1:1 onto Heavy [r …]
 // names; `synth` is special-cased to HeavyCore -selectSynth:.
 typedef NS_ENUM(AUParameterAddress, PhaseRingsParam) {
@@ -95,6 +99,7 @@ struct AURenderCtx {
     if (!self) return nil;
 
     _rc = new AURenderCtx();
+    _instrumentSettingsState = @{};  // empty -> store falls back to defaults
 
     // Stereo, non-interleaved float32 — matches HeavyCore's split-channel out.
     AVAudioFormat *format = [[AVAudioFormat alloc] initStandardFormatWithSampleRate:48000.0
@@ -192,6 +197,30 @@ struct AURenderCtx {
 - (void)pushAllParametersToCore {
     for (AUParameter *p in self.parameterTree.allParameters) {
         [self applyParameter:p.address value:p.value];
+    }
+}
+
+#pragma mark - Full state (session save/restore)
+
+// Carry the non-parameter instrument settings alongside the parameter tree
+// that AUAudioUnit's default fullState already serialises. fullStateForDocument
+// builds on fullState, so overriding here covers both.
+- (NSDictionary<NSString *, id> *)fullState {
+    NSMutableDictionary<NSString *, id> *state = [[super fullState] mutableCopy];
+    if (!state) state = [NSMutableDictionary dictionary];
+    state[kPhaseRingsInstrumentStateKey] = self.instrumentSettingsState ?: @{};
+    return state;
+}
+
+- (void)setFullState:(NSDictionary<NSString *, id> *)fullState {
+    [super setFullState:fullState];  // restores the parameter tree
+    id inst = fullState[kPhaseRingsInstrumentStateKey];
+    if ([inst isKindOfClass:[NSDictionary class]]) {
+        self.instrumentSettingsState = inst;
+    }
+    void (^handler)(void) = self.instrumentStateRestoredHandler;
+    if (handler) {
+        dispatch_async(dispatch_get_main_queue(), ^{ handler(); });
     }
 }
 

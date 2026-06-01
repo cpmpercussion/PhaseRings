@@ -10,13 +10,9 @@
 #import "MetatoneNetworkManager.h"
 #import "MetatoneMidiManager.h"
 #import "StateSaver.h"
-// Settings:
-#import "IASKAppSettingsViewController.h"
-#import "IASKSettingsReader.h"
 
-@interface ViewController : UIViewController <MetatoneNetworkManagerDelegate,IASKSettingsDelegate,UIAdaptivePresentationControllerDelegate>
+@interface ViewController : UIViewController <MetatoneNetworkManagerDelegate,UIAdaptivePresentationControllerDelegate>
 @property (strong, nonatomic) MetatoneMidiManager* midiManager;
-@property (strong, nonatomic) IASKAppSettingsViewController *appSettingsViewController;
 
 @property (nonatomic) int currentPerformanceType;
 @property (nonatomic) bool experimentMode;

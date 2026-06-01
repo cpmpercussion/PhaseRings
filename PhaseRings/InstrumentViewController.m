@@ -11,17 +11,14 @@
 #import "SingingBowlView.h"
 #import "SingingBowlSetup.h"
 #import "GenerativeSetupComposition.h"
+#import "PRSettings.h"
+#import "PRCompositionFactory.h"
+#import "PRMemoryStore.h"
+#import <PhaseRingsKit/PhaseRingsKit-Swift.h>   // PRSettingsHostingController
 
 // Diagonal used to normalise swirl translation into Heavy's panTranslation,
 // matching the standalone app.
 static const CGFloat kScreenDiagonal = 1280.0;
-
-// Sound schemes, matching the standalone app's Settings (Root.plist `sound`).
-// 0..1 are the Phase / String synths; 2..6 are SoundScraper samples.
-static NSArray<NSString *> *SoundSchemeNames(void) {
-    return @[@"Phase Synthesis", @"String Synthesis", @"Singing Bowls",
-             @"Gongs", @"Crotales", @"Terracotta Pots", @"Marimba"];
-}
 
 @interface InstrumentViewController ()
 @property (nonatomic, strong) SingingBowlView *bowlView;
@@ -29,12 +26,20 @@ static NSArray<NSString *> *SoundSchemeNames(void) {
 @property (nonatomic, strong) GenerativeSetupComposition *composition;
 @property (nonatomic) UInt8 currentlyPanningPitch;
 @property (nonatomic) CGSize lastDrawnSize;
-@property (nonatomic, strong) UIButton *soundButton;
 @property (nonatomic) NSInteger soundScheme;
 @property (nonatomic) BOOL showNoteLabels;
+@property (nonatomic) BOOL showSetupLabel;
+@property (nonatomic) int setupState;
+// On-screen control bar.
+@property (nonatomic, strong) UIStepper *setupStepper;
+@property (nonatomic, strong) UILabel *setupDescriptionLabel;
+// Last settings applied, so a settings change only rebuilds what actually moved.
+@property (nonatomic, strong) PRSettings *appliedSettings;
 @end
 
 @implementation InstrumentViewController
+
+@synthesize settingsStore = _settingsStore;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -54,62 +59,85 @@ static NSArray<NSString *> *SoundSchemeNames(void) {
     [self reloadComposition];
 }
 
-#pragma mark - Control bar
+#pragma mark - Settings store
 
-- (UIButton *)pillButtonWithTitle:(NSString *)title {
-    UIButton *b = [UIButton buttonWithType:UIButtonTypeSystem];
-    [b setTitle:title forState:UIControlStateNormal];
-    [b setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    b.titleLabel.font = [UIFont systemFontOfSize:15 weight:UIFontWeightMedium];
-    b.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.12];
-    b.contentEdgeInsets = UIEdgeInsetsMake(6, 12, 6, 12);
-    b.layer.cornerRadius = 14;
-    b.translatesAutoresizingMaskIntoConstraints = NO;
-    return b;
+- (id<PRSettingsStore>)settingsStore {
+    if (!_settingsStore) {
+        self.settingsStore = [[PRMemoryStore alloc] init];  // through setter -> wires onChange
+    }
+    return _settingsStore;
 }
 
+- (void)setSettingsStore:(id<PRSettingsStore>)settingsStore {
+    _settingsStore = settingsStore;
+    __weak typeof(self) weakSelf = self;
+    settingsStore.onChange = ^(PRSettings *settings) {
+        [weakSelf settingsDidChange:settings];
+    };
+    if (self.isViewLoaded) {
+        [self reloadComposition];
+    }
+}
+
+#pragma mark - Control bar
+
 - (void)buildControlBar {
-    // Sound scheme picker — a menu so all seven schemes are reachable without
-    // crowding the bar; performance stays on the rings.
-    self.soundButton = [self pillButtonWithTitle:SoundSchemeNames()[0]];
-    self.soundButton.showsMenuAsPrimaryAction = YES;
-    [self rebuildSoundMenu];
+    // Setup stepper — steps through the composition's setups (replaces the old
+    // "New Setup" pill; matches the standalone app's compositionStepper).
+    self.setupStepper = [[UIStepper alloc] init];
+    self.setupStepper.wraps = YES;
+    self.setupStepper.minimumValue = 0;
+    self.setupStepper.tintColor = [UIColor whiteColor];
+    [self.setupStepper addTarget:self action:@selector(setupStepperChanged)
+                forControlEvents:UIControlEventValueChanged];
+    self.setupStepper.translatesAutoresizingMaskIntoConstraints = NO;
 
-    UIButton *setupButton = [self pillButtonWithTitle:@"New Setup"];
-    [setupButton addTarget:self action:@selector(newSetupTapped) forControlEvents:UIControlEventTouchUpInside];
+    // Settings gear — presents the shared PhaseRingsKit settings screen. Sound
+    // scheme + note labels now live there rather than as on-screen pills.
+    UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    [settingsButton setImage:[UIImage systemImageNamed:@"gearshape"] forState:UIControlStateNormal];
+    settingsButton.tintColor = [UIColor whiteColor];
+    [settingsButton addTarget:self action:@selector(showSettingsTapped)
+             forControlEvents:UIControlEventTouchUpInside];
+    settingsButton.translatesAutoresizingMaskIntoConstraints = NO;
 
-    UIButton *labelsButton = [self pillButtonWithTitle:@"Labels"];
-    [labelsButton addTarget:self action:@selector(toggleLabelsTapped) forControlEvents:UIControlEventTouchUpInside];
-
-    UIStackView *bar = [[UIStackView alloc] initWithArrangedSubviews:@[self.soundButton, setupButton, labelsButton]];
+    UIStackView *bar = [[UIStackView alloc] initWithArrangedSubviews:@[self.setupStepper, settingsButton]];
     bar.axis = UILayoutConstraintAxisHorizontal;
-    bar.spacing = 8;
+    bar.spacing = 12;
+    bar.alignment = UIStackViewAlignmentCenter;
     bar.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:bar];
+
+    // Setup description label — shown when the setup_label setting is on.
+    self.setupDescriptionLabel = [[UILabel alloc] init];
+    self.setupDescriptionLabel.textColor = [UIColor colorWithWhite:1.0 alpha:0.85];
+    self.setupDescriptionLabel.font = [UIFont systemFontOfSize:15 weight:UIFontWeightMedium];
+    self.setupDescriptionLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:self.setupDescriptionLabel];
 
     UILayoutGuide *safe = self.view.safeAreaLayoutGuide;
     [NSLayoutConstraint activateConstraints:@[
         [bar.topAnchor constraintEqualToAnchor:safe.topAnchor constant:8],
         [bar.leadingAnchor constraintEqualToAnchor:safe.leadingAnchor constant:12],
+        [self.setupDescriptionLabel.centerYAnchor constraintEqualToAnchor:bar.centerYAnchor],
+        [self.setupDescriptionLabel.leadingAnchor constraintEqualToAnchor:bar.trailingAnchor constant:12],
+        [self.setupDescriptionLabel.trailingAnchor constraintLessThanOrEqualToAnchor:safe.trailingAnchor constant:-12],
     ]];
 }
 
-- (void)rebuildSoundMenu {
-    NSArray<NSString *> *names = SoundSchemeNames();
-    NSMutableArray<UIAction *> *actions = [NSMutableArray array];
-    for (NSInteger i = 0; i < (NSInteger)names.count; i++) {
-        NSInteger scheme = i;
-        UIAction *a = [UIAction actionWithTitle:names[i] image:nil identifier:nil
-                                        handler:^(__kindof UIAction *action) {
-            [self selectSoundScheme:scheme];
-        }];
-        a.state = (i == self.soundScheme) ? UIMenuElementStateOn : UIMenuElementStateOff;
-        [actions addObject:a];
-    }
-    self.soundButton.menu = [UIMenu menuWithTitle:@"Sound" children:actions];
+- (void)showSettingsTapped {
+    // Edits flow through the store live (onChange -> -settingsDidChange:), so no
+    // reload-on-dismiss is needed here.
+    PRSettingsHostingController *settings =
+        [[PRSettingsHostingController alloc] initWithStore:self.settingsStore];
+    __weak typeof(self) weakSelf = self;
+    settings.onDone = ^{ [weakSelf dismissViewControllerAnimated:YES completion:nil]; };
+    [self presentViewController:settings animated:YES completion:nil];
 }
 
-- (void)selectSoundScheme:(NSInteger)scheme {
+#pragma mark - Sound scheme
+
+- (void)applySoundScheme:(NSInteger)scheme {
     [self setDisplayedSoundScheme:scheme];
     if (self.soundSchemeHandler) {
         self.soundSchemeHandler(scheme);
@@ -128,22 +156,30 @@ static NSArray<NSString *> *SoundSchemeNames(void) {
     if (scheme < 0) scheme = 0;
     if (scheme > 6) scheme = 6;
     self.soundScheme = scheme;
-    [self.soundButton setTitle:SoundSchemeNames()[scheme] forState:UIControlStateNormal];
-    [self rebuildSoundMenu];
 }
 
-- (void)newSetupTapped {
-    NSArray *pitches = [self.composition nextSetup];
+#pragma mark - Setups
+
+- (void)setupStepperChanged {
+    [self applySetupForState:(int)lround(self.setupStepper.value)];
+}
+
+- (void)applySetupForState:(int)state {
+    NSArray *pitches = [self.composition setupForState:state];
     if (pitches.count == 0) return;
+    self.setupState = state;
     self.bowlSetup = [[SingingBowlSetup alloc] initWithPitches:[NSMutableArray arrayWithArray:pitches]];
     self.lastDrawnSize = CGSizeZero;  // force redraw at current size
     [self.view setNeedsLayout];
+    [self updateSetupDescription];
 }
 
-- (void)toggleLabelsTapped {
-    self.showNoteLabels = !self.showNoteLabels;
-    self.lastDrawnSize = CGSizeZero;
-    [self.view setNeedsLayout];
+- (void)updateSetupDescription {
+    NSArray *descriptions = self.composition.setupDescriptions;
+    NSString *text = (self.setupState >= 0 && self.setupState < (int)descriptions.count)
+                   ? descriptions[self.setupState] : @"";
+    self.setupDescriptionLabel.text = text;
+    self.setupDescriptionLabel.hidden = !self.showSetupLabel;
 }
 
 // drawSetup: lays the rings out for the view size at call time, so (re)draw
@@ -155,7 +191,7 @@ static NSArray<NSString *> *SoundSchemeNames(void) {
     if (self.bowlSetup && size.width > 0 && size.height > 0 &&
         !CGSizeEqualToSize(size, self.lastDrawnSize)) {
         // drawSetup: reads note_labels from NSUserDefaults; drive it from our
-        // toggle (the extension has its own defaults domain).
+        // setting (the extension has its own defaults domain).
         [[NSUserDefaults standardUserDefaults] setBool:self.showNoteLabels forKey:@"note_labels"];
         [self.bowlView setSelectedColourScheme];
         [self.bowlView drawSetup:self.bowlSetup];
@@ -164,16 +200,47 @@ static NSArray<NSString *> *SoundSchemeNames(void) {
 }
 
 - (void)reloadComposition {
-    // A pleasant default spread; the standalone app reads NSUserDefaults, but
-    // the plugin just ships a sensible generative composition.
-    NSArray *notes = @[@45, @50, @57];
-    NSArray *scales = @[@"IONIAN", @"MIXOLYDIAN", @"AEOLIAN"];
-    self.composition = [[GenerativeSetupComposition alloc] initWithRootNotes:notes andScales:scales];
-    NSArray *pitches = [self.composition firstSetup];
-    self.bowlSetup = [[SingingBowlSetup alloc] initWithPitches:[NSMutableArray arrayWithArray:pitches]];
-    // Force a redraw at the next layout pass (when the real size is known).
-    self.lastDrawnSize = CGSizeZero;
-    [self.view setNeedsLayout];
+    if (!self.isViewLoaded) return;
+    PRSettings *settings = [self.settingsStore currentSettings];
+    self.appliedSettings = settings;
+    self.composition = [PRCompositionFactory compositionForSettings:settings];
+    self.showNoteLabels = settings.noteLabels;
+    self.showSetupLabel = settings.setupLabel;
+    [self setDisplayedSoundScheme:settings.sound];  // reflect only; caller applies
+
+    int count = [self.composition numberOfSetups];
+    self.setupStepper.maximumValue = MAX(0, count - 1);
+    self.setupStepper.value = 0;
+
+    [self applySetupForState:0];
+}
+
+// Apply only what changed between the last-applied settings and the new ones,
+// so e.g. toggling a label doesn't reset the player back to the first setup.
+- (void)settingsDidChange:(PRSettings *)settings {
+    PRSettings *prev = self.appliedSettings;
+    BOOL compositionChanged = !prev
+        || prev.composition != settings.composition
+        || prev.note1 != settings.note1 || prev.note2 != settings.note2 || prev.note3 != settings.note3
+        || prev.scale1 != settings.scale1 || prev.scale2 != settings.scale2 || prev.scale3 != settings.scale3;
+    BOOL soundChanged  = !prev || prev.sound != settings.sound;
+    BOOL labelsChanged = !prev || prev.noteLabels != settings.noteLabels
+        || prev.setupLabel != settings.setupLabel;
+
+    self.appliedSettings = settings;
+
+    if (compositionChanged) {
+        [self reloadComposition];  // rebuilds + re-reads labels/sound display
+    } else if (labelsChanged) {
+        self.showNoteLabels = settings.noteLabels;
+        self.showSetupLabel = settings.setupLabel;
+        self.lastDrawnSize = CGSizeZero;
+        [self.view setNeedsLayout];
+        [self updateSetupDescription];
+    }
+    if (soundChanged) {
+        [self applySoundScheme:settings.sound];
+    }
 }
 
 #pragma mark - Geometry

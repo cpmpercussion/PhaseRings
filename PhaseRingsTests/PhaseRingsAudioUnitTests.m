@@ -166,3 +166,91 @@
 }
 
 @end
+
+#pragma mark - AU state round-trip (Phase F.4)
+
+// These don't allocate render resources (no Heavy render), so they're free of
+// the #25 OOB skip above.
+@interface PhaseRingsAUStateTests : XCTestCase
+@end
+
+@implementation PhaseRingsAUStateTests
+
+- (PhaseRingsAudioUnit *)makeUnit {
+    NSError *err = nil;
+    PhaseRingsAudioUnit *au =
+        [[PhaseRingsAudioUnit alloc] initWithComponentDescription:[PhaseRingsAudioUnit componentDescription]
+                                                          options:0 error:&err];
+    XCTAssertNotNil(au, @"AU init failed: %@", err);
+    return au;
+}
+
+- (void)testStoreRoundTripsParamsAndNonParams {
+    PhaseRingsAudioUnit *au = [self makeUnit];
+    PRAudioUnitStore *store = [[PRAudioUnitStore alloc] initWithAudioUnit:au];
+    [store updateSettings:^(PRSettings *s) {
+        s.sound = 4;
+        s.masterVolume = 0.25f;
+        s.reverbVolume = 0.75f;
+        s.processEffects = NO;
+        s.composition = 0;
+        s.note1 = 7;
+        s.scale2 = 9;
+        s.noteLabels = NO;
+    }];
+    PRSettings *r = [store currentSettings];
+    XCTAssertEqual(r.sound, 4);
+    XCTAssertEqualWithAccuracy(r.masterVolume, 0.25f, 1e-4);
+    XCTAssertEqualWithAccuracy(r.reverbVolume, 0.75f, 1e-4);
+    XCTAssertFalse(r.processEffects);
+    XCTAssertEqual(r.composition, 0);
+    XCTAssertEqual(r.note1, 7);
+    XCTAssertEqual(r.scale2, 9);
+    XCTAssertFalse(r.noteLabels);
+    // The sound choice actually landed in the AU parameter tree.
+    XCTAssertEqualWithAccuracy([au.parameterTree parameterWithAddress:4].value, 4.0f, 1e-4);
+}
+
+- (void)testFullStateRoundTripsAcrossUnits {
+    PhaseRingsAudioUnit *au1 = [self makeUnit];
+    PRAudioUnitStore *store1 = [[PRAudioUnitStore alloc] initWithAudioUnit:au1];
+    [store1 updateSettings:^(PRSettings *s) {
+        s.sound = 5;
+        s.masterVolume = 0.3f;
+        s.composition = 2;
+        s.note3 = 10;
+        s.setupLabel = NO;
+    }];
+
+    NSDictionary *full = [au1 fullState];
+    XCTAssertNotNil(full[@"PhaseRingsInstrumentState"], @"instrument state must ride in fullState");
+
+    // A fresh unit restored from that state reproduces every setting.
+    PhaseRingsAudioUnit *au2 = [self makeUnit];
+    [au2 setFullState:full];
+    PRSettings *r = [[[PRAudioUnitStore alloc] initWithAudioUnit:au2] currentSettings];
+    XCTAssertEqual(r.sound, 5);
+    XCTAssertEqualWithAccuracy(r.masterVolume, 0.3f, 1e-4);
+    XCTAssertEqual(r.composition, 2);
+    XCTAssertEqual(r.note3, 10);
+    XCTAssertFalse(r.setupLabel);
+}
+
+- (void)testSetFullStateFiresStoreOnChange {
+    PhaseRingsAudioUnit *au1 = [self makeUnit];
+    PRAudioUnitStore *store1 = [[PRAudioUnitStore alloc] initWithAudioUnit:au1];
+    [store1 updateSettings:^(PRSettings *s) { s.composition = 3; }];
+    NSDictionary *full = [au1 fullState];
+
+    PhaseRingsAudioUnit *au2 = [self makeUnit];
+    PRAudioUnitStore *store2 = [[PRAudioUnitStore alloc] initWithAudioUnit:au2];
+    XCTestExpectation *fired = [self expectationWithDescription:@"onChange after restore"];
+    store2.onChange = ^(PRSettings *s) {
+        XCTAssertEqual(s.composition, 3);
+        [fired fulfill];
+    };
+    [au2 setFullState:full];  // restore handler is dispatched to the main queue
+    [self waitForExpectations:@[fired] timeout:1.0];
+}
+
+@end
