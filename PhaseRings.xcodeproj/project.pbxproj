@@ -106,6 +106,7 @@
 		8F62F8157E2F351360B762BB /* PhaseRingsKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2FE08C08C2919251994F67C0 /* PhaseRingsKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		930216EC6F45AE5626733767 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 538D3207BA55517D124D41B0 /* AudioToolbox.framework */; };
 		938AA48867A9BFE774BB20C4 /* PRSettingsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FCFD7686990226EAA3708361 /* PRSettingsTests.m */; };
+		A11CE27000000000000A0001 /* SharedSurfaceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A11CE27000000000000A0002 /* SharedSurfaceTests.m */; };
 		9EC2B128CDB543EF40E22DAF /* PhaseRingsAUv3.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 77551EC3321C963F7AB732B2 /* PhaseRingsAUv3.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A2F2F47F68D85A492C2F0ADB /* HvSignalCPole.c in Sources */ = {isa = PBXBuildFile; fileRef = 2F65F711BE867C9CBBBBE90E /* HvSignalCPole.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
 		A5E492F877F4BF40AB965EEE /* HvControlDelay.c in Sources */ = {isa = PBXBuildFile; fileRef = AFE38C0BF3CBBEC07653C487 /* HvControlDelay.c */; settings = {COMPILER_FLAGS = "-DNDEBUG=1"; }; };
@@ -413,6 +414,7 @@
 		F86F9A948783EFA0B850E403 /* HeavyCore.mm */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.objcpp; name = HeavyCore.mm; path = PhaseRings/HeavyCore.mm; sourceTree = "<group>"; };
 		FCCFB89B486B5BC30E343E80 /* HvTable.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = HvTable.h; sourceTree = "<group>"; };
 		FCFD7686990226EAA3708361 /* PRSettingsTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PRSettingsTests.m; path = PRSettingsTests.m; sourceTree = "<group>"; };
+		A11CE27000000000000A0002 /* SharedSurfaceTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SharedSurfaceTests.m; path = SharedSurfaceTests.m; sourceTree = "<group>"; };
 		FFE32122497440293798A147 /* InstrumentViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = InstrumentViewController.m; path = PhaseRings/InstrumentViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -791,6 +793,7 @@
 				7E06060200000000000000C0 /* PhaseRingsTests-Info.plist */,
 				965447B173741E68533AE789 /* PhaseRingsAudioUnitTests.m */,
 				FCFD7686990226EAA3708361 /* PRSettingsTests.m */,
+				A11CE27000000000000A0002 /* SharedSurfaceTests.m */,
 			);
 			path = PhaseRingsTests;
 			sourceTree = "<group>";
@@ -1207,6 +1210,7 @@
 				7E06063100000000000000C0 /* GenerativeSetupCompositionTests.m in Sources */,
 				1308910E1736DA7E020B78BF /* PhaseRingsAudioUnitTests.m in Sources */,
 				938AA48867A9BFE774BB20C4 /* PRSettingsTests.m in Sources */,
+				A11CE27000000000000A0001 /* SharedSurfaceTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -306,47 +306,57 @@ static const int kPlaybackStateMoving  = 1;
 }
 
 #pragma mark - Tap (note on)
+// The UIResponder / gesture entry points just extract plain values from UIKit
+// objects and forward to the input* methods, which carry the audio + MIDI +
+// OSC-delegate logic and are unit-testable without synthesising touches.
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    id<HeavyEventSink> core = [self core];
     for (UITouch *touch in touches) {
         CGPoint point = [touch locationInView:self.view];
         int velocity = floorf(15 + (110 * (touch.majorRadius / 125.0)));
         if (velocity > 127) velocity = 127;
         if (velocity < 0) velocity = 0;
-        int pitch = [self noteFromPosition:point];
-        [core sendNoteOn:1 pitch:pitch velocity:velocity];
-        // MIDI-out: a momentary note (on immediately followed by off), matching
-        // the standalone app's tap behaviour. Always emitted (no setting).
-        [self emitMIDIStatus:0x90 data1:(uint8_t)pitch data2:(uint8_t)velocity];
-        [self emitMIDIStatus:0x80 data1:(uint8_t)pitch data2:(uint8_t)velocity];
-        // OSC mirror (app-only): the app broadcast taps at velocity 0.
-        if ([self.delegate respondsToSelector:@selector(instrument:touchBeganAtPoint:pitch:velocity:)]) {
-            [self.delegate instrument:self touchBeganAtPoint:point pitch:pitch velocity:velocity];
-        }
-        // SingingBowlView animates the tapped ring in its own touchesBegan; we
-        // only send the note. (Calling animate here too double-triggered the
-        // CATransaction and made the tap flash/disappear.)
+        [self inputTapAtPoint:point velocity:velocity];
     }
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    if (![self.delegate respondsToSelector:@selector(instrument:touchMovedToPoint:velocity:)]) return;
     for (UITouch *touch in touches) {
         CGPoint point = [touch locationInView:self.view];
         CGPoint prev  = [touch previousLocationInView:self.view];
         CGFloat dx = point.x - prev.x, dy = point.y - prev.y;
-        CGFloat pixelVelocity = sqrt((dx * dx) + (dy * dy));
-        [self.delegate instrument:self touchMovedToPoint:point velocity:pixelVelocity];
+        [self inputMoveAtPoint:point pixelVelocity:sqrt((dx * dx) + (dy * dy))];
     }
 }
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     for (UITouch *touch in touches) {
-        // MIDI note-off for the ending touch's pitch, matching the app.
-        int pitch = [self noteFromPosition:[touch locationInView:self.view]];
-        [self emitMIDIStatus:0x80 data1:(uint8_t)pitch data2:0];
+        [self inputEndAtPoint:[touch locationInView:self.view]];
     }
+}
+
+// A tap: strike the note (audio), emit a momentary MIDI note (on+off, matching
+// the standalone app), and mirror to the delegate (OSC) at velocity 0.
+- (void)inputTapAtPoint:(CGPoint)point velocity:(int)velocity {
+    int pitch = [self noteFromPosition:point];
+    [[self core] sendNoteOn:1 pitch:pitch velocity:velocity];
+    [self emitMIDIStatus:0x90 data1:(uint8_t)pitch data2:(uint8_t)velocity];
+    [self emitMIDIStatus:0x80 data1:(uint8_t)pitch data2:(uint8_t)velocity];
+    if ([self.delegate respondsToSelector:@selector(instrument:touchBeganAtPoint:pitch:velocity:)]) {
+        [self.delegate instrument:self touchBeganAtPoint:point pitch:pitch velocity:velocity];
+    }
+    // SingingBowlView animates the tapped ring in its own touchesBegan.
+}
+
+- (void)inputMoveAtPoint:(CGPoint)point pixelVelocity:(CGFloat)pixelVelocity {
+    if ([self.delegate respondsToSelector:@selector(instrument:touchMovedToPoint:velocity:)]) {
+        [self.delegate instrument:self touchMovedToPoint:point velocity:pixelVelocity];
+    }
+}
+
+- (void)inputEndAtPoint:(CGPoint)point {
+    int pitch = [self noteFromPosition:point];
+    [self emitMIDIStatus:0x80 data1:(uint8_t)pitch data2:0];   // MIDI note-off
     if ([self.delegate respondsToSelector:@selector(instrumentTouchEnded:)]) {
         [self.delegate instrumentTouchEnded:self];
     }
@@ -362,46 +372,48 @@ static const int kPlaybackStateMoving  = 1;
 #pragma mark - Pan (continuous "sing")
 
 - (void)panGestureRecognized:(UIPanGestureRecognizer *)sender {
-    id<HeavyEventSink> core = [self core];
     CGPoint point = [sender locationInView:self.view];
-
     CGFloat xVel = [sender velocityInView:self.view].x;
     CGFloat yVel = [sender velocityInView:self.view].y;
     CGFloat velHyp = sqrt((xVel * xVel) + (yVel * yVel));
     CGFloat velocity = log(velHyp) / 10.0;
     if (velocity < 0) velocity = 0;
     if (velocity > 1) velocity = 1;
+    CGFloat angle = (velHyp > 0) ? yVel / velHyp : 0;
+    CGFloat xTrans = [sender translationInView:self.view].x;
+    CGFloat yTrans = [sender translationInView:self.view].y;
+    CGFloat translation = sqrt((xTrans * xTrans) + (yTrans * yTrans)) / kScreenDiagonal;
+    [self inputSwirlState:sender.state atPoint:point velocity:velocity angle:angle translation:translation];
+}
 
+- (void)inputSwirlState:(UIGestureRecognizerState)state
+                atPoint:(CGPoint)point
+               velocity:(CGFloat)velocity
+                  angle:(CGFloat)angle
+            translation:(CGFloat)translation {
+    id<HeavyEventSink> core = [self core];
     [core sendFloat:velocity toReceiver:@"singlevel"];
     [self.bowlView changeBowlVolumeTo:velocity];
 
-    if (sender.state == UIGestureRecognizerStateBegan) {
+    if (state == UIGestureRecognizerStateBegan) {
         [core sendFloat:1 toReceiver:@"sing"];
         [core sendFloat:(float)[self noteFromPosition:point] toReceiver:@"singpitch"];
         self.currentlyPanningPitch = (UInt8)[self noteFromPosition:point];
         [self.bowlView continuouslyAnimateBowlAtRadius:[self distanceFromCenter:point]];
-        // MIDI-out: note-on for the swirl pitch.
         [self emitMIDIStatus:0x90 data1:self.currentlyPanningPitch data2:(uint8_t)(velocity * 127)];
 
-    } else if (sender.state == UIGestureRecognizerStateChanged) {
-        CGFloat angle = (velHyp > 0) ? yVel / velHyp : 0;
+    } else if (state == UIGestureRecognizerStateChanged) {
         [core sendFloat:angle toReceiver:@"sinPanAngle"];
         [self.bowlView changeContinuousColour:angle forRadius:[self distanceFromCenter:point]];
-
-        CGFloat xTrans = [sender translationInView:self.view].x;
-        CGFloat yTrans = [sender translationInView:self.view].y;
-        CGFloat trans = sqrt((xTrans * xTrans) + (yTrans * yTrans)) / kScreenDiagonal;
-        [core sendFloat:trans toReceiver:@"panTranslation"];
-        [self.bowlView changeContinuousAnimationSpeed:(3 * trans) + 0.1];
-        // MIDI-out: swirl velocity as channel aftertouch.
+        [core sendFloat:translation toReceiver:@"panTranslation"];
+        [self.bowlView changeContinuousAnimationSpeed:(3 * translation) + 0.1];
         [self emitMIDIStatus:0xA0 data1:self.currentlyPanningPitch data2:(uint8_t)(velocity * 127)];
 
-    } else if (sender.state == UIGestureRecognizerStateEnded ||
-               sender.state == UIGestureRecognizerStateCancelled) {
+    } else if (state == UIGestureRecognizerStateEnded ||
+               state == UIGestureRecognizerStateCancelled) {
         [core sendFloat:0 toReceiver:@"singlevel"];
         [core sendFloat:0 toReceiver:@"sing"];
         [self.bowlView stopAnimatingBowl];
-        // MIDI-out: note-off for the swirl pitch.
         [self emitMIDIStatus:0x80 data1:self.currentlyPanningPitch data2:(uint8_t)(velocity * 127)];
     }
 }
