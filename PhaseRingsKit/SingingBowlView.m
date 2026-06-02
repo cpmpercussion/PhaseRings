@@ -212,9 +212,13 @@
 #pragma mark - UI Methods
 -(void) animateBowlAtRadius:(CGFloat)radius {
     CGFloat fracRadius = [self fractionOfTotalRadiusFromRadius:radius];
-    int note = [self.currentSetup pitchAtRadius:fracRadius];
+    [self animateBowlForNote:[self.currentSetup pitchAtRadius:fracRadius]];
+}
+
+-(void) animateBowlForNote:(int)note {
     CAShapeLayer *layer = [self.tapEdgeLayers objectForKey:
                            [NSNumber numberWithInt:note]];
+    if (!layer) return;   // note not in the current setup: nothing to light
     [CATransaction flush];
     [CATransaction begin];
     //NSLog(@"Current duration: %f", [CATransaction animationDuration]);
@@ -235,17 +239,47 @@
     CAShapeLayer *layer = [self.continuousEdgeLayers objectForKey:
                            [NSNumber numberWithInt:[self.currentSetup pitchAtRadius:
                             [self fractionOfTotalRadiusFromRadius:radius]]]];
-    CGFloat width = layer.lineWidth;
+    // Opacity is driven by the swirl gesture's changeBowlVolumeTo:.
     layer.hidden = NO;
-    
+    [self addPulseAnimationToLayer:layer];
+}
+
+// Shared pulse used by the swirl gesture and by MIDI sustain (#29): grow/shrink
+// the ring's line width forever until it's stopped/hidden.
+-(void) addPulseAnimationToLayer:(CAShapeLayer *)layer {
+    if (!layer) return;
+    CGFloat width = layer.lineWidth;
     CABasicAnimation *pulse = [CABasicAnimation animationWithKeyPath:@"lineWidth"];
     pulse.fromValue = [NSNumber numberWithDouble:width * 0.90];
     pulse.toValue = [NSNumber numberWithDouble:width * 1.10];
     pulse.duration = 0.15;
     pulse.autoreverses = YES;
     pulse.repeatCount = HUGE_VALF;
-    
     [layer addAnimation:pulse forKey:@"pulseAnimation"];
+}
+
+-(void) continuouslyAnimateBowlForNote:(int)note {
+    CAShapeLayer *layer = [self.continuousEdgeLayers objectForKey:
+                           [NSNumber numberWithInt:note]];
+    if (!layer) return;   // note not in the current setup
+    // No volume gesture drives this, so make the ring visible directly.
+    layer.hidden = NO;
+    layer.opacity = 1.0;
+    [self addPulseAnimationToLayer:layer];
+}
+
+-(void) stopContinuousAnimationForNote:(int)note {
+    CAShapeLayer *layer = [self.continuousEdgeLayers objectForKey:
+                           [NSNumber numberWithInt:note]];
+    if (!layer || layer.hidden) return;
+    [CATransaction begin];
+    [CATransaction setAnimationDuration:0.3];
+    [CATransaction setCompletionBlock:^{
+        layer.hidden = YES;
+        [layer removeAnimationForKey:@"pulseAnimation"];
+    }];
+    layer.opacity = 0.0;
+    [CATransaction commit];
 }
 
 -(void) stopAnimatingBowl {

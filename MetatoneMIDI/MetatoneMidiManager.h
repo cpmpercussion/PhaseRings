@@ -19,6 +19,16 @@
 /// match the prior libpd routing.
 @property (copy, nonatomic) void (^noteOnHandler)(int pitch, int velocity);
 
+/// Invoked on the MIDI thread when a sustain-pedal control change (CC64)
+/// arrives, gated by the `midi_in` user default. `down` = controller value
+/// ≥ 64. Drives the ring-light sustain behaviour (issue #29).
+@property (copy, nonatomic) void (^sustainHandler)(BOOL down);
+
+/// Invoked on the MIDI thread for control changes other than the sustain pedal,
+/// gated by the `midi_in` user default. Maps to the continuous "sing"
+/// performance receivers (issue #29 follow-up).
+@property (copy, nonatomic) void (^controlChangeHandler)(int cc, int value);
+
 -(void) setupMidi;
 
 @end

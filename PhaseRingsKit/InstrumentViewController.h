@@ -94,6 +94,32 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)playbackSwirlAtPoint:(CGPoint)point velocity:(CGFloat)velocity;
 - (void)stopPlayback;
 
+/// MIDI-in ring lights (issue #29): a note arriving from outside the surface
+/// (the app's Core MIDI input, or the AUv3's host) lights the ring carrying
+/// that pitch. The struck note (`notein`) is produced by the host (the app's
+/// engine / the AU's render block), so this never re-triggers it. A note with
+/// no matching ring is ignored. Call on the main thread. `velocity` 0 is
+/// ignored (note release is governed by the sustain pedal, not key-up).
+/// Normally the ring flashes once; while the sustain pedal is held, the first
+/// note-on instead lights a pulsing ring AND starts the continuous "sing" voice
+/// at that pitch (with `velocity` as the initial level) until the pedal lifts —
+/// see `midiSustainPedal:`. The struck note and the sing voice are independent.
+- (void)midiNoteIn:(int)pitch velocity:(int)velocity;
+
+/// MIDI-in sustain pedal (CC64, issue #29). `down` = controller value ≥ 64.
+/// Gates the continuous "sing" voice: pressing arms the next note-on to become
+/// a held sing voice + pulsing ring; lifting stops it. Drives both audio (the
+/// `sing` receiver, via `coreProvider`) and the ring. Call on the main thread.
+- (void)midiSustainPedal:(BOOL)down;
+
+/// MIDI-in control change → the continuous "sing" performance receivers (issue
+/// #29 follow-up): CC11 (expression) → singlevel, CC1 (mod wheel) → sinPanAngle
+/// (bipolar), CC74 (brightness) → panTranslation. Sent to `coreProvider`'s core.
+/// Used by the standalone app; the AUv3 exposes these as automatable AU
+/// parameters (Sing Level / Angle / Morph) and the host maps MIDI to them. Call
+/// on the main thread.
+- (void)midiControlChange:(int)cc value:(int)value;
+
 /// Reflect the current sound scheme (0..6) in the control bar without firing
 /// the handler — e.g. after the host restores AU state.
 - (void)setDisplayedSoundScheme:(NSInteger)scheme;

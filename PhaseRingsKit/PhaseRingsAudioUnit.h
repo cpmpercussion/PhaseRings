@@ -46,6 +46,14 @@ extern const OSType PhaseRingsAUManufacturer;  // 'CPMa'
 /// advertises a single output port via `MIDIOutputNames`. (Issue #27, B3a.)
 - (void)sendMIDIOutBytes:(const uint8_t *)bytes length:(NSUInteger)length;
 
+/// Drain the MIDI messages received from the host since the last call, invoking
+/// `handler` once per message with the raw status / data bytes (note-ons and
+/// sustain CC; the channel is in the low nibble of `status`). Call from the main
+/// thread; the host UI uses it to light rings on incoming MIDI (issue #29). The
+/// render thread is the producer, so this is a lock-free consumer with no
+/// realtime impact.
+- (void)drainIncomingMIDI:(void (^)(uint8_t status, uint8_t data1, uint8_t data2))handler;
+
 /// AudioComponentDescription for this unit ('aumu' / 'phrg' / 'CPMa').
 + (AudioComponentDescription)componentDescription;
 

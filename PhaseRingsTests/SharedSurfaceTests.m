@@ -215,6 +215,46 @@
     XCTAssertEqualObjects([_sink lastFloatFor:@"singlevel"], @0);
 }
 
+#pragma mark - MIDI-in (ring lights + sing performance)
+
+- (void)testMidiNoteInWithoutPedalDoesNotSing {
+    [_vc midiNoteIn:60 velocity:100];
+    XCTAssertNil([_sink lastFloatFor:@"sing"]);          // a bare note-on only flashes a ring
+    XCTAssertNil([_sink lastFloatFor:@"singpitch"]);
+    XCTAssertEqual(_sink.noteOns.count, (NSUInteger)0);  // the struck note is the host's job, not the surface
+}
+
+- (void)testSustainPedalGatesSingVoice {
+    [_vc midiSustainPedal:YES];
+    [_vc midiNoteIn:62 velocity:100];
+    XCTAssertEqualObjects([_sink lastFloatFor:@"sing"], @1);
+    XCTAssertEqualWithAccuracy([_sink lastFloatFor:@"singpitch"].floatValue, 62.0, 0.0001);
+    XCTAssertEqualWithAccuracy([_sink lastFloatFor:@"singlevel"].floatValue, 100.0 / 127.0, 0.0001);
+
+    [_vc midiSustainPedal:NO];
+    XCTAssertEqualObjects([_sink lastFloatFor:@"sing"], @0);   // pedal up ends the voice
+}
+
+- (void)testFirstNoteAfterPedalSingsAndLaterNotesDoNotResing {
+    [_vc midiSustainPedal:YES];
+    [_vc midiNoteIn:62 velocity:100];   // first note: captured as the sing pitch
+    [_vc midiNoteIn:67 velocity:100];   // later note while held: must not re-pitch the voice
+    XCTAssertEqualWithAccuracy([_sink lastFloatFor:@"singpitch"].floatValue, 62.0, 0.0001);
+}
+
+- (void)testControlChangeMapsToSingReceivers {
+    [_vc midiControlChange:11 value:64];   // expression → singlevel
+    XCTAssertEqualWithAccuracy([_sink lastFloatFor:@"singlevel"].floatValue, 64.0 / 127.0, 0.0001);
+
+    [_vc midiControlChange:1 value:127];   // mod wheel → sinPanAngle (bipolar)
+    XCTAssertEqualWithAccuracy([_sink lastFloatFor:@"sinPanAngle"].floatValue, 1.0, 0.0001);
+    [_vc midiControlChange:1 value:0];
+    XCTAssertEqualWithAccuracy([_sink lastFloatFor:@"sinPanAngle"].floatValue, -1.0, 0.0001);
+
+    [_vc midiControlChange:74 value:127];  // brightness → panTranslation
+    XCTAssertEqualWithAccuracy([_sink lastFloatFor:@"panTranslation"].floatValue, 1.0, 0.0001);
+}
+
 - (void)testShowSetupStateClamps {
     NSInteger n = _vc.numberOfSetups;
     XCTAssertGreaterThan(n, 0);

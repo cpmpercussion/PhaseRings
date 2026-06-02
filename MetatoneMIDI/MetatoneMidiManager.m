@@ -58,9 +58,16 @@
 {
     const MIDIPacket *packet = &packetList->packet[0];
     for (int i = 0; i < packetList->numPackets; ++i) {
-        if ((packet->length == 3) && ((packet->data[0] & 0xf0) == 0x90) && (packet->data[2] != 0)) {
-            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"midi_in"] && self.noteOnHandler) {
+        if ((packet->length == 3) && [[NSUserDefaults standardUserDefaults] boolForKey:@"midi_in"]) {
+            const UInt8 status = packet->data[0] & 0xf0;
+            if (status == 0x90 && packet->data[2] != 0 && self.noteOnHandler) {
                 self.noteOnHandler(packet->data[1], packet->data[2]);
+            } else if (status == 0xb0) {                       // control change
+                if (packet->data[1] == 64) {
+                    if (self.sustainHandler) self.sustainHandler(packet->data[2] >= 64);  // sustain pedal
+                } else if (self.controlChangeHandler) {
+                    self.controlChangeHandler(packet->data[1], packet->data[2]);
+                }
             }
         }
         packet = MIDIPacketNext(packet);
