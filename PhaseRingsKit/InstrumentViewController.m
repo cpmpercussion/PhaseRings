@@ -38,6 +38,10 @@ static const CGFloat kScreenDiagonal = 1280.0;
 // Remote-OSC playback state (continuous "swirl" with a 1s auto-stop timer).
 @property (nonatomic) int playbackPanGestureState;
 @property (nonatomic, strong, nullable) NSTimer *playbackPanGestureTimeout;
+// MIDI-in sustain pedal (#29): while the pedal is down, the first note-on lights
+// a pulsing (held) ring until the pedal lifts; other notes flash as usual.
+@property (nonatomic) BOOL midiSustainDown;
+@property (nonatomic) int midiSustainedNote;   // -1 = none currently sustained
 @end
 
 // Playback pan states (matches the standalone app's PAN_STATE_* constants).
@@ -52,6 +56,7 @@ static const int kPlaybackStateMoving  = 1;
     [super viewDidLoad];
     self.view.multipleTouchEnabled = YES;
     self.showNoteLabels = YES;
+    self.midiSustainedNote = -1;
 
     // SingingBowlView is transparent in light mode (and paints the solarized
     // teal itself in dark mode), so it relies on a backdrop behind it. Provide
@@ -444,6 +449,33 @@ static const int kPlaybackStateMoving  = 1;
 
 - (int)pitchAtPoint:(CGPoint)point {
     return [self noteFromPosition:point];
+}
+
+#pragma mark - MIDI-in (ring lights)
+
+// Visual only: the host already drives audio for incoming MIDI (the app's
+// engine in its noteOnHandler; the AU's render block via HeavyCoreSendMIDINote).
+// We just light the matching ring, so we never touch `core` here.
+- (void)midiNoteIn:(int)pitch velocity:(int)velocity {
+    if (velocity <= 0) return;   // note-off arrives via the sustain pedal, not here
+    if (self.midiSustainDown && self.midiSustainedNote < 0) {
+        // First note-on since the pedal went down: hold it as a pulsing ring.
+        self.midiSustainedNote = pitch;
+        [self.bowlView continuouslyAnimateBowlForNote:pitch];
+    } else {
+        [self.bowlView animateBowlForNote:pitch];
+    }
+}
+
+// CC64. The sustained ring is released on either pedal edge: pressing arms the
+// next note to be held; lifting stops whatever is held.
+- (void)midiSustainPedal:(BOOL)down {
+    if (down == self.midiSustainDown) return;
+    self.midiSustainDown = down;
+    if (self.midiSustainedNote >= 0) {
+        [self.bowlView stopContinuousAnimationForNote:self.midiSustainedNote];
+        self.midiSustainedNote = -1;
+    }
 }
 
 #pragma mark - Remote-OSC playback

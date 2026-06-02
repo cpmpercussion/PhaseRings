@@ -78,6 +78,19 @@
     __weak typeof(self) weakSelf = self;
     self.midiManager.noteOnHandler = ^(int pitch, int velocity) {
         [weakSelf.audioEngine sendNoteOn:1 pitch:pitch velocity:velocity];
+        // Light the matching ring (#29). Fires from the Core MIDI read thread,
+        // so hop to main for UIKit. Gated by the same `midi_in` default as the
+        // audio above (MetatoneMidiManager only calls us when it's enabled).
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [weakSelf.instrument midiNoteIn:pitch velocity:velocity];
+        });
+    };
+    // Sustain pedal (CC64) → ring-light sustain (#29). Visual only; also from
+    // the MIDI thread, so hop to main.
+    self.midiManager.sustainHandler = ^(BOOL down) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [weakSelf.instrument midiSustainPedal:down];
+        });
     };
 
     [self embedInstrument];

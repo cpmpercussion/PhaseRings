@@ -52,6 +52,11 @@ namespace {
 // consumer render thread). Power of two so wrap is a mask.
 constexpr uint32_t kMidiOutCap = 256;
 
+// Capacity of the incoming-note FIFO (single-producer render thread → single-
+// consumer main thread; #29 ring lights). Power of two. Smaller than the
+// output ring: note-ons are sparse and the UI drains it every display frame.
+constexpr uint32_t kMidiInCap = 64;
+
 // Stable, heap-owned state the render block captures. The host guarantees it
 // will not call the render block while render resources are deallocated, so
 // the block only ever sees a valid (or null) refCon. The atomic guards the
@@ -69,6 +74,14 @@ struct AURenderCtx {
     std::atomic<uint32_t> midiTail{0};  // consumer (render)
     // (__bridge) AUMIDIOutputEventBlock, kept alive by the AU's capturedMIDIOut.
     std::atomic<void *> midiSink{nullptr};
+
+    // Incoming MIDI for ring lights (#29): the render thread parses host MIDI
+    // and enqueues raw {status, data1, data2} here (note-ons + sustain CC); the
+    // UI drains on the main thread and interprets. SPSC ring, render = producer,
+    // main = consumer. Drop-on-full (the UI lag, not the note, is what's lost).
+    uint8_t midiIn[kMidiInCap][3];
+    std::atomic<uint32_t> midiInHead{0};  // producer (render)
+    std::atomic<uint32_t> midiInTail{0};  // consumer (main)
 };
 }
 
@@ -267,6 +280,20 @@ struct AURenderCtx {
     _rc->midiHead.store(next, std::memory_order_release);
 }
 
+// Main-thread consumer: hand the UI each MIDI message the render thread
+// enqueued since last call, for ring lights (#29). Mirrors the render block's
+// drain of the outgoing ring.
+- (void)drainIncomingMIDI:(void (^)(uint8_t status, uint8_t data1, uint8_t data2))handler {
+    if (!handler) return;
+    uint32_t tail = _rc->midiInTail.load(std::memory_order_relaxed);
+    uint32_t head = _rc->midiInHead.load(std::memory_order_acquire);
+    while (tail != head) {
+        handler(_rc->midiIn[tail][0], _rc->midiIn[tail][1], _rc->midiIn[tail][2]);
+        tail = (tail + 1) & (kMidiInCap - 1);
+    }
+    _rc->midiInTail.store(tail, std::memory_order_release);
+}
+
 #pragma mark - Render resources
 
 - (BOOL)allocateRenderResourcesAndReturnError:(NSError **)outError {
@@ -375,11 +402,27 @@ struct AURenderCtx {
             if (m->length < 2) continue;
             const uint8_t status = m->data[0] & 0xF0;
             const int channel = (m->data[0] & 0x0F) + 1;  // 1-based, matches the app
+            const uint8_t d1 = m->data[1];
+            const uint8_t d2 = (m->length >= 3) ? m->data[2] : 0;
             if (status == 0x90) {  // note on (velocity 0 == note off)
-                const int vel = (m->length >= 3) ? m->data[2] : 0;
-                HeavyCoreSendMIDINote(refCon, m->data[1], vel, channel);
+                HeavyCoreSendMIDINote(refCon, d1, d2, channel);
             } else if (status == 0x80) {  // note off
-                HeavyCoreSendMIDINote(refCon, m->data[1], 0, channel);
+                HeavyCoreSendMIDINote(refCon, d1, 0, channel);
+            }
+            // Surface note-ons and the sustain pedal (CC64) to the UI for ring
+            // lights (#29). Note-offs aren't needed (flashes self-fade; sustain
+            // holds until the pedal lifts).
+            const bool wantUI = (status == 0x90 && d2 > 0) ||
+                                (status == 0xB0 && d1 == 64);
+            if (wantUI) {
+                uint32_t h = rc->midiInHead.load(std::memory_order_relaxed);
+                uint32_t n = (h + 1) & (kMidiInCap - 1);
+                if (n != rc->midiInTail.load(std::memory_order_acquire)) {  // not full
+                    rc->midiIn[h][0] = m->data[0];   // full status byte (with channel)
+                    rc->midiIn[h][1] = d1;
+                    rc->midiIn[h][2] = d2;
+                    rc->midiInHead.store(n, std::memory_order_release);
+                }
             }
         }
 

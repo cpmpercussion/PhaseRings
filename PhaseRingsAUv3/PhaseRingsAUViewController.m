@@ -11,6 +11,10 @@
 @interface PhaseRingsAUViewController ()
 @property (nonatomic, strong) PhaseRingsAudioUnit *audioUnit;
 @property (nonatomic, strong) InstrumentViewController *instrument;
+// Polls the AU's incoming-note ring each frame to light rings on host MIDI
+// (#29). Live only while the view is on screen (avoids a CADisplayLink retain
+// cycle and idle ticks when the plugin UI is closed).
+@property (nonatomic, strong, nullable) CADisplayLink *midiInLink;
 @end
 
 @implementation PhaseRingsAUViewController
@@ -24,6 +28,39 @@
     [super viewDidLoad];
     self.preferredContentSize = CGSizeMake(1024, 1024);
     [self embedInstrument];
+}
+
+// Drive the incoming-note → ring-light polling off the view's lifecycle. The
+// link retains its target, so we create it on appear and tear it down on
+// disappear rather than leaking the controller.
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    if (!self.midiInLink) {
+        self.midiInLink = [CADisplayLink displayLinkWithTarget:self
+                                                      selector:@selector(drainIncomingMIDI)];
+        [self.midiInLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+    }
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [self.midiInLink invalidate];
+    self.midiInLink = nil;
+}
+
+- (void)drainIncomingMIDI {
+    __weak PhaseRingsAUViewController *weakSelf = self;
+    [self.audioUnit drainIncomingMIDI:^(uint8_t status, uint8_t d1, uint8_t d2) {
+        InstrumentViewController *instrument = weakSelf.instrument;
+        switch (status & 0xF0) {
+            case 0x90:  // note on (the AU only enqueues velocity > 0)
+                [instrument midiNoteIn:d1 velocity:d2];
+                break;
+            case 0xB0:  // control change
+                if (d1 == 64) [instrument midiSustainPedal:(d2 >= 64)];
+                break;
+        }
+    }];
 }
 
 - (void)embedInstrument {

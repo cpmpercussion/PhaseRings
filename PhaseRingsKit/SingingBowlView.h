@@ -20,8 +20,20 @@
 
 /*! Starts the tap animation for a single ring. */
 -(void) animateBowlAtRadius:(CGFloat)radius;
+/*! Starts the tap animation for the ring carrying a given MIDI note number.
+    No-op if the note is not present in the current setup. Used to light rings
+    from incoming MIDI (issue #29); the radius variant resolves to this. */
+-(void) animateBowlForNote:(int)note;
 /*! Starts the swirl animation for a single ring. */
 -(void) continuouslyAnimateBowlAtRadius:(CGFloat) radius;
+/*! Starts the pulsing (held) animation for the ring carrying a given MIDI note
+    number, made visible directly (no volume gesture drives it). Used for
+    sustain-pedal held notes from incoming MIDI (issue #29). No-op if the note
+    is not present in the current setup. */
+-(void) continuouslyAnimateBowlForNote:(int)note;
+/*! Stops the pulsing animation for a single ring by MIDI note number, fading it
+    out. Counterpart to continuouslyAnimateBowlForNote:. */
+-(void) stopContinuousAnimationForNote:(int)note;
 /*! Adjusts the "volume" (opacity) of the currently animated ring.*/
 -(void) changeBowlVolumeTo:(CGFloat) level;
 /*! Adjusts the speed of the currently animated ring.*/

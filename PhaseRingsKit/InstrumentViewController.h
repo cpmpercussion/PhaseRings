@@ -94,6 +94,23 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)playbackSwirlAtPoint:(CGPoint)point velocity:(CGFloat)velocity;
 - (void)stopPlayback;
 
+/// MIDI-in ring lights (issue #29): a note arriving from outside the surface
+/// (the app's Core MIDI input, or the AUv3's host) lights the ring carrying
+/// that pitch. Audio for incoming MIDI is produced by the host (the app's
+/// engine / the AU's render block), so this is purely visual and must NOT
+/// re-trigger the core. A note with no matching ring is ignored. Call on the
+/// main thread. `velocity` 0 is ignored (note release is governed by the
+/// sustain pedal, not key-up). Normally the ring flashes once; while the
+/// sustain pedal is held, the first note-on instead lights a pulsing ring that
+/// holds until the pedal lifts (see `midiSustainPedal:`). Velocity is accepted
+/// for future intensity mapping.
+- (void)midiNoteIn:(int)pitch velocity:(int)velocity;
+
+/// MIDI-in sustain pedal (CC64, issue #29). `down` = controller value ≥ 64.
+/// Pressing arms the next note-on to be held as a pulsing ring; lifting stops
+/// the currently held ring. Visual only. Call on the main thread.
+- (void)midiSustainPedal:(BOOL)down;
+
 /// Reflect the current sound scheme (0..6) in the control bar without firing
 /// the handler — e.g. after the host restores AU state.
 - (void)setDisplayedSoundScheme:(NSInteger)scheme;
