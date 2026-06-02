@@ -459,22 +459,44 @@ static const int kPlaybackStateMoving  = 1;
 - (void)midiNoteIn:(int)pitch velocity:(int)velocity {
     if (velocity <= 0) return;   // note-off arrives via the sustain pedal, not here
     if (self.midiSustainDown && self.midiSustainedNote < 0) {
-        // First note-on since the pedal went down: hold it as a pulsing ring.
+        // First note-on since the pedal went down: hold it as a pulsing ring
+        // AND start the continuous "sing" voice at that pitch. The struck note
+        // (notein) still fires via the host, independently — taps and sing are
+        // separate (issue #29).
         self.midiSustainedNote = pitch;
         [self.bowlView continuouslyAnimateBowlForNote:pitch];
+        id<HeavyEventSink> core = [self core];
+        [core sendFloat:(float)pitch toReceiver:@"singpitch"];
+        [core sendFloat:(float)velocity / 127.0f toReceiver:@"singlevel"];  // initial level; CC11 / Sing Level param then modulates
+        [core sendFloat:1 toReceiver:@"sing"];
     } else {
         [self.bowlView animateBowlForNote:pitch];
     }
 }
 
-// CC64. The sustained ring is released on either pedal edge: pressing arms the
-// next note to be held; lifting stops whatever is held.
+// CC64 gates the "sing" voice. A pedal transition (either edge) ends whatever
+// is currently held; pressing then arms the next note-on to become the held
+// sing voice + pulsing ring.
 - (void)midiSustainPedal:(BOOL)down {
     if (down == self.midiSustainDown) return;
     self.midiSustainDown = down;
     if (self.midiSustainedNote >= 0) {
         [self.bowlView stopContinuousAnimationForNote:self.midiSustainedNote];
+        [[self core] sendFloat:0 toReceiver:@"sing"];
         self.midiSustainedNote = -1;
+    }
+}
+
+// Standard CC modulators → the continuous "sing" receivers (issue #29 follow-up,
+// standalone app only; the AUv3 exposes these as host-mappable AU parameters).
+- (void)midiControlChange:(int)cc value:(int)value {
+    id<HeavyEventSink> core = [self core];
+    float v = (float)value / 127.0f;
+    switch (cc) {
+        case 11: [core sendFloat:v toReceiver:@"singlevel"]; break;                    // expression
+        case 1:  [core sendFloat:(v * 2.0f - 1.0f) toReceiver:@"sinPanAngle"]; break;  // mod wheel (bipolar)
+        case 74: [core sendFloat:v toReceiver:@"panTranslation"]; break;               // brightness
+        default: break;
     }
 }
 

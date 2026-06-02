@@ -24,6 +24,11 @@
 /// ≥ 64. Drives the ring-light sustain behaviour (issue #29).
 @property (copy, nonatomic) void (^sustainHandler)(BOOL down);
 
+/// Invoked on the MIDI thread for control changes other than the sustain pedal,
+/// gated by the `midi_in` user default. Maps to the continuous "sing"
+/// performance receivers (issue #29 follow-up).
+@property (copy, nonatomic) void (^controlChangeHandler)(int cc, int value);
+
 -(void) setupMidi;
 
 @end

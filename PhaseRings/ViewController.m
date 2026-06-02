@@ -85,11 +85,17 @@
             [weakSelf.instrument midiNoteIn:pitch velocity:velocity];
         });
     };
-    // Sustain pedal (CC64) → ring-light sustain (#29). Visual only; also from
+    // Sustain pedal (CC64) → gate the "sing" voice + ring sustain (#29). From
     // the MIDI thread, so hop to main.
     self.midiManager.sustainHandler = ^(BOOL down) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [weakSelf.instrument midiSustainPedal:down];
+        });
+    };
+    // Other CCs → the continuous "sing" performance receivers (#29 follow-up).
+    self.midiManager.controlChangeHandler = ^(int cc, int value) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [weakSelf.instrument midiControlChange:cc value:value];
         });
     };
 

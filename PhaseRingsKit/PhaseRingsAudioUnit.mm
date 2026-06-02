@@ -24,6 +24,13 @@ typedef NS_ENUM(AUParameterAddress, PhaseRingsParam) {
     PhaseRingsParamDistortLevel,
     PhaseRingsParamProcessEffects,
     PhaseRingsParamSound,
+    // Continuous "sing" performance controls (#29 follow-up): exposed as
+    // automatable / MIDI-learnable parameters so DAW hosts can replicate the
+    // swirl performance. The standalone app drives the same receivers from a
+    // fixed CC map instead (it has no host).
+    PhaseRingsParamSingLevel,
+    PhaseRingsParamPanAngle,
+    PhaseRingsParamPanTranslation,
 };
 
 // Sound schemes 0..6 (matches the standalone app's Settings `sound`): 0/1 are
@@ -43,6 +50,9 @@ static NSString *ReceiverForParam(AUParameterAddress addr) {
         case PhaseRingsParamReverbVolume:  return @"reverbvolume";
         case PhaseRingsParamDistortLevel:  return @"distortlevel";
         case PhaseRingsParamProcessEffects:return @"processeffects";
+        case PhaseRingsParamSingLevel:     return @"singlevel";
+        case PhaseRingsParamPanAngle:      return @"sinPanAngle";
+        case PhaseRingsParamPanTranslation:return @"panTranslation";
         default: return nil;
     }
 }
@@ -196,7 +206,34 @@ struct AURenderCtx {
         dependentParameters:nil];
     sound.value = 0.0;
 
-    self.parameterTree = [AUParameterTree createTreeWithChildren:@[master, reverb, distort, effects, sound]];
+    // Continuous "sing" performance controls (#29 follow-up). singLevel is the
+    // voice intensity; panAngle (bipolar) and panTranslation are the swirl
+    // timbre morph. Defaults: a mid level so the voice is audible when gated,
+    // neutral timbre. The `sing` gate + `singpitch` are event-driven (sustain
+    // pedal + note), not parameters.
+    AUParameter *singLevel = [AUParameterTree createParameterWithIdentifier:@"singLevel"
+        name:@"Sing Level" address:PhaseRingsParamSingLevel
+        min:0.0 max:1.0 unit:kAudioUnitParameterUnit_LinearGain unitName:nil
+        flags:(kAudioUnitParameterFlag_IsReadable | kAudioUnitParameterFlag_IsWritable)
+        valueStrings:nil dependentParameters:nil];
+    singLevel.value = 0.7;
+
+    AUParameter *panAngle = [AUParameterTree createParameterWithIdentifier:@"panAngle"
+        name:@"Sing Angle" address:PhaseRingsParamPanAngle
+        min:-1.0 max:1.0 unit:kAudioUnitParameterUnit_Generic unitName:nil
+        flags:(kAudioUnitParameterFlag_IsReadable | kAudioUnitParameterFlag_IsWritable)
+        valueStrings:nil dependentParameters:nil];
+    panAngle.value = 0.0;
+
+    AUParameter *panTranslation = [AUParameterTree createParameterWithIdentifier:@"panTranslation"
+        name:@"Sing Morph" address:PhaseRingsParamPanTranslation
+        min:0.0 max:1.0 unit:kAudioUnitParameterUnit_Generic unitName:nil
+        flags:(kAudioUnitParameterFlag_IsReadable | kAudioUnitParameterFlag_IsWritable)
+        valueStrings:nil dependentParameters:nil];
+    panTranslation.value = 0.0;
+
+    self.parameterTree = [AUParameterTree createTreeWithChildren:@[master, reverb, distort, effects, sound,
+                                                                   singLevel, panAngle, panTranslation]];
 
     // Apply parameter changes to the core. Called off the render thread (the
     // setter side); HeavyCore's send paths just enqueue, so this is safe.
