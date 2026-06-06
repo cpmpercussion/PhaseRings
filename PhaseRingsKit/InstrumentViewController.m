@@ -122,9 +122,10 @@ static const int kPlaybackStateMoving  = 1;
 
 - (void)buildControlBar {
     // Bottom-centre, like the old storyboard: a top-left bar blocked tapping the
-    // top of the screen and sat under macOS window traffic lights. Layout is
-    // label | stepper | gear with the *stepper* pinned to the screen centre, so
-    // the variable-width label can't shove it around.
+    // top of the screen and sat under the window traffic lights when the app is
+    // windowed on iPadOS. Layout is label | stepper | gear with the *stepper*
+    // pinned to the screen centre, so the variable-width label can't shove it
+    // around.
 
     // Setup stepper — steps through the composition's setups (replaces the old
     // "New Setup" pill; matches the standalone app's compositionStepper).
