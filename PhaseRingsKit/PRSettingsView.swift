@@ -108,7 +108,30 @@ public struct PRSettingsView: View {
                     Toggle("Enable Remote Control", isOn: $remoteControlEnabled)
                 }
             }
+
+            Section(header: Text("About")) {
+                Text("PhaseRings by Charles Martin 2014–\(String(currentYear)). Version \(versionString).")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                Link("charlesmartin.au/phaserings", destination: URL(string: "https://charlesmartin.au/phaserings/")!)
+                    .font(.footnote)
+            }
         }
+    }
+
+    private var currentYear: Int {
+        Calendar.current.component(.year, from: Date())
+    }
+
+    // Marketing version + build from the presenting bundle (the app or the
+    // AUv3 appex — both carry their own Info.plist version).
+    private var versionString: String {
+        let info = Bundle.main.infoDictionary
+        let version = info?["CFBundleShortVersionString"] as? String ?? "?"
+        if let build = info?["CFBundleVersion"] as? String {
+            return "\(version) (\(build))"
+        }
+        return version
     }
 
     private func notePicker(_ title: String, selection: Binding<Int>) -> some View {
