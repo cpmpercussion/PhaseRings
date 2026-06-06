@@ -14,7 +14,14 @@
 #define METATONE_NEWIDEA_MESSAGE @"new_idea"
 #define ENSEMBLE_STATUS_MODE NO
 #define NUMBER_COMPOSITIONS_AVAILABLE 5
-#define BACKGROUND_SOUND_ALWAYS_ON YES
+// Issue #41: the UIBackgroundModes audio entitlement is gone (App Review
+// 2.5.4 — background/inter-app rendering is the AUv3's job now). This flag no
+// longer means background sound: it keeps the session active across
+// *transient* focus loss (notification banners, control centre, app-switcher
+// peek) so a held drone survives mid-performance. Once truly backgrounded,
+// iOS interrupts the session itself and the interruption handler +
+// applicationDidBecomeActive: restart path recovers on return.
+#define KEEP_AUDIO_ON_RESIGN_ACTIVE YES
 // Modern iPads run hardware at 48 kHz; asking for 44.1 forced libpd to log
 // "could not set session sample rate". Match the hardware.
 #define SAMPLE_RATE 48000
@@ -188,7 +195,7 @@
 }
 
 - (void)shutdownSoundProcessing {
-    if (!BACKGROUND_SOUND_ALWAYS_ON) {
+    if (!KEEP_AUDIO_ON_RESIGN_ACTIVE) {
         [self.audioEngine setActive:NO];
     }
 }
