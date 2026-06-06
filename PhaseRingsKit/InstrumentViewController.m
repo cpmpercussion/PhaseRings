@@ -121,46 +121,50 @@ static const int kPlaybackStateMoving  = 1;
 #pragma mark - Control bar
 
 - (void)buildControlBar {
+    // Bottom-centre, like the old storyboard: a top-left bar blocked tapping the
+    // top of the screen and sat under the window traffic lights when the app is
+    // windowed on iPadOS. Layout is label | stepper | gear with the *stepper*
+    // pinned to the screen centre, so the variable-width label can't shove it
+    // around.
+
     // Setup stepper — steps through the composition's setups (replaces the old
     // "New Setup" pill; matches the standalone app's compositionStepper).
     self.setupStepper = [[UIStepper alloc] init];
     self.setupStepper.wraps = YES;
     self.setupStepper.minimumValue = 0;
-    self.setupStepper.tintColor = [UIColor whiteColor];
     [self.setupStepper addTarget:self action:@selector(setupStepperChanged)
                 forControlEvents:UIControlEventValueChanged];
     self.setupStepper.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:self.setupStepper];
 
     // Settings gear — presents the shared PhaseRingsKit settings screen. Sound
     // scheme + note labels now live there rather than as on-screen pills.
+    // labelColor so it tracks light/dark like the stepper (which ignores
+    // tintColor and adapts on its own).
     UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeSystem];
     [settingsButton setImage:[UIImage systemImageNamed:@"gearshape"] forState:UIControlStateNormal];
-    settingsButton.tintColor = [UIColor whiteColor];
+    settingsButton.tintColor = [UIColor labelColor];
     [settingsButton addTarget:self action:@selector(showSettingsTapped)
              forControlEvents:UIControlEventTouchUpInside];
     settingsButton.translatesAutoresizingMaskIntoConstraints = NO;
-
-    UIStackView *bar = [[UIStackView alloc] initWithArrangedSubviews:@[self.setupStepper, settingsButton]];
-    bar.axis = UILayoutConstraintAxisHorizontal;
-    bar.spacing = 12;
-    bar.alignment = UIStackViewAlignmentCenter;
-    bar.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addSubview:bar];
+    [self.view addSubview:settingsButton];
 
     // Setup description label — shown when the setup_label setting is on.
     self.setupDescriptionLabel = [[UILabel alloc] init];
-    self.setupDescriptionLabel.textColor = [UIColor colorWithWhite:1.0 alpha:0.85];
+    self.setupDescriptionLabel.textColor = [UIColor secondaryLabelColor];
     self.setupDescriptionLabel.font = [UIFont systemFontOfSize:15 weight:UIFontWeightMedium];
     self.setupDescriptionLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:self.setupDescriptionLabel];
 
     UILayoutGuide *safe = self.view.safeAreaLayoutGuide;
     [NSLayoutConstraint activateConstraints:@[
-        [bar.topAnchor constraintEqualToAnchor:safe.topAnchor constant:8],
-        [bar.leadingAnchor constraintEqualToAnchor:safe.leadingAnchor constant:12],
-        [self.setupDescriptionLabel.centerYAnchor constraintEqualToAnchor:bar.centerYAnchor],
-        [self.setupDescriptionLabel.leadingAnchor constraintEqualToAnchor:bar.trailingAnchor constant:12],
-        [self.setupDescriptionLabel.trailingAnchor constraintLessThanOrEqualToAnchor:safe.trailingAnchor constant:-12],
+        [self.setupStepper.centerXAnchor constraintEqualToAnchor:safe.centerXAnchor],
+        [self.setupStepper.bottomAnchor constraintEqualToAnchor:safe.bottomAnchor constant:-8],
+        [self.setupDescriptionLabel.centerYAnchor constraintEqualToAnchor:self.setupStepper.centerYAnchor],
+        [self.setupDescriptionLabel.trailingAnchor constraintEqualToAnchor:self.setupStepper.leadingAnchor constant:-12],
+        [self.setupDescriptionLabel.leadingAnchor constraintGreaterThanOrEqualToAnchor:safe.leadingAnchor constant:12],
+        [settingsButton.centerYAnchor constraintEqualToAnchor:self.setupStepper.centerYAnchor],
+        [settingsButton.leadingAnchor constraintEqualToAnchor:self.setupStepper.trailingAnchor constant:12],
     ]];
 }
 
