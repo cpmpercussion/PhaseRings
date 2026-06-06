@@ -80,6 +80,13 @@ static const int kPlaybackStateMoving  = 1;
 
     UIPanGestureRecognizer *pan =
         [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureRecognized:)];
+    // Issue #35: match the old storyboard recognizer (cancelsTouchesInView=NO,
+    // delaysTouchesEnded=NO). With the default cancelsTouchesInView=YES, a
+    // recognized pan claims every later touch, so no taps land while swirling —
+    // these flags keep touchesBegan: firing, so a held swirl drone can have
+    // tapped notes played over the top.
+    pan.cancelsTouchesInView = NO;
+    pan.delaysTouchesEnded = NO;
     [self.view addGestureRecognizer:pan];
 
     [self buildControlBar];

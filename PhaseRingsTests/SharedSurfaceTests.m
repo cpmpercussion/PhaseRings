@@ -281,6 +281,19 @@
     XCTAssertNotEqual(center, edge);   // inner vs outer ring → different pitch
 }
 
+// Issue #35: the swirl pan recognizer must not swallow touches, or no taps land
+// while a swirl is in progress (drone + tapped melody). Matches the old
+// storyboard recognizer: cancelsTouchesInView=NO, delaysTouchesEnded=NO.
+- (void)testPanRecognizerDoesNotSwallowTouches {
+    UIPanGestureRecognizer *pan = nil;
+    for (UIGestureRecognizer *gr in _vc.view.gestureRecognizers) {
+        if ([gr isKindOfClass:[UIPanGestureRecognizer class]]) pan = (UIPanGestureRecognizer *)gr;
+    }
+    XCTAssertNotNil(pan, @"surface must have its swirl pan recognizer");
+    XCTAssertFalse(pan.cancelsTouchesInView, @"a recognized swirl must keep delivering taps to touchesBegan:");
+    XCTAssertFalse(pan.delaysTouchesEnded);
+}
+
 @end
 
 #pragma mark - 2. OSC message wire format
