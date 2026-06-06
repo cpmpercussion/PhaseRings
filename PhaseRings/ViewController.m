@@ -262,7 +262,7 @@
 // Any NSUserDefaults change (in-app sheet or the iOS Settings.app pane): push
 // the volume/effects levels to the engine, and let the surface re-apply
 // composition / sound / labels non-disruptively. For in-app-sheet edits the
-// surface already updated via the store's onChange, so this is a cheap no-op.
+// surface already updated via its store observer, so this is a cheap no-op.
 //
 // NSUserDefaultsDidChangeNotification fires once per set* call, and
 // PRUserDefaultsStore writes all 14 keys per edit — so a single sheet edit

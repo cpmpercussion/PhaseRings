@@ -244,11 +244,11 @@
 
     PhaseRingsAudioUnit *au2 = [self makeUnit];
     PRAudioUnitStore *store2 = [[PRAudioUnitStore alloc] initWithAudioUnit:au2];
-    XCTestExpectation *fired = [self expectationWithDescription:@"onChange after restore"];
-    store2.onChange = ^(PRSettings *s) {
+    XCTestExpectation *fired = [self expectationWithDescription:@"observer fires after restore"];
+    [store2 addSettingsObserver:^(PRSettings *s) {
         XCTAssertEqual(s.composition, 3);
         [fired fulfill];
-    };
+    }];
     [au2 setFullState:full];  // restore handler is dispatched to the main queue
     [self waitForExpectations:@[fired] timeout:1.0];
 }

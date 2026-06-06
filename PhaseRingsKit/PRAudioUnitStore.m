@@ -5,6 +5,7 @@
 
 #import "PRAudioUnitStore.h"
 #import "PRSettings.h"
+#import "PRSettingsObserverSet.h"
 #import "PhaseRingsAudioUnit.h"
 #import <AudioToolbox/AudioToolbox.h>
 
@@ -31,26 +32,34 @@ static NSString *const kScale3      = @"scale3";
 
 @interface PRAudioUnitStore ()
 @property (nonatomic, weak) PhaseRingsAudioUnit *audioUnit;
+@property (nonatomic, strong) PRSettingsObserverSet *observers;
 @end
 
 @implementation PRAudioUnitStore
-
-@synthesize onChange = _onChange;
 
 - (instancetype)initWithAudioUnit:(PhaseRingsAudioUnit *)audioUnit {
     self = [super init];
     if (self) {
         _audioUnit = audioUnit;
+        _observers = [[PRSettingsObserverSet alloc] init];
         // Rebroadcast host state restores (fullState) to the UI.
         __weak typeof(self) weakSelf = self;
         audioUnit.instrumentStateRestoredHandler = ^{
             typeof(self) strongSelf = weakSelf;
-            if (strongSelf.onChange) {
-                strongSelf.onChange([strongSelf currentSettings]);
+            if (strongSelf) {
+                [strongSelf.observers notifyAll:[strongSelf currentSettings]];
             }
         };
     }
     return self;
+}
+
+- (id)addSettingsObserver:(void (^)(PRSettings *))observer {
+    return [self.observers addObserver:observer];
+}
+
+- (void)removeSettingsObserver:(id)token {
+    [self.observers removeObserver:token];
 }
 
 - (float)param:(AUParameterAddress)address {
@@ -112,9 +121,7 @@ static NSString *const kScale3      = @"scale3";
         kScale3:      @(s.scale3),
     };
 
-    if (self.onChange) {
-        self.onChange([s copy]);
-    }
+    [self.observers notifyAll:[s copy]];
 }
 
 @end

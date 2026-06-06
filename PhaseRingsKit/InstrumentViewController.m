@@ -35,6 +35,9 @@ static const CGFloat kScreenDiagonal = 1280.0;
 @property (nonatomic, strong) UILabel *setupDescriptionLabel;
 // Last settings applied, so a settings change only rebuilds what actually moved.
 @property (nonatomic, strong) PRSettings *appliedSettings;
+// Token from the store's addSettingsObserver: (issue #37 — observers are
+// token-registered now, so the settings sheet's model can't clobber ours).
+@property (nonatomic, strong, nullable) id settingsObserverToken;
 // Remote-OSC playback state (continuous "swirl" with a 1s auto-stop timer).
 @property (nonatomic) int playbackPanGestureState;
 @property (nonatomic, strong, nullable) NSTimer *playbackPanGestureTimeout;
@@ -87,20 +90,25 @@ static const int kPlaybackStateMoving  = 1;
 
 - (id<PRSettingsStore>)settingsStore {
     if (!_settingsStore) {
-        self.settingsStore = [[PRMemoryStore alloc] init];  // through setter -> wires onChange
+        self.settingsStore = [[PRMemoryStore alloc] init];  // through setter -> registers observer
     }
     return _settingsStore;
 }
 
 - (void)setSettingsStore:(id<PRSettingsStore>)settingsStore {
+    [_settingsStore removeSettingsObserver:_settingsObserverToken];
     _settingsStore = settingsStore;
     __weak typeof(self) weakSelf = self;
-    settingsStore.onChange = ^(PRSettings *settings) {
+    _settingsObserverToken = [settingsStore addSettingsObserver:^(PRSettings *settings) {
         [weakSelf settingsDidChange:settings];
-    };
+    }];
     if (self.isViewLoaded) {
         [self reloadComposition];
     }
+}
+
+- (void)dealloc {
+    [_settingsStore removeSettingsObserver:_settingsObserverToken];
 }
 
 #pragma mark - Control bar
@@ -150,7 +158,7 @@ static const int kPlaybackStateMoving  = 1;
 }
 
 - (void)showSettingsTapped {
-    // Edits flow through the store live (onChange -> -settingsDidChange:), so no
+    // Edits flow through the store live (observer -> -settingsDidChange:), so no
     // reload-on-dismiss is needed here.
     PRSettingsHostingController *settings =
         [[PRSettingsHostingController alloc] initWithStore:self.settingsStore];
