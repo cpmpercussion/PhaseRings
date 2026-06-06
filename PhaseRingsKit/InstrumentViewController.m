@@ -76,6 +76,14 @@ static const int kPlaybackStateMoving  = 1;
     self.bowlView = [[SingingBowlView alloc] initWithFrame:self.view.bounds];
     self.bowlView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.bowlView.backgroundColor = [UIColor clearColor];
+    // VoiceOver: the rings are a playing surface, not navigable controls —
+    // AllowsDirectInteraction passes touches straight through (as in other
+    // instrument apps) so taps and swirls play notes rather than being
+    // intercepted by the screen reader.
+    self.bowlView.isAccessibilityElement = YES;
+    self.bowlView.accessibilityTraits = UIAccessibilityTraitAllowsDirectInteraction;
+    self.bowlView.accessibilityLabel = @"Playing surface";
+    self.bowlView.accessibilityHint = @"Rings of notes, lowest at the outside. Tap a ring to play its note; move in circles to swell it.";
     [self.view addSubview:self.bowlView];
 
     UIPanGestureRecognizer *pan =
@@ -135,6 +143,10 @@ static const int kPlaybackStateMoving  = 1;
     [self.setupStepper addTarget:self action:@selector(setupStepperChanged)
                 forControlEvents:UIControlEventValueChanged];
     self.setupStepper.translatesAutoresizingMaskIntoConstraints = NO;
+    self.setupStepper.accessibilityLabel = @"Ring setup";
+    self.setupStepper.accessibilityHint = @"Changes the notes on the rings.";
+    // accessibilityValue (the current setup's description) is kept fresh in
+    // updateSetupDescription.
     [self.view addSubview:self.setupStepper];
 
     // Settings gear — presents the shared PhaseRingsKit settings screen. Sound
@@ -147,6 +159,8 @@ static const int kPlaybackStateMoving  = 1;
     [settingsButton addTarget:self action:@selector(showSettingsTapped)
              forControlEvents:UIControlEventTouchUpInside];
     settingsButton.translatesAutoresizingMaskIntoConstraints = NO;
+    settingsButton.accessibilityLabel = @"Settings";
+    settingsButton.accessibilityHint = @"Opens sound, composition and audio settings.";
     [self.view addSubview:settingsButton];
 
     // Setup description label — shown when the setup_label setting is on.
@@ -165,6 +179,8 @@ static const int kPlaybackStateMoving  = 1;
         [self.setupDescriptionLabel.leadingAnchor constraintGreaterThanOrEqualToAnchor:safe.leadingAnchor constant:12],
         [settingsButton.centerYAnchor constraintEqualToAnchor:self.setupStepper.centerYAnchor],
         [settingsButton.leadingAnchor constraintEqualToAnchor:self.setupStepper.trailingAnchor constant:12],
+        // Keep the gear on-screen on narrow widths (PR #40 review).
+        [settingsButton.trailingAnchor constraintLessThanOrEqualToAnchor:safe.trailingAnchor constant:-12],
     ]];
 }
 
@@ -232,6 +248,10 @@ static const int kPlaybackStateMoving  = 1;
                    ? descriptions[self.setupState] : @"";
     self.setupDescriptionLabel.text = text;
     self.setupDescriptionLabel.hidden = !self.showSetupLabel;
+    // VoiceOver reads the stepper as "Ring setup, <description>" even when the
+    // visual label is switched off.
+    self.setupStepper.accessibilityValue = text.length ? text
+        : [NSString stringWithFormat:@"Setup %d", self.setupState + 1];
 }
 
 // drawSetup: lays the rings out for the view size at call time, so (re)draw
