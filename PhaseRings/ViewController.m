@@ -42,6 +42,13 @@
 @property (strong, nonatomic) NSDate *timeOfLastNewIdea;
 // Classifier-driven distortion level (formerly held by a hidden slider).
 @property (nonatomic) float currentDistortion;
+// Last-sent engine settings, so openPdPatch only re-sends what changed (#34).
+@property (nonatomic) BOOL hasPushedEngineSettings;
+@property (nonatomic) HeavySynth lastPushedSynth;
+@property (nonatomic) NSInteger lastPushedSoundScheme;
+@property (nonatomic) float lastPushedMasterVolume;
+@property (nonatomic) float lastPushedReverbVolume;
+@property (nonatomic) float lastPushedProcessEffects;
 @end
 
 @implementation ViewController
@@ -109,15 +116,18 @@
 
     // Push volume/effects changes to the engine whenever settings change (from
     // the in-app sheet or the iOS Settings.app). Composition / sound / labels
-    // are handled by the embedded surface via its settings store.
+    // are handled by the embedded surface via its settings store. Observe only
+    // the standard defaults — with object:nil this also fired for framework-
+    // internal defaults domains (#34).
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(settingsChangedPushToEngine)
                                                  name:NSUserDefaultsDidChangeNotification
-                                               object:nil];
+                                               object:[NSUserDefaults standardUserDefaults]];
 }
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [NSObject cancelPreviousPerformRequestsWithTarget:self];
 }
 
 // Build and embed the shared instrument surface, wiring it to the app-only
@@ -207,27 +217,71 @@
 // Selects the Heavy synth for the current sound scheme and pushes the level
 // settings. Sound schemes 0/1 map to Phase / CircleStrings; 2..6 use
 // SoundScraper and pick a sample via `selectsound`.
+//
+// Only sends what actually changed since the last push: re-sending
+// `selectsound` retriggers sample-selection logic in the SoundScraper patch,
+// which is the audible grind of #34. The three synths are separate Heavy
+// contexts, so a synth switch marks everything dirty — the newly active
+// context has never heard our levels.
 - (void)openPdPatch {
     NSUserDefaults *d = [NSUserDefaults standardUserDefaults];
     NSInteger soundScheme = [d integerForKey:@"sound"];
+    float master  = [d floatForKey:@"master_volume"];
+    float reverb  = [d floatForKey:@"reverb_volume"];
+    float effects = [d boolForKey:@"process_effects"] ? 1 : 0;
     HeavySynth synth;
     switch (soundScheme) {
         case 0:  synth = HeavySynthPhase;         break;
         case 1:  synth = HeavySynthCircleStrings; break;
         default: synth = HeavySynthSoundScraper;  break;
     }
-    [self.audioEngine selectSynth:synth];
-    [self.audioEngine sendFloat:soundScheme toReceiver:@"selectsound"];
-    [self.audioEngine sendFloat:[d floatForKey:@"master_volume"] toReceiver:@"mastervolume"];
-    [self.audioEngine sendFloat:[d floatForKey:@"reverb_volume"] toReceiver:@"reverbvolume"];
-    [self.audioEngine sendFloat:[d boolForKey:@"process_effects"] ? 1 : 0 toReceiver:@"processeffects"];
+
+    BOOL allDirty = !self.hasPushedEngineSettings || synth != self.lastPushedSynth;
+    [self.audioEngine selectSynth:synth];  // no-ops when unchanged
+    if (allDirty || soundScheme != self.lastPushedSoundScheme) {
+        [self.audioEngine sendFloat:soundScheme toReceiver:@"selectsound"];
+    }
+    if (allDirty || master != self.lastPushedMasterVolume) {
+        [self.audioEngine sendFloat:master toReceiver:@"mastervolume"];
+    }
+    if (allDirty || reverb != self.lastPushedReverbVolume) {
+        [self.audioEngine sendFloat:reverb toReceiver:@"reverbvolume"];
+    }
+    if (allDirty || effects != self.lastPushedProcessEffects) {
+        [self.audioEngine sendFloat:effects toReceiver:@"processeffects"];
+    }
+
+    self.hasPushedEngineSettings = YES;
+    self.lastPushedSynth = synth;
+    self.lastPushedSoundScheme = soundScheme;
+    self.lastPushedMasterVolume = master;
+    self.lastPushedReverbVolume = reverb;
+    self.lastPushedProcessEffects = effects;
 }
 
 // Any NSUserDefaults change (in-app sheet or the iOS Settings.app pane): push
 // the volume/effects levels to the engine, and let the surface re-apply
 // composition / sound / labels non-disruptively. For in-app-sheet edits the
 // surface already updated via the store's onChange, so this is a cheap no-op.
+//
+// NSUserDefaultsDidChangeNotification fires once per set* call, and
+// PRUserDefaultsStore writes all 14 keys per edit — so a single sheet edit
+// fired this 14×, and a slider drag hundreds of times a second, grinding
+// audio on older iPads (#34). Coalesce to one push per main-runloop turn.
 - (void)settingsChangedPushToEngine {
+    if (![NSThread isMainThread]) {
+        // performSelector:afterDelay: needs a running runloop; defaults writes
+        // can land on arbitrary threads.
+        dispatch_async(dispatch_get_main_queue(), ^{ [self settingsChangedPushToEngine]; });
+        return;
+    }
+    [NSObject cancelPreviousPerformRequestsWithTarget:self
+                                             selector:@selector(pushSettingsToEngine)
+                                               object:nil];
+    [self performSelector:@selector(pushSettingsToEngine) withObject:nil afterDelay:0];
+}
+
+- (void)pushSettingsToEngine {
     [self openPdPatch];
     [self.instrument applyCurrentSettings];
 }
