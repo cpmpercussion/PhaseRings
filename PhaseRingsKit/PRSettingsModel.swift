@@ -17,8 +17,12 @@ import Combine
 public final class PRSettingsModel: NSObject, ObservableObject {
 
     private let store: PRSettingsStore
-    // Suppresses store writes while we're ingesting a snapshot (load / onChange),
-    // so republishing doesn't bounce back into the store.
+    // Token from the store's addSettingsObserver: (issue #37 — registering as
+    // one observer among many, instead of stealing the instrument surface's
+    // old single-slot `onChange` callback).
+    private var observerToken: Any?
+    // Suppresses store writes while we're ingesting a snapshot (load / observer
+    // callback), so republishing doesn't bounce back into the store.
     private var isSyncing = false
 
     @Published public var sound: Int { didSet { push() } }
@@ -55,9 +59,13 @@ public final class PRSettingsModel: NSObject, ObservableObject {
         scale3 = s.scale3
         super.init()
 
-        store.onChange = { [weak self] snapshot in
+        observerToken = store.addSettingsObserver { [weak self] snapshot in
             self?.ingest(snapshot)
         }
+    }
+
+    deinit {
+        store.removeSettingsObserver(observerToken)
     }
 
     /// Pull a store snapshot into the published properties without writing back.

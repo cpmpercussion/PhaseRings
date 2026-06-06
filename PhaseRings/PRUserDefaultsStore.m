@@ -4,6 +4,7 @@
 //
 
 #import "PRUserDefaultsStore.h"
+#import <PhaseRingsKit/PRSettingsObserverSet.h>
 
 // Existing NSUserDefaults keys (see Settings.bundle + AppDelegate registerDefaults).
 static NSString *const kSound          = @"sound";
@@ -23,11 +24,10 @@ static NSString *const kScale3         = @"scale_3";
 
 @interface PRUserDefaultsStore ()
 @property (nonatomic, strong) NSUserDefaults *defaults;
+@property (nonatomic, strong) PRSettingsObserverSet *observers;
 @end
 
 @implementation PRUserDefaultsStore
-
-@synthesize onChange = _onChange;
 
 - (instancetype)init {
     return [self initWithUserDefaults:[NSUserDefaults standardUserDefaults]];
@@ -37,8 +37,17 @@ static NSString *const kScale3         = @"scale_3";
     self = [super init];
     if (self) {
         _defaults = defaults;
+        _observers = [[PRSettingsObserverSet alloc] init];
     }
     return self;
+}
+
+- (id)addSettingsObserver:(void (^)(PRSettings *))observer {
+    return [self.observers addObserver:observer];
+}
+
+- (void)removeSettingsObserver:(id)token {
+    [self.observers removeObserver:token];
 }
 
 - (PRSettings *)currentSettings {
@@ -82,9 +91,7 @@ static NSString *const kScale3         = @"scale_3";
     [d setInteger:s.scale2         forKey:kScale2];
     [d setInteger:s.scale3         forKey:kScale3];
 
-    if (self.onChange) {
-        self.onChange([s copy]);
-    }
+    [self.observers notifyAll:[s copy]];
 }
 
 @end

@@ -20,6 +20,7 @@ FOUNDATION_EXPORT const unsigned char PhaseRingsKitVersionString[];
 #import <PhaseRingsKit/InstrumentViewController.h>
 #import <PhaseRingsKit/PRSettings.h>
 #import <PhaseRingsKit/PRSettingsStore.h>
+#import <PhaseRingsKit/PRSettingsObserverSet.h>
 #import <PhaseRingsKit/PRMemoryStore.h>
 #import <PhaseRingsKit/PRAudioUnitStore.h>
 #import <PhaseRingsKit/PRCompositionFactory.h>

@@ -11,6 +11,7 @@
 
 #import <XCTest/XCTest.h>
 #import <PhaseRingsKit/PhaseRingsKit.h>
+#import <PhaseRingsKit/PhaseRingsKit-Swift.h>   // PRSettingsModel
 #import "GenerativeSetupComposition.h"
 #import "PRUserDefaultsStore.h"
 
@@ -112,11 +113,11 @@ static const NSInteger kBaseA = 33;
     [d removePersistentDomainForName:suite];
     PRUserDefaultsStore *store = [[PRUserDefaultsStore alloc] initWithUserDefaults:d];
 
-    XCTestExpectation *fired = [self expectationWithDescription:@"onChange"];
-    store.onChange = ^(PRSettings *s) {
+    XCTestExpectation *fired = [self expectationWithDescription:@"observer"];
+    [store addSettingsObserver:^(PRSettings *s) {
         XCTAssertEqual(s.sound, 4);
         [fired fulfill];
-    };
+    }];
     [store updateSettings:^(PRSettings *s) { s.sound = 4; }];
     [self waitForExpectations:@[fired] timeout:1.0];
 
@@ -153,13 +154,61 @@ static const NSInteger kBaseA = 33;
 
 - (void)testMemoryStoreFiresOnChange {
     PRMemoryStore *store = [[PRMemoryStore alloc] init];
-    XCTestExpectation *fired = [self expectationWithDescription:@"onChange"];
-    store.onChange = ^(PRSettings *s) {
+    XCTestExpectation *fired = [self expectationWithDescription:@"observer"];
+    [store addSettingsObserver:^(PRSettings *s) {
         XCTAssertEqual(s.sound, 5);
         [fired fulfill];
-    };
+    }];
     [store updateSettings:^(PRSettings *s) { s.sound = 5; }];
     [self waitForExpectations:@[fired] timeout:1.0];
+}
+
+#pragma mark - Multi-observer store notifications (issue #37)
+
+- (void)testMultipleObserversAllFire {
+    PRMemoryStore *store = [[PRMemoryStore alloc] init];
+    __block NSInteger first = 0, second = 0;
+    [store addSettingsObserver:^(PRSettings *s) { first++; }];
+    [store addSettingsObserver:^(PRSettings *s) { second++; }];
+    [store updateSettings:^(PRSettings *s) { s.sound = 2; }];
+    XCTAssertEqual(first, 1, @"registering a second observer must not clobber the first");
+    XCTAssertEqual(second, 1);
+}
+
+- (void)testRemovedObserverStopsFiringOthersUnaffected {
+    PRMemoryStore *store = [[PRMemoryStore alloc] init];
+    __block NSInteger kept = 0, removed = 0;
+    [store addSettingsObserver:^(PRSettings *s) { kept++; }];
+    id token = [store addSettingsObserver:^(PRSettings *s) { removed++; }];
+    [store removeSettingsObserver:token];
+    [store removeSettingsObserver:nil];  // nil token is a no-op
+    [store updateSettings:^(PRSettings *s) { s.sound = 2; }];
+    XCTAssertEqual(kept, 1);
+    XCTAssertEqual(removed, 0);
+}
+
+// The issue #37 scenario end-to-end: the instrument surface observes the store,
+// the settings sheet's PRSettingsModel comes and goes; the surface keeps
+// receiving change notifications throughout and afterwards. (The model's
+// @Published properties aren't ObjC-visible, so the store is driven directly;
+// the regression was the model's registration clobbering the surface's slot.)
+- (void)testSettingsModelLifecycleDoesNotDisconnectOtherObservers {
+    PRMemoryStore *store = [[PRMemoryStore alloc] init];
+    __block NSInteger surfaceNotified = 0;
+    [store addSettingsObserver:^(PRSettings *s) { surfaceNotified++; }];
+
+    @autoreleasepool {
+        PRSettingsModel *model = [[PRSettingsModel alloc] initWithStore:store];
+        XCTAssertNotNil(model);
+        // Sheet open: a store change must still reach the surface.
+        [store updateSettings:^(PRSettings *s) { s.sound = 3; }];
+        XCTAssertEqual(surfaceNotified, 1, @"opening the sheet must not steal the surface's observer");
+    }
+
+    // Sheet dismissed (model deallocated): host-driven changes still reach the
+    // surface — this was the AUv3 breakage in issue #37.
+    [store updateSettings:^(PRSettings *s) { s.sound = 4; }];
+    XCTAssertEqual(surfaceNotified, 2, @"surface must keep observing after the sheet is gone");
 }
 
 @end

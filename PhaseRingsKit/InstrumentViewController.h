@@ -130,7 +130,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// Re-read the settings store and apply any changes non-disruptively (rebuild
 /// only if the composition changed; otherwise just re-apply labels/sound). A
 /// host calls this when settings may have changed outside the in-app sheet
-/// (e.g. the iOS Settings.app pane) so the store's `onChange` did not fire.
+/// (e.g. the iOS Settings.app pane) so the store's observers did not fire.
 - (void)applyCurrentSettings;
 
 @end

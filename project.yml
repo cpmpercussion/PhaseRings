@@ -102,6 +102,7 @@ targets:
           - "PRCompositionFactory.h"
           - "PRMemoryStore.h"
           - "PRSettings.h"
+          - "PRSettingsObserverSet.h"
           - "PRSettingsStore.h"
           - "PhaseRingsAudioUnit.h"
           - "PhaseRingsKit.h"
@@ -116,6 +117,7 @@ targets:
       - { path: PhaseRingsKit/InstrumentViewController.h, headerVisibility: public }
       - { path: PhaseRingsKit/PRSettings.h, headerVisibility: public }
       - { path: PhaseRingsKit/PRSettingsStore.h, headerVisibility: public }
+      - { path: PhaseRingsKit/PRSettingsObserverSet.h, headerVisibility: public }
       - { path: PhaseRingsKit/PRCompositionFactory.h, headerVisibility: public }
       - { path: PhaseRingsKit/PRMemoryStore.h, headerVisibility: public }
       - { path: PhaseRingsKit/PRAudioUnitStore.h, headerVisibility: public }

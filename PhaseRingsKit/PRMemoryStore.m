@@ -4,17 +4,18 @@
 //
 
 #import "PRMemoryStore.h"
+#import "PRSettingsObserverSet.h"
 
 @implementation PRMemoryStore {
     PRSettings *_settings;
+    PRSettingsObserverSet *_observers;
 }
-
-@synthesize onChange = _onChange;
 
 - (instancetype)init {
     self = [super init];
     if (self) {
         _settings = [PRSettings defaultSettings];
+        _observers = [[PRSettingsObserverSet alloc] init];
     }
     return self;
 }
@@ -29,9 +30,15 @@
         mutations(s);
     }
     _settings = [s copy];
-    if (self.onChange) {
-        self.onChange([_settings copy]);
-    }
+    [_observers notifyAll:[_settings copy]];
+}
+
+- (id)addSettingsObserver:(void (^)(PRSettings *))observer {
+    return [_observers addObserver:observer];
+}
+
+- (void)removeSettingsObserver:(id)token {
+    [_observers removeObserver:token];
 }
 
 @end
