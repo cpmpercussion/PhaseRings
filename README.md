@@ -1,6 +1,6 @@
 # PhaseRings
 
-[![DOI](https://zenodo.org/badge/20166/cpmpercussion/PhaseRings.svg)](https://zenodo.org/badge/latestdoi/20166/cpmpercussion/PhaseRings)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20225113.svg)](https://doi.org/10.5281/zenodo.20225113)
 
 [Available in the App Store for iPad and iPhones](https://itunes.apple.com/app/phaserings/id924795988)
 
