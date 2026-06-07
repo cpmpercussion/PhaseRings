@@ -83,7 +83,7 @@ static const int kPlaybackStateMoving  = 1;
     self.bowlView.isAccessibilityElement = YES;
     self.bowlView.accessibilityTraits = UIAccessibilityTraitAllowsDirectInteraction;
     self.bowlView.accessibilityLabel = @"Playing surface";
-    self.bowlView.accessibilityHint = @"Rings of notes, lowest at the outside. Tap a ring to play its note; move in circles to swell it.";
+    self.bowlView.accessibilityHint = @"Rings of notes, lowest at the centre, rising outward. Tap a ring to play its note; move in circles to swell it.";
     [self.view addSubview:self.bowlView];
 
     UIPanGestureRecognizer *pan =
