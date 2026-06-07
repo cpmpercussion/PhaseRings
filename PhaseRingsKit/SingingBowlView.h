@@ -46,8 +46,10 @@
 /*! Sets the colour scheme by reading the current trait collection's userInterfaceStyle. */
 -(void) setSelectedColourScheme;
 
-/*! Lights every other ring in the current setup at full saturation for App Store screenshots. */
--(void) lightAlternateRingsForScreenshot;
+/*! Lights rings in the current setup at full saturation for App Store
+    screenshots. The 0/1 pattern repeats across the rings from the centre
+    outward; nil or empty falls back to the classic on-off alternation. */
+-(void) lightRingsForScreenshotWithPattern:(NSArray<NSNumber *> *)pattern;
 
 /*! Calculates the distance of a CGPoint from the centre of the SingingBowlView */
 -(CGFloat)calculateDistanceFromCenter:(CGPoint)touchPoint;

@@ -33,6 +33,32 @@ STYLES=("light" "dark")
 
 mkdir -p "$OUT_ROOT"
 
+# Resolve a simulator name to a UDID (first available match).
+udid_for_device() {
+  xcrun simctl list -j devices available | python3 -c '
+import json, sys
+name = sys.argv[1]
+data = json.load(sys.stdin)
+for devices in data["devices"].values():
+    for dev in devices:
+        if dev["name"] == name:
+            print(dev["udid"]); raise SystemExit
+raise SystemExit(f"no available simulator named {name!r}")
+' "$1"
+}
+
+# Boot the sim and pin the status bar to the canonical App Store look
+# (9:41, full battery and signal) before any capture runs on it.
+prepare_device() {
+  local udid="$1"
+  xcrun simctl boot "$udid" 2>/dev/null || true
+  xcrun simctl bootstatus "$udid" -b >/dev/null
+  xcrun simctl status_bar "$udid" override \
+    --time "9:41" \
+    --batteryState charged --batteryLevel 100 \
+    --wifiBars 3 --cellularBars 4 --dataNetwork wifi
+}
+
 # App Store Connect required dimensions. The installed iPhone 17 sim emits
 # 1206x2622 and the iPad Pro 13" M5 sim emits a slightly non-standard size;
 # both are within ~1% of the targets, so a straight `sips` resize is
@@ -138,6 +164,8 @@ PY
 }
 
 for device in "${DEVICES[@]}"; do
+  udid=$(udid_for_device "$device")
+  prepare_device "$udid"
   for style in "${STYLES[@]}"; do
     run_one "$device" "$style"
   done

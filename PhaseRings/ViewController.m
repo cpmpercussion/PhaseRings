@@ -144,6 +144,7 @@
     instrument.settingsStore = self.settingsStore;
     instrument.showsAppSettings = YES;   // app shows MIDI / Network sections
     instrument.screenshotMode = [[NSUserDefaults standardUserDefaults] boolForKey:@"screenshotMode"];
+    instrument.screenshotPattern = [[NSUserDefaults standardUserDefaults] stringForKey:@"screenshotPattern"];
 
     __weak typeof(self) weakSelf = self;
     // Audio sink: the standalone app drives a HeavyAudioEngine.

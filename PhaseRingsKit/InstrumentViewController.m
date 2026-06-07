@@ -230,7 +230,7 @@ static const int kPlaybackStateMoving  = 1;
 
 - (void)applySetupForState:(int)state {
     // Screenshot mode forces a fixed 9-pitch spread so App Store captures show a
-    // consistent, busier display (5 lit by lightAlternateRingsForScreenshot).
+    // consistent, busier display (rings lit per screenshotPattern, below).
     NSArray *pitches = self.screenshotMode
         ? @[@48, @50, @52, @55, @57, @60, @62, @64, @67]
         : [self.composition setupForState:state];
@@ -277,7 +277,15 @@ static const int kPlaybackStateMoving  = 1;
         // dictionaries, and mutes the master so captures are silent.
         if (self.screenshotMode) {
             [[self core] sendFloat:0.0 toReceiver:@"mastervolume"];
-            [self.bowlView lightAlternateRingsForScreenshot];
+            NSArray<NSNumber *> *pattern;
+            if ([self.screenshotPattern isEqualToString:@"varied"]) {
+                pattern = @[@1, @0, @1, @1, @0];   // 1 on, 1 off, 2 on, 1 off
+            } else if ([self.screenshotPattern isEqualToString:@"none"]) {
+                pattern = @[@0];   // preview video: rings light from touches only
+            } else {
+                pattern = @[@1, @0];
+            }
+            [self.bowlView lightRingsForScreenshotWithPattern:pattern];
         }
     }
 }

@@ -311,10 +311,12 @@
     }
 }
 
--(void) lightAlternateRingsForScreenshot {
+-(void) lightRingsForScreenshotWithPattern:(NSArray<NSNumber *> *)pattern {
     if (!self.currentSetup) return;
+    if (pattern.count == 0) pattern = @[@1, @0];
     int n = [self.currentSetup numberOfPitches];
-    for (int i = 0; i < n; i += 2) {
+    for (int i = 0; i < n; i++) {
+        if (![pattern[i % pattern.count] boolValue]) continue;
         int note = [self.currentSetup pitchAtIndex:i];
         CAShapeLayer *tapLayer = [self.tapEdgeLayers objectForKey:@(note)];
         if (tapLayer) {

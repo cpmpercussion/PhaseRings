@@ -72,6 +72,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// `screenshotMode` default; the host sets it before the view lays out.
 @property (nonatomic) BOOL screenshotMode;
 
+/// Lighting pattern used by screenshotMode: @"varied" lights rings in a
+/// 1-on, 1-off, 2-on, 1-off cycle; anything else (including nil) is the
+/// classic on-off alternation.
+@property (nonatomic, copy, nullable) NSString *screenshotPattern;
+
 /// Number of setups in the current composition (for a host driving remote
 /// setup changes).
 @property (nonatomic, readonly) NSInteger numberOfSetups;
