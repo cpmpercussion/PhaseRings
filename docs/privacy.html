@@ -70,7 +70,7 @@
 
 <main class="container py-5" style="max-width: 760px;">
   <h1 class="mb-2">Privacy Policy</h1>
-  <p class="text-muted">Last updated: 17 May 2026</p>
+  <p class="text-muted">Last updated: 7 June 2026</p>
 
   <p>PhaseRings is a musical instrument app for iPad and iPhone. It is designed to be played, not to collect data about you. This page explains what PhaseRings does and does not do with your information.</p>
 
@@ -78,13 +78,13 @@
   <p><strong>Nothing.</strong> PhaseRings has no user accounts, no analytics, no advertising, and no tracking. The app does not collect, store, or transmit any personal information about you or your device to the developer or to any third party.</p>
 
   <h2>How the app uses your device</h2>
-  <p>PhaseRings runs entirely on your device. All audio is synthesised locally using <a href="https://puredata.info">Pure Data</a> via libpd. Your settings (chosen composition, scales, sound scheme, etc.) are saved in the standard iOS user preferences for the app and stay on your device.</p>
+  <p>PhaseRings runs entirely on your device. All audio is synthesised locally from <a href="https://puredata.info">Pure Data</a> patches compiled into the app. Your settings (chosen composition, scales, sound scheme, etc.) are saved in the standard iOS user preferences for the app and stay on your device.</p>
 
   <h2>Optional networking features</h2>
   <p>PhaseRings includes several optional features that send or receive data over a local network or to other apps on your device. These are off or inactive unless you configure them. None of this data is sent to the developer.</p>
   <ul>
     <li><strong>Core MIDI.</strong> When MIDI output is enabled in settings, note and aftertouch messages are sent to other MIDI apps or accessories you have connected to your device.</li>
-    <li><strong>Inter-App Audio.</strong> If you connect PhaseRings as an audio source to a compatible host app, audio is streamed to that app.</li>
+    <li><strong>AUv3 plugin.</strong> If you load PhaseRings as an Audio Unit instrument inside a host app (such as AUM or GarageBand), audio and MIDI are exchanged with that host on your device.</li>
     <li><strong>OSC and ensemble networking.</strong> For networked performance, PhaseRings can broadcast touch and gesture events over OSC on your local network and connect to a user-configured logging or gesture-classifier server. These features are only used when you explicitly point the app at a server address, and the data is sent only to the destination you choose.</li>
     <li><strong>Bonjour service discovery.</strong> When networked performance is in use, the app uses Bonjour on the local network to discover compatible servers.</li>
   </ul>
@@ -111,6 +111,7 @@
       <a href="index.html">Home</a>
       · <a href="https://github.com/cpmpercussion/phaserings">Source on GitHub</a>
       · <a href="https://apps.apple.com/app/phaserings/id924795988">App Store</a>
+      · <a href="accessibility.html">Accessibility</a>
     </div>
   </div>
 </footer>
