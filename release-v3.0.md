@@ -25,6 +25,31 @@ created 2026-05-31). v2.0.0 shipped 2026-05-23.
 | Privacy Policy URL| https://charlesmartin.au/phaserings/privacy.html     |
 | Accessibility URL | https://charlesmartin.au/phaserings/accessibility.html |
 
+## App Store metadata — make "AUv3" searchable
+
+App Store search indexes only the **app name**, **subtitle**, and the hidden
+**keywords field** — not the description. Musicians hunting for new
+instruments search "auv3" directly, so it must appear in one of those three.
+
+- **Subtitle** (30 chars max): e.g. `Ring instrument & AUv3 synth` (28 chars).
+  This is the highest-value slot: visible on the product page *and* indexed.
+- **Keywords field** (100 chars max, comma-separated, no spaces after commas):
+  e.g. `auv3,audio unit,plugin,synth,instrument,midi,rings,generative,ambient,percussion,music making`
+  (93 chars). Don't waste characters on "phaserings" (the name is already
+  indexed) or plurals (search matches them). Avoid third-party app names
+  (AUM, GarageBand) in *keywords* — guideline 2.3.7 territory; naming them in
+  the **description** as compatible hosts is fine and conventional.
+- **Description**: lead with AUv3 in the first paragraph (it's what's new and
+  what differentiates v3.0), e.g. "…now an AUv3 Audio Unit plugin — play
+  PhaseRings inside AUM, GarageBand, Logic Pro for iPad, Cubasis and other
+  hosts." Not indexed, but it converts the people who arrive from an "auv3"
+  search.
+- **Promotional text** (170 chars, editable without re-review): use it to
+  announce the AUv3 while v3.0 is fresh, e.g. "New in 3.0: PhaseRings is now
+  an AUv3 plugin — load it in AUM, GarageBand or Logic, run multiple
+  instances, and play it from MIDI."
+- **What's New (release notes)**: AUv3 first line, for the same reason.
+
 ## App Accessibility section (Accessibility Nutrition Label)
 
 App Store Connect → app page → **App Accessibility**. Declarations below are
