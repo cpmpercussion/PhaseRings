@@ -62,7 +62,17 @@ class PhaseRingsScreenshotTests: XCTestCase {
         captureScreenshot(style: "dark")
     }
 
-    private func captureScreenshot(style: String) {
+    /// The settings sheet over the surface (one per appearance). Finds the
+    /// gear via its accessibility label.
+    func testCaptureSettingsLight() {
+        captureScreenshot(style: "light", settings: true)
+    }
+
+    func testCaptureSettingsDark() {
+        captureScreenshot(style: "dark", settings: true)
+    }
+
+    private func captureScreenshot(style: String, settings: Bool = false) {
         let app = XCUIApplication()
         app.launchArguments += ["-screenshotMode", "1", "-uiStyle", style]
         app.launch()
@@ -70,8 +80,16 @@ class PhaseRingsScreenshotTests: XCTestCase {
         // Give the bowl view a beat to finish layout and re-light its rings;
         // viewDidLayoutSubviews fires more than once during launch.
         Thread.sleep(forTimeInterval: 1.5)
+        var name = "phaserings-\(style)"
+        if settings {
+            app.buttons["Settings"].tap()
+            XCTAssertTrue(app.navigationBars["Settings"].waitForExistence(timeout: 5.0))
+            // Let the sheet's presentation animation settle.
+            Thread.sleep(forTimeInterval: 1.0)
+            name = "phaserings-settings-\(style)"
+        }
         let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
-        attachment.name = "phaserings-\(style)"
+        attachment.name = name
         attachment.lifetime = .keepAlways
         add(attachment)
     }

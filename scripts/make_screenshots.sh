@@ -3,8 +3,9 @@
 # Generate App Store screenshots for PhaseRings.
 #
 # Runs the PhaseRingsScreenshotTests UI tests against iPhone 17 and
-# iPad Pro 11" (M5) simulators for both light and dark mode, then extracts
-# the PNG attachments from each xcresult bundle into screenshots/.
+# iPad Pro 13" (M5) simulators for both light and dark mode — surface and
+# settings-sheet shots — then extracts the PNG attachments from each
+# xcresult bundle into screenshots/.
 #
 # Usage: scripts/make_screenshots.sh [device ...]
 #   With no args, runs all configured devices. Device names must match
@@ -14,7 +15,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-WORKSPACE="PhaseRings.xcworkspace"
+PROJECT="PhaseRings.xcodeproj"
 SCHEME="PhaseRings"
 TEST_TARGET="PhaseRingsUITests/PhaseRingsScreenshotTests"
 OUT_ROOT="screenshots"
@@ -71,10 +72,11 @@ run_one() {
 
   echo "==> $device / $style"
   xcodebuild test \
-    -workspace "$WORKSPACE" \
+    -project "$PROJECT" \
     -scheme "$SCHEME" \
     -destination "platform=iOS Simulator,name=${device}" \
     -only-testing:"${TEST_TARGET}/testCapture${style_cap}Mode" \
+    -only-testing:"${TEST_TARGET}/testCaptureSettings${style_cap}" \
     -resultBundlePath "$result_bundle" \
     ONLY_ACTIVE_ARCH=YES ARCHS=arm64 \
     -quiet
@@ -101,7 +103,13 @@ for test in manifest:
         if not name.startswith("phaserings-"):
             continue
         src = os.path.join(export_dir, att["exportedFileName"])
-        dst = os.path.join(out_dir, f"phaserings-{style}.png")
+        # Keep each attachment's own name (surface vs settings shots), minus
+        # the "_<n>_<UUID>" suffix xcresulttool appends.
+        import re
+        base = re.sub(r"_\d+_[0-9A-Fa-f-]{36}", "", name)
+        if not base.endswith(".png"):
+            base += ".png"
+        dst = os.path.join(out_dir, base)
         shutil.copyfile(src, dst)
         count += 1
         print(f"   wrote {dst}")
@@ -118,10 +126,11 @@ PY
   local dims
   dims=$(target_dimensions_for_slug "$slug")
   if [ -n "$dims" ]; then
-    local w h
+    local w h png
     read -r w h <<<"$dims"
-    local out_png="$out_dir/phaserings-${style}.png"
-    sips --resampleHeightWidth "$h" "$w" "$out_png" >/dev/null
+    for png in "$out_dir"/*.png; do
+      sips --resampleHeightWidth "$h" "$w" "$png" >/dev/null
+    done
     echo "   resized to ${w}x${h}"
   else
     echo "   note: no target dimensions configured for slug '$slug' — leaving native size"
