@@ -24,6 +24,11 @@ set -uo pipefail
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 VENV_DIR="$REPO_ROOT/.venv-hvcc"
 HVCC="$VENV_DIR/bin/hvcc"
+# Invoke hvcc through a wrapper that pins its RNGs and emission order so the
+# generated C++ is byte-reproducible (see scripts/hvcc_deterministic.py).
+# Without this, every regeneration reshuffles object IDs, random~ seeds and
+# function ordering, drowning real patch changes in noise.
+HVCC_RUN=("$VENV_DIR/bin/python" "$REPO_ROOT/scripts/hvcc_deterministic.py")
 SYNTH_DIR="$REPO_ROOT/synth"
 OUT_ROOT="$REPO_ROOT/PhaseRingsKit/Heavy"
 TMP_ROOT="$OUT_ROOT/.tmp"
@@ -64,7 +69,7 @@ for entry in "${PATCHES[@]}"; do
     rm -rf "$tmp"
     mkdir -p "$tmp"
 
-    "$HVCC" \
+    "${HVCC_RUN[@]}" \
         "$SYNTH_DIR/$patch" \
         -n "$name" \
         -g cpp \
